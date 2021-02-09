@@ -14,9 +14,8 @@ export const Aquarium = (props, context) => {
   } = data;
   return (
     <Window
-      width={450}
-      height={400}
-      resizable>
+      width={500}
+      height={400}>
       <Window.Content>
         <Section title="Aquarium Controls">
           <LabeledControls>
