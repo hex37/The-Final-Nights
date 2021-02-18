@@ -153,6 +153,7 @@
 		. += MA
 	if(!chambered && empty_indicator) //this is duplicated in c20's update_overlayss due to a layering issue with the select fire icon.
 		. += "[icon_state]_empty"
+
 	if (magazine && !internal_magazine)
 		if (special_mags)
 			. += "[icon_state]_mag_[initial(magazine.icon_state)]"
@@ -318,7 +319,7 @@
 		return
 	if (istype(A, /obj/item/ammo_casing) || istype(A, /obj/item/ammo_box))
 		if (bolt_type == BOLT_TYPE_NO_BOLT || internal_magazine)
-			if (chambered && !chambered.BB)
+			if (chambered && !chambered.loaded_projectile)
 				chambered.forceMove(drop_location())
 				chambered = null
 			var/num_loaded = magazine?.attackby(A, user, params, TRUE)
@@ -366,10 +367,10 @@
 
 /obj/item/gun/ballistic/process_fire(atom/target, mob/living/user, message = TRUE, params = null, zone_override = "", bonus_spread = 0)
 
-//	if(magazine && chambered.BB && can_misfire && misfire_probability > 0)
-//		if(prob(misfire_probability))
-//			if(blow_up(user))
-//				to_chat(user, "<span class='userdanger'>[src] misfires!</span>")
+	if(magazine && chambered.loaded_projectile && can_misfire && misfire_probability > 0)
+		if(prob(misfire_probability))
+			if(blow_up(user))
+				to_chat(user, "<span class='userdanger'>[src] misfires!</span>")
 
 	if (sawn_off)
 		bonus_spread += SAWN_OFF_ACC_PENALTY
@@ -521,7 +522,7 @@
 #define BRAINS_BLOWN_THROW_SPEED 1
 /obj/item/gun/ballistic/suicide_act(mob/user)
 	var/obj/item/organ/brain/B = user.getorganslot(ORGAN_SLOT_BRAIN)
-	if (B && chambered && chambered.BB && can_trigger_gun(user) && !chambered.BB.nodamage)
+	if (B && chambered && chambered.loaded_projectile && can_trigger_gun(user) && !chambered.loaded_projectile.nodamage)
 		user.visible_message("<span class='suicide'>[user] is putting the barrel of [src] in [user.p_their()] mouth. It looks like [user.p_theyre()] trying to commit suicide!</span>")
 		sleep(25)
 		if(user.is_holding(src))
@@ -643,7 +644,7 @@ GLOBAL_LIST_INIT(gun_saw_types, typecacheof(list(
 /obj/item/gun/ballistic/proc/blow_up(mob/user)
 	. = FALSE
 	for(var/obj/item/ammo_casing/AC in magazine.stored_ammo)
-		if(AC.BB)
+		if(AC.loaded_projectile)
 			process_fire(user, user, FALSE)
 			. = TRUE
 
