@@ -18,7 +18,7 @@
 /mob/living/verb/flavor_verb()
 	set name = "Flavor Text"
 	set category = "IC"
-	var/flavor = input("Choose your character's flavor text:") as message|null
+	var/flavor = tgui_input_text(usr, "Choose your character's flavor text:", "Flavor Text", max_length = MAX_MESSAGE_LEN, multiline = TRUE, encode = FALSE)
 
 	if(!length(flavor))
 		return
@@ -38,7 +38,7 @@
 	say(message, language) //only living mobs actually whisper, everything else just talks
 // TFN EDIT START
 ///The me emote verb
-/mob/verb/me_verb(message as text)
+/mob/verb/me_verb()
 	set name = "Me"
 	set category = "IC"
 
