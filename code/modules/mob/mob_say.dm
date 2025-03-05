@@ -38,7 +38,7 @@
 	say(message, language) //only living mobs actually whisper, everything else just talks
 // TFN EDIT START
 ///The me emote verb
-/mob/verb/me_verb()
+/mob/verb/me_verb(message as text)
 	set name = "Me"
 	set category = "IC"
 
