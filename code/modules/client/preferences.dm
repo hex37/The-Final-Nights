@@ -1844,7 +1844,7 @@ GLOBAL_LIST_EMPTY(preferences_datums)
 					if(slotlocked)
 						return
 
-					var/new_hair = input(user, "Choose your character's hair colour:", "Character Preference","#"+hair_color) as color|null
+					var/new_hair = tgui_input_list(user, "Choose your character's hair colour:", "Character Preference","#"+hair_color)
 					if(new_hair)
 						hair_color = sanitize_hexcolor(new_hair)
 
@@ -1904,7 +1904,7 @@ GLOBAL_LIST_EMPTY(preferences_datums)
 					if(slotlocked)
 						return
 
-					var/new_facial = input(user, "Choose your character's facial-hair colour:", "Character Preference","#"+facial_hair_color) as color|null
+					var/new_facial = tgui_input_list(user, "Choose your character's facial-hair colour:", "Character Preference","#"+facial_hair_color)
 					if(new_facial)
 						facial_hair_color = sanitize_hexcolor(new_facial)
 
