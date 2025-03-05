@@ -18,7 +18,7 @@
 /mob/living/verb/flavor_verb()
 	set name = "Flavor Text"
 	set category = "IC"
-	var/flavor = input("Choose your character's flavor text:") as message|null
+	var/flavor = tgui_input_text(usr, "Choose your character's flavor text:", "Flavor Text", max_length = MAX_MESSAGE_LEN, multiline = TRUE, encode = FALSE)
 
 	if(!length(flavor))
 		return
@@ -38,17 +38,15 @@
 	say(message, language) //only living mobs actually whisper, everything else just talks
 // TFN EDIT START
 ///The me emote verb
-/mob/verb/me_verb(message as text)
+/mob/verb/me_verb()
 	set name = "Me"
 	set category = "IC"
+	var/message = tgui_input_text(usr, "Input a custom emote:", "Emote", max_length = MAX_MESSAGE_LEN)
 
-	// If they don't type anything just drop the message.
-	if(!length(message))
-		return
 	if(GLOB.say_disabled)	//This is here to try to identify lag problems
 		to_chat(usr, span_notice("Speech is currently admin-disabled."))
 		return
-	message = trim(copytext_char(sanitize(message), 1, MAX_MESSAGE_LEN))
+
 	usr.emote("me",1,message,TRUE)
 // TFN EDIT END
 ///Speak as a dead person (ghost etc)
