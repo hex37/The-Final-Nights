@@ -11,7 +11,7 @@ GLOBAL_LIST_INIT(bunker_bypasses, load_bypasses_from_file())
 	set category = "Admin"
 	set name = "Add Bunker Bypass"
 
-	var/selection = input("Who would you like to let in?", "CKEY", "") as text|null
+	var/selection = tgui_input_text(usr, "Who would you like to let in?", "CKEY", encode = FALSE)
 	if(selection)
 		add_bunker_bypass(selection, ckey)
 
