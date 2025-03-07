@@ -409,7 +409,6 @@
 	key = "me"
 	key_third_person = "custom"
 	message = null
-	message_param = "%t"
 
 /datum/emote/living/custom/can_run_emote(mob/user, status_check, intentional)
 	. = ..() && intentional
@@ -455,7 +454,7 @@
 	emote_type = EMOTE_VISIBLE
 
 /datum/emote/living/custom/proc/get_custom_emote_from_user()
-	return stripped_multiline_input(usr, "Choose an emote to display.", "Me" , null, MAX_MESSAGE_LEN)
+	return tgui_input_text(usr, "Choose an emote to display.", "Me" , null, MAX_MESSAGE_LEN, TRUE)
 
 /datum/emote/living/custom/replace_pronoun(mob/user, message)
 	return message

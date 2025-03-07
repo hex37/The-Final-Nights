@@ -41,13 +41,12 @@
 /mob/verb/me_verb()
 	set name = "Me"
 	set category = "IC"
-	var/message = tgui_input_text(usr, "Input a custom emote:", "Emote", max_length = MAX_MESSAGE_LEN)
 
 	if(GLOB.say_disabled)	//This is here to try to identify lag problems
 		to_chat(usr, span_notice("Speech is currently admin-disabled."))
 		return
 
-	usr.emote("me",1,message,TRUE)
+	usr.emote(act = "me", m_type = EMOTE_VISIBLE, intentional = TRUE)
 // TFN EDIT END
 ///Speak as a dead person (ghost etc)
 /mob/proc/say_dead(message)
