@@ -42,14 +42,13 @@
 	set name = "Me"
 	set category = "IC"
 
-	if(GLOB.say_disabled)	//This is here to try to identify lag problems
-		to_chat(usr, "<span class='danger'>Speech is currently admin-disabled.</span>")
+	if(GLOB.say_disabled) //This is here to try to identify lag problems
+		to_chat(usr, span_danger("Speech is currently admin-disabled."))
 		return
 
 	message = trim(copytext_char(sanitize(message), 1, MAX_MESSAGE_LEN))
 
-	usr.emote("me",1,message,TRUE)
-
+	usr.emote("me", EMOTE_VISIBLE, message, TRUE)
 // TFN EDIT END
 ///Speak as a dead person (ghost etc)
 /mob/proc/say_dead(message)
