@@ -24,7 +24,7 @@
 	if(ishuman(user))
 		var/mob/living/carbon/human/H = user
 		if(locate(/obj/structure/mirror) in L)
-			var/new_mirror = input(user, "Choose the mirror to travel:","Enter Mirror",null) as null|anything in GLOB.las_mirrors
+			var/new_mirror = tgui_input_list(user, "Choose a mirror to travel to:", "Enter Mirror", GLOB.las_mirrors)
 			if(new_mirror)
 				if(istype(new_mirror, /obj/structure/mirror))
 					var/obj/structure/mirror/M = new_mirror
@@ -52,7 +52,7 @@
 		if(light_amount < SHADOW_SPECIES_LIGHT_THRESHOLD)
 			if(!activating)
 				activating = TRUE
-				if(do_mob(user, user, 50))
+				if(do_mob(user, user, 5 SECONDS))
 					activating = FALSE
 					playsound(get_turf(user), 'sound/magic/ethereal_enter.ogg', 50, TRUE, -1)
 					visible_message("<span class='boldwarning'>[user] melts into the shadows!</span>")
@@ -68,7 +68,6 @@
 
 /obj/effect/dummy/phased_mob/shadow
 	var/mob/living/jaunter
-	var/last_go = 0
 
 /obj/effect/dummy/phased_mob/shadow/Initialize(mapload)
 	. = ..()
@@ -90,9 +89,6 @@
 
 
 /obj/effect/dummy/phased_mob/shadow/relaymove(mob/living/user, direction)
-	if(last_go+5 > world.time)
-		return
-	last_go = world.time
 	var/turf/oldloc = loc
 	. = ..()
 	if(loc != oldloc)
