@@ -24,6 +24,11 @@ interface ByondType {
    */
   IS_LTE_IE11: boolean;
 
+    /**
+   * Version of Blink engine of WebView2. Null if N/A.
+   */
+    BLINK: number | null;
+
   /**
    * Makes a BYOND call.
    *
