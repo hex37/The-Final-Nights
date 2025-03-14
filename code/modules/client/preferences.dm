@@ -2400,14 +2400,14 @@ GLOBAL_LIST_EMPTY(preferences_datums)
 					flavor_text = new_flavor
 
 				if("view_flavortext")
-					var/datum/browser/popup = new(user, "[real_name]'s Description", real_name, 500, 200)
-					popup.set_content(text("<HTML><HEAD><TITLE>[]</TITLE></HEAD><BODY><TT>[]</TT></BODY></HTML>", "[real_name]", replacetext(flavor_text, "\n", "<BR>")))
+					var/datum/browser/popup = new(user, "[real_name]_flavortext", real_name, 500, 200)
+					popup.set_content(replacetext(flavor_text, "\n", "<BR>"))
 					popup.open(FALSE)
 					return
 
 				if("view_headshot")
 					var/list/dat = list("<table width='100%' height='100%'><td align='center' valign='middle'><img src='[headshot_link]' width='250px' height='250px'></td></table>")
-					var/datum/browser/popup = new(user, "[real_name]'s Headshot", "<div align='center'>Headshot</div>", 310, 330)
+					var/datum/browser/popup = new(user, "[real_name]_headshot", "<div align='center'>Headshot</div>", 310, 330)
 					popup.set_content(dat.Join())
 					popup.open(FALSE)
 					return

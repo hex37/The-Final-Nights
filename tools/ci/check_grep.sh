@@ -140,4 +140,8 @@ if $grep -P --exclude='__byond_version_compat.dm' '\.proc/' code/**/*.dm; then
     echo -e "${RED}ERROR: Outdated proc reference use detected in code, please use proc reference helpers.${NC}"
     st=1
 fi;
+if $grep "href[\s='\"\\\\]*\?" $code_files ; then
+    echo
+    echo -e "${RED}ERROR: BYOND requires internal href links to begin with \"byond://\".${NC}"
+    st=1
 exit $st
