@@ -107,7 +107,7 @@ GLOBAL_VAR_INIT(dynamic_forced_threat_level, -1)
 
 /datum/game_mode/dynamic/admin_panel()
 	var/list/dat = list()
-	dat += "Dynamic Mode <a href='byond://?_src_=vars;[HrefToken()];Vars=[REF(src)]'>VV</a> <a href='byond://?src=\ref[src];[HrefToken()]'>\[Refresh\]</a><BR>"
+	dat += "Dynamic Mode <a href='?_src_=vars;[HrefToken()];Vars=[REF(src)]'>VV</a> <a href='?src=\ref[src];[HrefToken()]'>\[Refresh\]</a><BR>"
 	dat += "Threat Level: <b>[threat_level]</b><br/>"
 
 	dat += "Threat to Spend: <b>[threat]</b> <a href='byond://?src=\ref[src];[HrefToken()];adjustthreat=1'>Adjust</a> <a href='byond://?src=\ref[src];[HrefToken()];threatlog=1'>\[View Log\]</a><br/>"
@@ -119,10 +119,10 @@ GLOBAL_VAR_INIT(dynamic_forced_threat_level, -1)
 	dat += "No stacking (only one round-ender): <a href='byond://?src=\ref[src];[HrefToken()];no_stacking=1'><b>[GLOB.dynamic_no_stacking ? "On" : "Off"]</b></a><br/>"
 	dat += "Stacking limit: [GLOB.dynamic_stacking_limit] <a href='byond://?src=\ref[src];[HrefToken()];stacking_limit=1'>Adjust</a>"
 	dat += "<br/>"
-	dat += "<A href='byond://?src=\ref[src];[HrefToken()];force_latejoin_rule=1'>\[Force Next Latejoin Ruleset\]</A><br>"
+	dat += "<A href='?src=\ref[src];[HrefToken()];force_latejoin_rule=1'>\[Force Next Latejoin Ruleset\]</A><br>"
 	if (forced_latejoin_rule)
-		dat += {"<A href='byond://?src=\ref[src];[HrefToken()];clear_forced_latejoin=1'>-> [forced_latejoin_rule.name] <-</A><br>"}
-	dat += "<A href='byond://?src=\ref[src];[HrefToken()];force_midround_rule=1'>\[Execute Midround Ruleset\]</A><br>"
+		dat += {"<A href='?src=\ref[src];[HrefToken()];clear_forced_latejoin=1'>-> [forced_latejoin_rule.name] <-</A><br>"}
+	dat += "<A href='?src=\ref[src];[HrefToken()];force_midround_rule=1'>\[Execute Midround Ruleset\]</A><br>"
 	dat += "<br />"
 	dat += "Executed rulesets: "
 	if (executed_rules.len > 0)

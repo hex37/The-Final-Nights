@@ -32,7 +32,7 @@ GLOBAL_LIST_EMPTY(deletion_failures)
 
 	var/list/frontrefs = get_forward_references(D)
 	var/list/dat = list()
-	dat += "<h1>References of \ref[D] - [D]</h1><br><a href='byond://?_src_=vars;[HrefToken()];[VV_HK_VIEW_REFERENCES]=TRUE;[VV_HK_TARGET]=[REF(D)]'>\[Refresh\]</a><hr>"
+	dat += "<h1>References of \ref[D] - [D]</h1><br><a href='?_src_=vars;[HrefToken()];[VV_HK_VIEW_REFERENCES]=TRUE;[VV_HK_TARGET]=[REF(D)]'>\[Refresh\]</a><hr>"
 	dat += "<h3>Back references - these things hold references to this object.</h3>"
 	dat += "<table>"
 	dat += "<tr><th>Ref</th><th>Type</th><th>Variable Name</th><th>Follow</th>"
@@ -41,9 +41,9 @@ GLOBAL_LIST_EMPTY(deletion_failures)
 		if(isnull(backreference))
 			dat += "<tr><td>GC'd Reference</td></tr>"
 		if(istype(backreference))
-			dat += "<tr><td><a href='byond://?_src_=vars;[HrefToken()];Vars=[REF(backreference)]'>[REF(backreference)]</td><td>[backreference.type]</td><td>[backrefs[backreference]]</td><td><a href='byond://?_src_=vars;[HrefToken()];[VV_HK_VIEW_REFERENCES]=TRUE;[VV_HK_TARGET]=[REF(backreference)]'>\[Follow\]</a></td></tr>"
+			dat += "<tr><td><a href='?_src_=vars;[HrefToken()];Vars=[REF(backreference)]'>[REF(backreference)]</td><td>[backreference.type]</td><td>[backrefs[backreference]]</td><td><a href='?_src_=vars;[HrefToken()];[VV_HK_VIEW_REFERENCES]=TRUE;[VV_HK_TARGET]=[REF(backreference)]'>\[Follow\]</a></td></tr>"
 		else if(islist(backreference))
-			dat += "<tr><td><a href='byond://?_src_=vars;[HrefToken()];Vars=[REF(backreference)]'>[REF(backreference)]</td><td>list</td><td>[backrefs[backreference]]</td><td><a href='byond://?_src_=vars;[HrefToken()];[VV_HK_VIEW_REFERENCES]=TRUE;[VV_HK_TARGET]=[REF(backreference)]'>\[Follow\]</a></td></tr>"
+			dat += "<tr><td><a href='?_src_=vars;[HrefToken()];Vars=[REF(backreference)]'>[REF(backreference)]</td><td>list</td><td>[backrefs[backreference]]</td><td><a href='?_src_=vars;[HrefToken()];[VV_HK_VIEW_REFERENCES]=TRUE;[VV_HK_TARGET]=[REF(backreference)]'>\[Follow\]</a></td></tr>"
 		else
 			dat += "<tr><td>Weird reference type. Add more debugging checks.</td></tr>"
 	dat += "</table><hr>"
@@ -52,7 +52,7 @@ GLOBAL_LIST_EMPTY(deletion_failures)
 	dat += "<tr><th>Variable name</th><th>Ref</th><th>Type</th><th>Follow</th>"
 	for(var/ref in frontrefs)
 		var/datum/backreference = frontrefs[ref]
-		dat += "<tr><td>[ref]</td><td><a href='byond://?_src_=vars;[HrefToken()];Vars=[REF(backreference)]'>[REF(backreference)]</a></td><td>[backreference.type]</td><td><a href='byond://?_src_=vars;[HrefToken()];[VV_HK_VIEW_REFERENCES]=TRUE;[VV_HK_TARGET]=[REF(backreference)]'>\[Follow\]</a></td></tr>"
+		dat += "<tr><td>[ref]</td><td><a href='?_src_=vars;[HrefToken()];Vars=[REF(backreference)]'>[REF(backreference)]</a></td><td>[backreference.type]</td><td><a href='?_src_=vars;[HrefToken()];[VV_HK_VIEW_REFERENCES]=TRUE;[VV_HK_TARGET]=[REF(backreference)]'>\[Follow\]</a></td></tr>"
 	dat += "</table><hr>"
 	dat = dat.Join()
 
