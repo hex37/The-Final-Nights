@@ -8,7 +8,7 @@ import { classes } from "common/react";
 import { computeBoxClassName, computeBoxProps } from "../components/Box";
 import { addScrollableNode, removeScrollableNode } from "../events";
 
-export const Layout = (props) => {
+export const Layout = props => {
   const { className, theme = "nanotrasen", children, ...rest } = props;
   document.documentElement.className = `theme-${theme}`;
   return (
@@ -23,7 +23,7 @@ export const Layout = (props) => {
   );
 };
 
-const LayoutContent = (props) => {
+const LayoutContent = props => {
   const { className, scrollable, children, ...rest } = props;
   return (
     <div
@@ -41,8 +41,8 @@ const LayoutContent = (props) => {
 };
 
 LayoutContent.defaultHooks = {
-  onComponentDidMount: (node) => addScrollableNode(node),
-  onComponentWillUnmount: (node) => removeScrollableNode(node),
+  onComponentDidMount: node => addScrollableNode(node),
+  onComponentWillUnmount: node => removeScrollableNode(node),
 };
 
 Layout.Content = LayoutContent;

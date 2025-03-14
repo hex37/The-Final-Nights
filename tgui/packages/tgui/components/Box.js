@@ -12,7 +12,7 @@ import { CSS_COLORS } from "../constants";
 /**
  * Coverts our rem-like spacing unit into a CSS unit.
  */
-export const unit = (value) => {
+export const unit = value => {
   if (typeof value === "string") {
     // Transparently convert pixels into rem units
     if (value.endsWith("px") && !Byond.IS_LTE_IE8) {
@@ -31,7 +31,7 @@ export const unit = (value) => {
 /**
  * Same as `unit`, but half the size for integers numbers.
  */
-export const halfUnit = (value) => {
+export const halfUnit = value => {
   if (typeof value === "string") {
     return unit(value);
   }
@@ -40,12 +40,12 @@ export const halfUnit = (value) => {
   }
 };
 
-const isColorCode = (str) => !isColorClass(str);
+const isColorCode = str => !isColorClass(str);
 
-const isColorClass = (str) =>
+const isColorClass = str =>
   typeof str === "string" && CSS_COLORS.includes(str);
 
-const mapRawPropTo = (attrName) => (style, value) => {
+const mapRawPropTo = attrName => (style, value) => {
   if (typeof value === "number" || typeof value === "string") {
     style[attrName] = value;
   }
@@ -71,7 +71,7 @@ const mapDirectionalUnitPropTo = (attrName, unit, dirs) => (style, value) => {
   }
 };
 
-const mapColorPropTo = (attrName) => (style, value) => {
+const mapColorPropTo = attrName => (style, value) => {
   if (isColorCode(value)) {
     style[attrName] = value;
   }
@@ -152,7 +152,7 @@ const styleMapperByPropName = {
   },
 };
 
-export const computeBoxProps = (props) => {
+export const computeBoxProps = props => {
   const computedProps = {};
   const computedStyles = {};
   // Compute props
@@ -191,7 +191,7 @@ export const computeBoxProps = (props) => {
   return computedProps;
 };
 
-export const computeBoxClassName = (props) => {
+export const computeBoxClassName = props => {
   const color = props.textColor || props.color;
   const backgroundColor = props.backgroundColor;
   return classes([
@@ -200,14 +200,14 @@ export const computeBoxClassName = (props) => {
   ]);
 };
 
-export const Box = (props) => {
+export const Box = props => {
   const { as = "div", className, children, ...rest } = props;
   // Render props
   if (typeof children === "function") {
     return children(computeBoxProps(props));
   }
-  const computedClassName =
-    typeof className === "string"
+  const computedClassName
+    = typeof className === "string"
       ? className + " " + computeBoxClassName(rest)
       : computeBoxClassName(rest);
   const computedProps = computeBoxProps(rest);

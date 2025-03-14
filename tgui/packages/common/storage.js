@@ -11,7 +11,7 @@ export const IMPL_HUB_STORAGE = 1;
 export const IMPL_INDEXED_DB = 2;
 
 const INDEXED_DB_VERSION = 1;
-const INDEXED_DB_NAME = "tgui";
+const INDEXED_DB_NAME = "tfn-tgui";
 const INDEXED_DB_STORE_NAME = "storage-v1";
 
 const READ_ONLY = "readonly";
@@ -26,8 +26,15 @@ const testGeneric = (testFn) => () => {
 };
 
 const testHubStorage = testGeneric(
-  () => window.hubStorage && !!window.hubStorage.getItem
+  () => window.hubStorage && window.hubStorage.getItem
 );
+
+// TODO: Remove with 516
+// prettier-ignore
+const testIndexedDb = testGeneric(() => (
+  (window.indexedDB || window.msIndexedDB)
+  && (window.IDBTransaction || window.msIDBTransaction)
+));
 
 class MemoryBackend {
   constructor() {
@@ -58,19 +65,18 @@ class HubStorageBackend {
   }
 
   async get(key) {
-    const value = await window.hubStorage.getItem(key);
+    const value = await window.hubStorage.getItem("tfn-" + key);
     if (typeof value === "string") {
       return JSON.parse(value);
     }
-    return undefined;
   }
 
   async set(key, value) {
-    window.hubStorage.setItem(key, JSON.stringify(value));
+    window.hubStorage.setItem("tfn-" + key, JSON.stringify(value));
   }
 
   async remove(key) {
-    window.hubStorage.removeItem(key);
+    window.hubStorage.removeItem("tfn-" + key);
   }
 
   async clear() {
@@ -79,6 +85,7 @@ class HubStorageBackend {
 }
 
 class IndexedDbBackend {
+  // TODO: Remove with 516
   constructor() {
     this.impl = IMPL_INDEXED_DB;
     /** @type {Promise<IDBDatabase>} */
@@ -100,10 +107,10 @@ class IndexedDbBackend {
   }
 
   async getStore(mode) {
-    const db = await this.dbPromise;
-    return db
+    // prettier-ignore
+    return this.dbPromise.then((db) => db
       .transaction(INDEXED_DB_STORE_NAME, mode)
-      .objectStore(INDEXED_DB_STORE_NAME);
+      .objectStore(INDEXED_DB_STORE_NAME));
   }
 
   async get(key) {
@@ -116,13 +123,6 @@ class IndexedDbBackend {
   }
 
   async set(key, value) {
-    // The reason we don't _save_ null is because IE 10 does
-    // not support saving the `null` type in IndexedDB. How
-    // ironic, given the bug below!
-    // See: https://github.com/mozilla/localForage/issues/161
-    if (value === null) {
-      value = undefined;
-    }
     // NOTE: We deliberately make this operation transactionless
     const store = await this.getStore(READ_WRITE);
     store.put(value, key);

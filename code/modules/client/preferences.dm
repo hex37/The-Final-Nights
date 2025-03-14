@@ -367,7 +367,7 @@ GLOBAL_LIST_EMPTY(preferences_datums)
 						if(!name)
 							name = "Character[i]"
 						if(istype(user, /mob/dead/new_player))
-							dat += "<a style='white-space:nowrap;' href='?_src_=prefs;preference=changeslot;num=[i];' [i == default_slot ? "class='linkOn'" : ""]>[name]</a> "
+							dat += "<a style='white-space:nowrap;' href='byond://?_src_=prefs;preference=changeslot;num=[i];' [i == default_slot ? "class='linkOn'" : ""]>[name]</a> "
 					dat += "</center>"
 
 			if(reason_of_death != "None")
