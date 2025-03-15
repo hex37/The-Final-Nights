@@ -64,13 +64,21 @@ const yarn = args => {
   });
 };
 
-/// Installs all tgui dependencies
+/** Installs all tgui dependencies */
 const taskYarn = new Task('yarn')
+  // The following dependencies skip what could be considered an important
+  // step in Yarn: it verifies the integrity of cache. With this setup, if
+  // cache ever becomes corrupted, your only option is to clean build.
+  .depends('tgui/.yarn/+(cache|releases|plugins|sdks)/**/*')
+  .depends('tgui/**/package.json')
+  .depends('tgui/yarn.lock')
+  // Phony target (automatically created at the end of the task)
+  .provides('tgui/.yarn/install-target')
   .build(() => yarn(['install']));
 
-/// Builds svg fonts
+/** Builds svg fonts */
 const taskTgfont = new Task('tgfont')
-  .depends('tgui/.yarn/install-state.gz')
+  .depends('tgui/.yarn/install-target')
   .depends('tgui/packages/tgfont/**/*.+(js|cjs|svg)')
   .depends('tgui/packages/tgfont/package.json')
   .provides('tgui/packages/tgfont/dist/tgfont.css')
@@ -78,9 +86,9 @@ const taskTgfont = new Task('tgfont')
   .provides('tgui/packages/tgfont/dist/tgfont.woff2')
   .build(() => yarn(['workspace', 'tgfont', 'build']));
 
-/// Builds tgui
+/** Builds tgui */
 const taskTgui = new Task('tgui')
-  .depends('tgui/.yarn/install-state.gz')
+  .depends('tgui/.yarn/install-target')
   .depends('tgui/webpack.config.js')
   .depends('tgui/**/package.json')
   .depends('tgui/packages/**/*.+(js|jsx|ts|tsx|cjs|scss)')
@@ -92,6 +100,18 @@ const taskTgui = new Task('tgui')
   .provides('code/modules/tgui/USE_BUILD_BAT_INSTEAD_OF_DREAM_MAKER.dm')
   .build(async () => {
     await yarn(['run', 'webpack-cli', '--mode=production']);
+  });
+
+/**
+ * Prepends the defines to the .dme.
+ * Does not clean them up, as this is intended for TGS which
+ * clones new copies anyway.
+ */
+const taskPrependDefines = (...defines) => new Task('prepend-defines')
+  .build(async () => {
+    const dmeContents = fs.readFileSync(`${DME_NAME}.dme`);
+    const textToWrite = defines.map(define => `#define ${define}\n`);
+    fs.writeFileSync(`${DME_NAME}.dme`, `${textToWrite}\n${dmeContents}`);
   });
 
 const taskDm = (...injectedDefines) => new Task('dm')
@@ -146,7 +166,6 @@ const taskDm = (...injectedDefines) => new Task('dm')
         // Add the actual dme content
         const dme_content = fs.readFileSync(`${DME_NAME}.dme`)
         fs.appendFileSync(`${DME_NAME}.mdme`, dme_content)
-
         await exec(dmPath, [`${DME_NAME}.mdme`]);
         // Rename dmb
         fs.renameSync(`${DME_NAME}.mdme.dmb`, `${DME_NAME}.dmb`)
