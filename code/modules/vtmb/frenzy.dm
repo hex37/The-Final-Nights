@@ -29,7 +29,7 @@
 		if(iscathayan(src))
 			check = vampireroll(max(1, mind.dharma.Hun), min(10, (mind.dharma.level*2)-max_demon_chi), src)
 		else
-			check = vampireroll(max(1, round(humanity/2)), min(frenzy_chance_boost, frenzy_hardness), src)
+			check = vampireroll(max(1, round(H.morality_path.score/2)), min(frenzy_chance_boost, frenzy_hardness), src)
 		switch(check)
 			if(DICE_FAILURE)
 				enter_frenzymod()
@@ -317,8 +317,8 @@
 	if(H.key && (H.stat <= HARD_CRIT))
 		var/datum/preferences/P = GLOB.preferences_datums[ckey(H.key)]
 		if(P)
-			if(P.humanity != H.humanity)
-				P.humanity = H.humanity
+			if(P.path_score != H.morality_path.score)
+				P.path_score = H.morality_path.score
 				P.save_preferences()
 				P.save_character()
 			if(P.masquerade != H.masquerade)
@@ -343,9 +343,9 @@
 //					P.save_preferences()
 //					P.save_character()
 			if(!H.antifrenzy)
-				if(P.humanity < 1)
+				if(P.path_score < 1)
 					H.enter_frenzymod()
-					to_chat(H, "<span class='userdanger'>You have lost control of the Beast within you, and it has taken your body. Be more [H.client.prefs.enlightenment ? "Enlightened" : "humane"] next time.</span>")
+					to_chat(H, "<span class='userdanger'>You have lost control of the Beast within you, and it has taken your body. Be more [H.client.prefs.is_enlightened ? "Enlightened" : "humane"] next time.</span>")
 					H.ghostize(FALSE)
 					P.reason_of_death = "Lost control to the Beast ([time2text(world.timeofday, "YYYY-MM-DD hh:mm:ss")])."
 
@@ -374,7 +374,7 @@
 				H.last_frenzy_check = world.time
 				H.rollfrenzy()
 				if(H.clane)
-					if(H.clane.enlightenment)
+					if(H.clane.is_enlightened)
 						if(!H.CheckFrenzyMove())
 							H.AdjustHumanity(1, 10)
 //	if(length(blood_fr) >= 10 && !H.in_frenzy)

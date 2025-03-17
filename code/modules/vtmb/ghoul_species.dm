@@ -319,8 +319,8 @@
 				P.masquerade = H.masquerade
 				P.save_preferences()
 				P.save_character()
-
-			if(H.humanity <= 2)
+			// ? Is this just outright copy pasted? Why do ghouls have this?
+			if(H.morality_path?.score <= 2)
 				if(prob(5))
 					if(prob(50))
 						H.Stun(20)

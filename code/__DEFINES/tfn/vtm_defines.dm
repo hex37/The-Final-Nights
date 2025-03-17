@@ -62,6 +62,27 @@
 #define AURA_TRUE_FAITH "#ffe12f"
 
 /**
+ * Morality defines
+ */
+
+#define MAX_PATH_SCORE 10
+#define MIN_PATH_SCORE 1
+
+// Very simplified version of virtues
+#define MORALITY_HUMANITY 1
+#define MORALITY_ENLIGHTENMENT 2
+
+// Bearings
+#define BEARING_MUNDANE 1
+#define BEARING_RESOLVE 2
+#define BEARING_JUSTICE 3
+#define BEARING_INHUMANITY 4
+#define BEARING_COMMAND 5
+#define BEARING_INTELLECT 6
+#define BEARING_DEVOTION 7
+#define BEARING_HOLINESS 8
+
+/**
  * Whitelist defines
  */
 

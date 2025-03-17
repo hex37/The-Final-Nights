@@ -27,7 +27,7 @@ And it also helps for the character set panel
 	var/violating_appearance
 	var/male_clothes
 	var/female_clothes
-	var/enlightenment = FALSE
+	var/is_enlightened = FALSE
 	var/whitelisted = FALSE
 	var/accessories = list()
 	var/accessories_layers = list()
