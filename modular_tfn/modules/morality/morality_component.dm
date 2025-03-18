@@ -39,7 +39,7 @@
 							SEND_SOUND(kindred, sound('code/modules/wod13/sounds/humanity_gain.ogg', 0, 0, 75))
 							to_chat(kindred, span_userdanger("<b>HUMANITY INCREASED!</b>"))
 						if(PATH_SCORE_DOWN)
-							if(path_rating-1 > limit)
+							if(path_rating-1 < limit)
 								return
 							path_rating -= 1
 							SEND_SOUND(kindred, sound('code/modules/wod13/sounds/humanity_loss.ogg', 0, 0, 75))
@@ -58,7 +58,7 @@
 							SEND_SOUND(kindred, sound('code/modules/wod13/sounds/humanity_gain.ogg', 0, 0, 75))
 							to_chat(kindred, span_userdanger("<b>ENLIGHTENMENT INCREASED!</b>"))
 						if(PATH_SCORE_UP)
-							if(path_rating-1 > limit)
+							if(path_rating-1 < limit)
 								return
 							path_rating -= 1
 							SEND_SOUND(kindred, sound('code/modules/wod13/sounds/humanity_loss.ogg', 0, 0, 75))

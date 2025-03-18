@@ -233,7 +233,6 @@
 					to_chat(src, "<span class='warning'>This sad sacrifice for your own pleasure affects something deep in your mind.</span>")
 					AdjustMasquerade(-1)
 					SEND_SIGNAL(src, COMSIG_PATH_HIT, PATH_SCORE_DOWN)
-					//morality_path.adjust_humanity(PATH_SCORE_DOWN)
 					mob.death()
 			if(!ishuman(mob))
 				if(mob.stat != DEAD)

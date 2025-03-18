@@ -69,18 +69,18 @@
 #define MAX_PATH_SCORE 10
 
 // Very simplified version of virtues
-#define MORALITY_HUMANITY 1
-#define MORALITY_ENLIGHTENMENT 2
+#define MORALITY_HUMANITY "morality_humanity"
+#define MORALITY_ENLIGHTENMENT "morality_enlightenment"
 
 // Bearings
-#define BEARING_MUNDANE 1
-#define BEARING_RESOLVE 2
-#define BEARING_JUSTICE 3
-#define BEARING_INHUMANITY 4
-#define BEARING_COMMAND 5
-#define BEARING_INTELLECT 6
-#define BEARING_DEVOTION 7
-#define BEARING_HOLINESS 8
+#define BEARING_MUNDANE (1<<0)
+#define BEARING_RESOLVE (1<<1)
+#define BEARING_JUSTICE (1<<2)
+#define BEARING_INHUMANITY (1<<3)
+#define BEARING_COMMAND (1<<4)
+#define BEARING_INTELLECT (1<<5)
+#define BEARING_DEVOTION (1<<6)
+#define BEARING_HOLINESS (1<<7)
 
 // Path hits
 #define PATH_SCORE_DOWN -1
