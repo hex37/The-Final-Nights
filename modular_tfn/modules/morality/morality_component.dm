@@ -32,21 +32,6 @@
 	if(!is_special_character(kindred))
 		if(!kindred.in_frenzy)
 			switch(kindred.morality_path.alignment)
-				if(MORALITY_ENLIGHTENMENT)
-					// ? Enlightenment paths go UP if the value is negative and DOWN if the value is positive, so the following is correct
-					switch(SIGN(type))
-						if(PATH_SCORE_DOWN)
-							path_rating += 1
-							SEND_SOUND(kindred, sound('code/modules/wod13/sounds/humanity_gain.ogg', 0, 0, 75))
-							to_chat(kindred, span_userdanger("<b>ENLIGHTENMENT INCREASED!</b>"))
-						if(PATH_SCORE_UP)
-							if(path_rating-1 > limit)
-								return
-							path_rating -= 1
-							SEND_SOUND(kindred, sound('code/modules/wod13/sounds/humanity_loss.ogg', 0, 0, 75))
-							to_chat(kindred, span_userdanger("<b>ENLIGHTENMENT DECREASED!</b>"))
-						else
-							return
 				if(MORALITY_HUMANITY)
 					switch(SIGN(type))
 						if(PATH_SCORE_UP)
@@ -65,8 +50,21 @@
 							else if(path_rating < 3)
 								var/intrusive_thoughts = pick("<b>I can barely control the Beast!</b>", "<b>I SHOULD STOP.</b>", "<b>I'm succumbing to the Beast!</b>")
 								to_chat(kindred, span_userdanger(intrusive_thoughts))
-						else
-							return
+				if(MORALITY_ENLIGHTENMENT)
+					// ? Enlightenment paths go UP if the value is negative and DOWN if the value is positive, so the following is correct
+					switch(SIGN(type))
+						if(PATH_SCORE_DOWN)
+							path_rating += 1
+							SEND_SOUND(kindred, sound('code/modules/wod13/sounds/humanity_gain.ogg', 0, 0, 75))
+							to_chat(kindred, span_userdanger("<b>ENLIGHTENMENT INCREASED!</b>"))
+						if(PATH_SCORE_UP)
+							if(path_rating-1 > limit)
+								return
+							path_rating -= 1
+							SEND_SOUND(kindred, sound('code/modules/wod13/sounds/humanity_loss.ogg', 0, 0, 75))
+							to_chat(kindred, span_userdanger("<b>ENLIGHTENMENT DECREASED!</b>"))
+				else
+					return
 
 			kindred.morality_path.score = clamp(path_rating, 0, 10)
 			S_TIMER_COOLDOWN_START(kindred.morality_path, COOLDOWN_PATH_HIT, 5 MINUTES)
