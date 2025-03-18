@@ -717,13 +717,14 @@ GLOBAL_LIST_EMPTY(preferences_datums)
 			if(generation_bonus)
 				dat += "<a href='?_src_=prefs;preference=reset_with_bonus;task=input'>Create new character with generation bonus ([generation]-[generation_bonus])</a><BR>"
 			// TFN EDIT ADDITION START: headshots, flavortext, and morality system
-			dat += "<h2>[make_font_cool("PATH")]</h2>"
-			dat += "<b>[morality_path.name]:</b> [path_score]/10"
-			if ((true_experience >= (path_score * 2)) && (path_score < 10))
-				dat += " <a href='?_src_=prefs;preference=path;task=input'>Increase Path ([path_score * 2])</a>"
-			if(!slotlocked)
-				dat += "<a href='?_src_=prefs;preference=pathof;task=input'>Switch Path</a><BR>"
-			dat += "<br><b>Description:</b> [morality_path.desc]<BR>"
+			if(pref_species.name == "Vampire")
+				dat += "<h2>[make_font_cool("PATH")]</h2>"
+				dat += "<b>[morality_path.name]:</b> [path_score]/10"
+				if ((true_experience >= (path_score * 2)) && (path_score < 10))
+					dat += " <a href='?_src_=prefs;preference=path;task=input'>Increase Path ([path_score * 2])</a>"
+				if(!slotlocked)
+					dat += "<a href='?_src_=prefs;preference=pathof;task=input'>Switch Path</a>"
+				dat += "<BR><b>Description:</b> [morality_path.desc]<BR>"
 
 			if(length(flavor_text) <= 110)
 				dat += "<BR><b>Flavor Text:</b> [flavor_text] <a href='?_src_=prefs;preference=flavor_text;task=input'>Change</a><BR>"
