@@ -8,31 +8,32 @@
 	var/illegal = FALSE
 
 /obj/lombard/attackby(obj/item/W, mob/living/user, params)
+	var/mob/living/carbon/human/H = user
+
 	if(istype(W, /obj/item/stack))
 		return
 	if(istype(W, /obj/item/organ))
 		var/obj/item/organ/O = W
 		if(O.damage > round(O.maxHealth/2))
-			to_chat(user, "<span class='warning'>[W] is too damaged to sell!</span>")
+			to_chat(user, span_warning("[W] is too damaged to sell!"))
 			return
-	if(W.cost > 0)
-		if(W.illegal == illegal)
-			for(var/i in 1 to (W.cost / 5) * (user.social + (user.additional_social * 0.1)))
-				new /obj/item/stack/dollar(loc)
-			playsound(loc, 'code/modules/wod13/sounds/sell.ogg', 50, TRUE)
+
+	if(W?.cost > 0)
+		if(W.illegal && illegal)
 			if(istype(W, /obj/item/organ))
-				var/mob/living/carbon/human/H = user
-				to_chat(src, "<span class='userdanger'><b>Selling organs is a depraved act! If I keep doing this I will become a wight.</b></span>")
-				H.AdjustHumanity(PATH_SCORE_DOWN, 0)
+				to_chat(H, span_userdanger("<b>Selling organs is a depraved act... If I keep doing this, I will become a wight!</b>"))
+				SEND_SIGNAL(H, COMSIG_PATH_HIT, PATH_SCORE_DOWN, 0)
 			else if(istype(W, /obj/item/reagent_containers/food/drinks/meth/cocaine))
-				var/mob/living/carbon/human/H = user
-				H.AdjustHumanity(PATH_SCORE_DOWN, 5)
+				SEND_SIGNAL(H, COMSIG_PATH_HIT, PATH_SCORE_DOWN, 5)
 			else if(istype(W, /obj/item/reagent_containers/food/drinks/meth))
-				var/mob/living/carbon/human/H = user
-				H.AdjustHumanity(PATH_SCORE_DOWN, 4)
+				SEND_SIGNAL(H, COMSIG_PATH_HIT, PATH_SCORE_DOWN, 4)
 			else if(illegal)
-				var/mob/living/carbon/human/H = user
-				H.AdjustHumanity(PATH_SCORE_DOWN, 7)
+				SEND_SIGNAL(H, COMSIG_PATH_HIT, PATH_SCORE_DOWN, 7)
+
+			for(var/i in 1 to (W.cost / 5) * (user.social + (user.additional_social * 0.1)))
+				new /obj/item/stack/dollar(get_turf(src))
+
+			playsound(get_turf(src), 'code/modules/wod13/sounds/sell.ogg', 50, TRUE)
 			qdel(W)
 			return
 	else

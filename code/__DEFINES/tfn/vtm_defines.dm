@@ -84,8 +84,13 @@
 
 // Path hits
 #define PATH_SCORE_DOWN -1
-#define PATH_SCORE_NEUTRAL 0
 #define PATH_SCORE_UP 1
+
+// Path hit signals
+#define COMSIG_PATH_HIT "path_hit"
+
+// Path cooldowns
+#define COOLDOWN_PATH_HIT "path_hit_cooldown"
 
 /**
  * Whitelist defines

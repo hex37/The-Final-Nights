@@ -63,6 +63,8 @@ And it also helps for the character set panel
 	if(clan_keys)
 		H.put_in_hands(new clan_keys(H))
 
+	H.AddComponent(/datum/component/morality)
+
 /mob/living/carbon
 	var/datum/relationship/Myself
 

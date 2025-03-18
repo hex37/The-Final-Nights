@@ -35,6 +35,7 @@
 				enter_frenzymod()
 				if(iskindred(src))
 					addtimer(CALLBACK(src, PROC_REF(exit_frenzymod)), 100*H.clane.frenzymod)
+					SEND_SIGNAL(H, COMSIG_PATH_HIT, PATH_SCORE_DOWN)
 				else
 					addtimer(CALLBACK(src, PROC_REF(exit_frenzymod)), 100)
 				frenzy_hardness = 1
@@ -42,11 +43,14 @@
 				enter_frenzymod()
 				if(iskindred(src))
 					addtimer(CALLBACK(src, PROC_REF(exit_frenzymod)), 200*H.clane.frenzymod)
+					SEND_SIGNAL(H, COMSIG_PATH_HIT, PATH_SCORE_DOWN)
 				else
 					addtimer(CALLBACK(src, PROC_REF(exit_frenzymod)), 200)
 				frenzy_hardness = 1
 			if(DICE_CRIT_WIN)
 				frenzy_hardness = max(1, frenzy_hardness-1)
+				if(iskindred(src))
+					SEND_SIGNAL(H, COMSIG_PATH_HIT, PATH_SCORE_UP)
 			else
 				frenzy_hardness = min(10, frenzy_hardness+1)
 
@@ -364,20 +368,8 @@
 			if(H.bloodpool > 1 || H.in_frenzy)
 				H.last_frenzy_check = world.time
 
-//	var/list/blood_fr = list()
-//	for(var/obj/effect/decal/cleanable/blood/B in range(7, src))
-//		if(B.bloodiness)
-//			blood_fr += B
 	if(!H.antifrenzy && !HAS_TRAIT(H, TRAIT_KNOCKEDOUT))
 		if(H.bloodpool <= 1 && !H.in_frenzy)
 			if((H.last_frenzy_check + 40 SECONDS) <= world.time)
 				H.last_frenzy_check = world.time
 				H.rollfrenzy()
-				if(H.clane)
-					if(H.clane.is_enlightened)
-						if(!H.CheckFrenzyMove())
-							H.AdjustHumanity(PATH_SCORE_UP, 10)
-//	if(length(blood_fr) >= 10 && !H.in_frenzy)
-//		if(H.last_frenzy_check+400 <= world.time)
-//			H.last_frenzy_check = world.time
-//			H.rollfrenzy()

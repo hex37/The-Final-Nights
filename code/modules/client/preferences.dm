@@ -3370,6 +3370,7 @@ GLOBAL_LIST_EMPTY(preferences_datums)
 			if(!character.ischildren)
 				character.ischildren = TRUE
 				character.AddElement(/datum/element/children, COMSIG_PARENT_PREQDELETED, src)
+
 		parent << browse(null, "window=preferences_window")
 		parent << browse(null, "window=preferences_browser")
 

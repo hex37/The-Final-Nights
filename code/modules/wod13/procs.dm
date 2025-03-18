@@ -1,58 +1,3 @@
-/mob/living/carbon/human/proc/AdjustHumanity(value, limit)
-	if(value < 0)
-		for(var/mob/living/carbon/human/H in viewers(7, src))
-			if(H != src && H.mind?.dharma)
-				if("judgement" in H.mind.dharma.tenets)
-					to_chat(H, "<span class='warning'>[src] is doing something bad, I need to punish them!")
-					H.mind.dharma.judgement |= real_name
-	if(!iskindred(src))
-		return
-	if(!GLOB.canon_event)
-		return
-
-	var/path_rating = morality_path?.score
-
-	if(!is_special_character(src))
-		if(!in_frenzy)
-			switch(morality_path?.alignment)
-				if(MORALITY_ENLIGHTENMENT)
-					// ? Enlightenment paths go UP if the value is negative and DOWN if the value is positive, so the following is correct
-					switch(SIGN(value))
-						if(PATH_SCORE_DOWN)
-							path_rating += 1
-							path_rating = min(limit, path_rating)
-							SEND_SOUND(src, sound('code/modules/wod13/sounds/humanity_gain.ogg', 0, 0, 75))
-							to_chat(src, "<span class='userhelp'><b>ENLIGHTENMENT INCREASED!</b></span>")
-						if(PATH_SCORE_UP)
-							path_rating -= 1
-							path_rating = max(limit, path_rating)
-							SEND_SOUND(src, sound('code/modules/wod13/sounds/humanity_loss.ogg', 0, 0, 75))
-							to_chat(src, "<span class='userdanger'><b>ENLIGHTENMENT DECREASED!</b></span>")
-						if(PATH_SCORE_NEUTRAL)
-							debug_admins("SIGN returned 0!")
-							return
-				if(MORALITY_HUMANITY)
-					switch(SIGN(value))
-						if(PATH_SCORE_UP)
-							path_rating += 1
-							path_rating = min(limit, path_rating)
-							SEND_SOUND(src, sound('code/modules/wod13/sounds/humanity_gain.ogg', 0, 0, 75))
-							to_chat(src, "<span class='userhelp'><b>HUMANITY INCREASED!</b></span>")
-						if(PATH_SCORE_DOWN)
-							path_rating -= 1
-							path_rating = max(limit, path_rating)
-							SEND_SOUND(src, sound('code/modules/wod13/sounds/humanity_loss.ogg', 0, 0, 75))
-							to_chat(src, "<span class='userdanger'><b>HUMANITY DECREASED!</b></span>")
-
-							if(path_rating == limit)
-								to_chat(src, span_userdanger("<b>If I don't stop, I will succumb to the Beast.</b>"))
-							else
-								var/intrusive_thoughts = pick("<b>I can barely control the Beast!</b>", "<b>I SHOULD STOP.</b>", "<b>I'm succumbing to the Beast!</b>")
-								to_chat(src, span_userdanger(intrusive_thoughts))
-						if(PATH_SCORE_NEUTRAL)
-							debug_admins("SIGN returned 0!")
-							return
-
 /mob/living/carbon/human/proc/AdjustMasquerade(var/value, var/forced = FALSE)
 	if(!iskindred(src) && !isghoul(src) && !iscathayan(src))
 		return
@@ -76,8 +21,6 @@
 					to_chat(src, "<span class='userdanger'><b>MASQUERADE VIOLATION!</b></span>")
 				SSbad_guys_party.next_fire = max(world.time, SSbad_guys_party.next_fire - 2 MINUTES)
 			if(value > 0)
-				if(clane?.is_enlightened && !forced)
-					AdjustHumanity(PATH_SCORE_UP, 10)
 				for(var/mob/living/carbon/human/H in GLOB.player_list)
 					H.voted_for -= dna.real_name
 				if(masquerade < 5)

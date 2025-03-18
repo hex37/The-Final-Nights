@@ -143,8 +143,11 @@
 
 /datum/discipline_power/valeren/unburden_the_bestial_soul/activate(mob/living/carbon/human/target)
 	. = ..()
+	// Resets the path hit cooldown on the target vampire so this power isn't rendered completely time consuming
+	S_TIMER_COOLDOWN_RESET(target.morality_path, COOLDOWN_PATH_HIT)
+
 	to_chat(owner, span_notice("You have healed [target]'s soul slightly."))
-	target.AdjustHumanity(PATH_SCORE_UP, 10)
+	SEND_SIGNAL(target, COMSIG_PATH_HIT, PATH_SCORE_UP)
 	points_can_restore--
 
 

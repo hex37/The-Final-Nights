@@ -47,7 +47,7 @@
 /datum/morality/kings
 	name = "Road of Kings"
 	desc = "Via Regalis, commonly called the Road of Kings. Followers of Via Regalis control their Beast by ruling over others. Mortals are inferior, promises will be fulfilled, and power is everything. Those who follow the Road of Kings are known as Scions."
-	alignment = MORALITY_ENLIGHTENMENT
+	alignment = MORALITY_HUMANITY
 	bearing = BEARING_COMMAND
 
 /datum/morality/heart
@@ -55,3 +55,9 @@
 	desc = "The Path of the Scorched Heart, originally called the Path of Rathmonicus, is an ancient Path of Enlightenment that originates with the True Brujah. Based on the Book of the Empty Heart by Rathmonicus, it was first disseminated among a few Kindred in the Catholic Church; its scriptures were later reunited and compiled by the True Black Hand. The Path of the Scorched Heart controls the Beast by systematically eradicating every emotion within the vampire's heart. The Path is especially favored among the True Brujah, who already cultivate few emotions. Adherents are called the Unforgiving."
 	alignment = MORALITY_ENLIGHTENMENT
 	bearing = BEARING_INTELLECT
+
+/datum/morality/typhon
+	name = "Path of Typhon"
+	desc = "The Path of Typhon is a Path of Enlightenment that draws heavily on Setite doctrine and the religion around their Antediluvian. Adherents are called Theophidians and Typhonists. Outsiders call them Corruptors."
+	alignment = MORALITY_ENLIGHTENMENT
+	bearing = BEARING_DEVOTION
