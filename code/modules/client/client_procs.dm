@@ -534,7 +534,8 @@ GLOBAL_LIST_INIT(blacklisted_builds, list(
 		admin_rank = src.holder.rank.name
 	else
 		if(!GLOB.deadmins[ckey])
-			return	var/new_player
+			return
+	var/new_player
 	var/datum/db_query/query_client_in_db = SSdbcore.NewQuery(
 		"SELECT 1 FROM [format_table_name("player")] WHERE ckey = :ckey",
 		list("ckey" = ckey)
