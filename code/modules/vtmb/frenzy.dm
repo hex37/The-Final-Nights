@@ -376,7 +376,7 @@
 				if(H.clane)
 					if(H.clane.is_enlightened)
 						if(!H.CheckFrenzyMove())
-							H.AdjustHumanity(1, 10)
+							H.AdjustHumanity(PATH_SCORE_UP, 10)
 //	if(length(blood_fr) >= 10 && !H.in_frenzy)
 //		if(H.last_frenzy_check+400 <= world.time)
 //			H.last_frenzy_check = world.time

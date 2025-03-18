@@ -541,7 +541,7 @@ GLOBAL_PROTECT(admin_verbs_hideable)
 	if(value == null)
 		return
 
-	M.AdjustHumanity(value, 0, forced = TRUE)
+	M.AdjustHumanity(value, 0)
 
 	var/msg = "<span class='adminnotice'><b>Humanity Adjustment: [key_name_admin(usr)] adjusted [key_name(M)]'s [is_enlightenment ? "Enlightenment" : "Humanity"] by [is_enlightenment ? -value : value] to [M.morality_path.score]</b></span>"
 	log_admin("HumanityAdjust: [key_name_admin(usr)] has adjusted [key_name(M)]'s [is_enlightenment ? "Enlightenment" : "Humanity"] by [is_enlightenment ? -value : value] to [M.morality_path.score]")

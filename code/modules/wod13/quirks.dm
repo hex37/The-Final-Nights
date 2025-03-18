@@ -290,7 +290,7 @@ Dancer
 			if(J)
 				if(ishuman(owner))
 					var/mob/living/carbon/human/human = owner
-					human.AdjustHumanity(1, 8)
+					human.AdjustHumanity(PATH_SCORE_UP, 8)
 					last_added_humanity = world.time
 
 /datum/quirk/dwarf

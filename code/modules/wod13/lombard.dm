@@ -23,16 +23,16 @@
 			if(istype(W, /obj/item/organ))
 				var/mob/living/carbon/human/H = user
 				to_chat(src, "<span class='userdanger'><b>Selling organs is a depraved act! If I keep doing this I will become a wight.</b></span>")
-				H.AdjustHumanity(-1, 0)
+				H.AdjustHumanity(PATH_SCORE_DOWN, 0)
 			else if(istype(W, /obj/item/reagent_containers/food/drinks/meth/cocaine))
 				var/mob/living/carbon/human/H = user
-				H.AdjustHumanity(-1, 5)
+				H.AdjustHumanity(PATH_SCORE_DOWN, 5)
 			else if(istype(W, /obj/item/reagent_containers/food/drinks/meth))
 				var/mob/living/carbon/human/H = user
-				H.AdjustHumanity(-1, 4)
+				H.AdjustHumanity(PATH_SCORE_DOWN, 4)
 			else if(illegal)
 				var/mob/living/carbon/human/H = user
-				H.AdjustHumanity(-1, 7)
+				H.AdjustHumanity(PATH_SCORE_DOWN, 7)
 			qdel(W)
 			return
 	else

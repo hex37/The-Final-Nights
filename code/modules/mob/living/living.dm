@@ -1028,7 +1028,7 @@
 				var/mob/living/carbon/human/NPC = who
 				if(NPC.stat < SOFT_CRIT)
 					if(istype(what, /obj/item/clothing) || istype(what, /obj/item/vamp/keys) || istype(what, /obj/item/stack/dollar))
-						H.AdjustHumanity(-1, 6)
+						H.AdjustHumanity(PATH_SCORE_UP, 6)
 						call_dharma("steal", H)
 			if(islist(where))
 				var/list/L = where

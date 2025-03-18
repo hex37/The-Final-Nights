@@ -65,8 +65,8 @@
  * Morality defines
  */
 
-#define MAX_PATH_SCORE 10
 #define MIN_PATH_SCORE 1
+#define MAX_PATH_SCORE 10
 
 // Very simplified version of virtues
 #define MORALITY_HUMANITY 1
@@ -81,6 +81,11 @@
 #define BEARING_INTELLECT 6
 #define BEARING_DEVOTION 7
 #define BEARING_HOLINESS 8
+
+// Path hits
+#define PATH_SCORE_DOWN -1
+#define PATH_SCORE_NEUTRAL 0
+#define PATH_SCORE_UP 1
 
 /**
  * Whitelist defines

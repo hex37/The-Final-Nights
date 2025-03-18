@@ -1,4 +1,4 @@
-/mob/living/carbon/human/proc/AdjustHumanity(value, limit, forced = FALSE)
+/mob/living/carbon/human/proc/AdjustHumanity(value, limit)
 	if(value < 0)
 		for(var/mob/living/carbon/human/H in viewers(7, src))
 			if(H != src && H.mind?.dharma)
@@ -12,50 +12,46 @@
 
 	var/path_rating = morality_path?.score
 
-	if(!is_special_character(src) || forced)
-		if(!in_frenzy || forced)
-			var/mod = 1
-			mod = clane?.humanitymod
+	if(!is_special_character(src))
+		if(!in_frenzy)
 			switch(morality_path?.alignment)
 				if(MORALITY_ENLIGHTENMENT)
-					if(value < 0)
-						if(path_rating < 10)
-							if (forced)
-								path_rating = clamp(path_rating+(value * mod), 0, MAX_PATH_SCORE)
-							else
-								path_rating = clamp(path_rating+(value * mod), limit, MAX_PATH_SCORE)
+					// ? Enlightenment paths go UP if the value is negative and DOWN if the value is positive, so the following is correct
+					switch(SIGN(value))
+						if(PATH_SCORE_DOWN)
+							path_rating += 1
+							path_rating = min(limit, path_rating)
 							SEND_SOUND(src, sound('code/modules/wod13/sounds/humanity_gain.ogg', 0, 0, 75))
 							to_chat(src, "<span class='userhelp'><b>ENLIGHTENMENT INCREASED!</b></span>")
-					if(value > 0)
-						if(path_rating > 0)
-							if (forced)
-								path_rating = clamp(path_rating-(value * mod), 0, MAX_PATH_SCORE)
-							else
-								path_rating = clamp(path_rating-(value * mod), limit, MAX_PATH_SCORE)
+						if(PATH_SCORE_UP)
+							path_rating -= 1
+							path_rating = max(limit, path_rating)
 							SEND_SOUND(src, sound('code/modules/wod13/sounds/humanity_loss.ogg', 0, 0, 75))
 							to_chat(src, "<span class='userdanger'><b>ENLIGHTENMENT DECREASED!</b></span>")
+						if(PATH_SCORE_NEUTRAL)
+							debug_admins("SIGN returned 0!")
+							return
 				if(MORALITY_HUMANITY)
-					if(value < 0)
-						if((path_rating > limit) || forced)
-							if (forced)
-								path_rating = clamp(path_rating-(value * mod), 0, MAX_PATH_SCORE)
-							else
-								path_rating = clamp(path_rating-(value * mod), limit, MAX_PATH_SCORE)
-							SEND_SOUND(src, sound('code/modules/wod13/sounds/humanity_loss.ogg', 0, 0, 75))
-							to_chat(src, "<span class='userdanger'><b>HUMANITY DECREASED!</b></span>")
-							if(path_rating == limit)
-								to_chat(src, "<span class='userdanger'><b>If I don't stop, I will succumb to the Beast.</b></span>")
-						else
-							var/msgShit = pick("<span class='userdanger'><b>I can barely control the Beast!</b></span>", "<span class='userdanger'><b>I SHOULD STOP.</b></span>", "<span class='userdanger'><b>I'm succumbing to the Beast!</b></span>")
-							to_chat(src, msgShit) // [ChillRaccoon] - I think we should make's players more scared
-					if(value > 0)				  // so please, do not say about that, they're in safety after they're path_rating drops to limit
-						if((path_rating < limit) || forced)
-							if (forced)
-								path_rating = clamp(path_rating+(value * mod), 0, MAX_PATH_SCORE)
-							else
-								path_rating = clamp(path_rating+(value * mod), limit, MAX_PATH_SCORE)
+					switch(SIGN(value))
+						if(PATH_SCORE_UP)
+							path_rating += 1
+							path_rating = min(limit, path_rating)
 							SEND_SOUND(src, sound('code/modules/wod13/sounds/humanity_gain.ogg', 0, 0, 75))
 							to_chat(src, "<span class='userhelp'><b>HUMANITY INCREASED!</b></span>")
+						if(PATH_SCORE_DOWN)
+							path_rating -= 1
+							path_rating = max(limit, path_rating)
+							SEND_SOUND(src, sound('code/modules/wod13/sounds/humanity_loss.ogg', 0, 0, 75))
+							to_chat(src, "<span class='userdanger'><b>HUMANITY DECREASED!</b></span>")
+
+							if(path_rating == limit)
+								to_chat(src, span_userdanger("<b>If I don't stop, I will succumb to the Beast.</b>"))
+							else
+								var/intrusive_thoughts = pick("<b>I can barely control the Beast!</b>", "<b>I SHOULD STOP.</b>", "<b>I'm succumbing to the Beast!</b>")
+								to_chat(src, span_userdanger(intrusive_thoughts))
+						if(PATH_SCORE_NEUTRAL)
+							debug_admins("SIGN returned 0!")
+							return
 
 /mob/living/carbon/human/proc/AdjustMasquerade(var/value, var/forced = FALSE)
 	if(!iskindred(src) && !isghoul(src) && !iscathayan(src))
@@ -81,7 +77,7 @@
 				SSbad_guys_party.next_fire = max(world.time, SSbad_guys_party.next_fire - 2 MINUTES)
 			if(value > 0)
 				if(clane?.is_enlightened && !forced)
-					AdjustHumanity(1, 10)
+					AdjustHumanity(PATH_SCORE_UP, 10)
 				for(var/mob/living/carbon/human/H in GLOB.player_list)
 					H.voted_for -= dna.real_name
 				if(masquerade < 5)
