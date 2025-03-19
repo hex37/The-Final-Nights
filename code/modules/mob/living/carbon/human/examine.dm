@@ -447,7 +447,7 @@
 			if (iskindred(src))
 				var/mob/living/carbon/human/vampire = src
 				weaver_taint++
-        msg += "<span class='purple'><i>You recognize their scent as cold and lifeless.</i></span><br>"
+				msg += "<span class='purple'><i>You recognize their scent as cold and lifeless.</i></span><br>"
 				if ((vampire.morality_path.score < 7) || client?.prefs?.is_enlightened)
 					wyrm_taint++
 
