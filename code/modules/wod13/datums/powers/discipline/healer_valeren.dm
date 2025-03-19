@@ -28,7 +28,8 @@
 	healthscan(owner, target, 1, FALSE)
 	chemscan(owner, target)
 	to_chat(owner, "<b>[target]</b> has <b>[num2text(target.bloodpool)]/[target.maxbloodpool]</b> blood points.")
-	to_chat(owner, "<b>[target]</b> has a rating of <b>[target.morality_path.score]</b> on their path.")
+	if(iskindred(target))
+		to_chat(owner, "<b>[target]</b> has a rating of <b>[target.morality_path?.score]</b> on their path.")
 
 //ANESTHETIC TOUCH
 /datum/discipline_power/valeren/anesthetic_touch
