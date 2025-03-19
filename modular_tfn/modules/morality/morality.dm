@@ -61,3 +61,27 @@
 	desc = "The Path of Typhon is a Path of Enlightenment that draws heavily on Setite doctrine and the religion around their Antediluvian. Adherents are called Theophidians and Typhonists. Outsiders call them Corruptors."
 	alignment = MORALITY_ENLIGHTENMENT
 	bearing = BEARING_DEVOTION
+
+/datum/morality/bones
+	name = "Path of Bones"
+	desc = "The Path of Bones is a Path of Enlightenment that suppresses the Beast by studying the true nature of death and its relationships with other states of existence. Adherents are called Gravediggers."
+	alignment = MORALITY_ENLIGHTENMENT
+	bearing = BEARING_SILENCE
+
+/datum/morality/night
+	name = "Road of Night"
+	desc = "Via Noctis, commonly called the Road of Night. The Redeemers feel the weight of Caine's curse and their own damnation, even more so than those who follow Via Caeli. Also like the Noddists, the Redeemers seek redemption and forgiveness, and to earn it requires suffering and purification. However, instead of the fairly benign ways of the Noddists, the Redeemers actively go about the world of man, punishing and killing mortal sinners. Some followers of Via Noctis offer penance for lesser deeds, and still others will Embrace irredeemable mortals to help them in their punishment. They also target Cainites who would tempt mortals into corruption, outstanding examples being the Followers of Set and the Baali."
+	alignment = MORALITY_ENLIGHTENMENT
+	bearing = BEARING_GUILT
+
+/datum/morality/honor
+	name = "Path of Honorable Accord"
+	desc = "The Path of Honorable Accord is a Path of Enlightenment that harnesses the Beast through the rigorous practice of honorable and chivalrous behavior. Adherents are called Knights, Patriots, or Canonici."
+	alignment = MORALITY_HUMANITY
+	bearing = BEARING_DEVOTION
+
+/datum/morality/beast
+	name = "Path of the Beast"
+	desc = "The Path of the Beast is a Path of Enlightenment practiced especially by members of Clan Gangrel. It controls the Beast by accepting its urges as natural and accepting their role as a hunter among hunters. Adherents are called Bestials or Beasts."
+	alignment = MORALITY_ENLIGHTENMENT
+	bearing = BEARING_MENACE

@@ -81,6 +81,10 @@
 #define BEARING_INTELLECT (1<<5)
 #define BEARING_DEVOTION (1<<6)
 #define BEARING_HOLINESS (1<<7)
+#define BEARING_SILENCE (1<<8)
+#define BEARING_MENACE (1<<9)
+#define BEARING_FAITH (1<<10)
+#define BEARING_GUILT (1<<11)
 
 // Path hits
 #define PATH_SCORE_DOWN -1
