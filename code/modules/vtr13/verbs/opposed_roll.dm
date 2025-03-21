@@ -1,5 +1,5 @@
 //Returns true if player_a wins, false if not. There is always a winner or a loser!
-/mob/proc/opposed_roll(mob/player_a, mob/player_b, dice_a = 1, dice_b = 1, difficulty=6, stat_test_a_header="", stat_test_b_header="", show_player_a=TRUE, show_player_b=TRUE, draw_goes_to_b=TRUE)
+/mob/living/proc/opposed_roll(mob/player_a, mob/player_b, dice_a = 1, dice_b = 1, difficulty=6, stat_test_a_header="", stat_test_b_header="", show_player_a=TRUE, show_player_b=TRUE, draw_goes_to_b=TRUE)
 	if(dice_a < 1)
 		dice_a = 1
 	
