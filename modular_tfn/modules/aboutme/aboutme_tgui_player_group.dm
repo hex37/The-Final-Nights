@@ -91,7 +91,7 @@
 			// ---------------------
 			if ("(Member) Loyalty: Raise", "(Member) Loyalty: Lower")
 				var/delta = (selection == "(Member) Loyalty: Raise") ? 10 : -10
-				var/reason = tgui_input_text(user, "Why are you adjusting loyalty?", "Adjust Loyalty")
+				var/reason = tgui_input_text(user, "Why are you adjusting loyalty?", "Adjust Loyalty", encode = FALSE)
 				if (isnull(reason)) continue
 				if (!my_rel || !(my_rel.id in R.relationship_keys) || !(my_rel.id in this_group.group_relationship_keys))
 					to_chat(user, "<span class='alert'>Could not update loyalty — invalid relationship binding.</span>")
@@ -179,9 +179,9 @@
 					to_chat(user, "<b>Loyalty Overview for [this_group.name]</b><br>[jointext(loyalty_report, "<br>")]")
 			// ---------------------
 			if ("(Leader) Set Orders")
-				var/input = tgui_input_text(user, "Set new orders for [this_group.name]:", "Set Orders", this_group.orders)
+				var/input = tgui_input_text(user, "Set new orders for [this_group.name]:", "Set Orders", this_group.orders, encode = FALSE)
 				if (!isnull(input))
-					this_group.orders = html_decode(input)
+					this_group.orders = input
 					to_chat(user, "<span class='notice'>Orders updated for [this_group.name].</span>")
 			// ---------------------
 			if ("(Leader) Promote Member")
@@ -335,7 +335,7 @@
 		if (G.gtype == GROUP_TYPE_PARTY && (character_key in G.leaders))
 			to_chat(user, "<span class='alert'>You already lead a party group: [G.name]. You cannot create another.</span>")
 			return src.prompt_manage_groups(user)
-	var/group_name = tgui_input_text(user, "Enter a name for your new party group:", "Create Party Group")
+	var/group_name = tgui_input_text(user, "Enter a name for your new party group:", "Create Party Group", encode = FALSE)
 	if (isnull(group_name) || !length(group_name)) return
 	var/safe_id = "party_[lowertext(replacetext(group_name, " ", "_"))]_[world.time]"
 	if (GLOB.groups[safe_id])

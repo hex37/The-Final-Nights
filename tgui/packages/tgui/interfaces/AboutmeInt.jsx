@@ -1,3 +1,4 @@
+// THIS IS A NOVA SECTOR UI FILE
 // ====================
 // AboutMeInt.jsx - Annotated
 // ====================
@@ -566,7 +567,7 @@ export const AboutmeInt = (props, context) => {
   const [tab, setTab] = useLocalState('aboutme_tab', 'overview');
 
   return (
-    <Window width={400} height={650} title="About My Character (Early Testing)">
+    <Window width={400} height={500} title="About My Character (Early Testing)">
       <Window.Content scrollable>
         <Box italic mb={2}>
           <details open>
@@ -623,7 +624,6 @@ export const AboutmeInt = (props, context) => {
               </>
             )}
           </Box>
-
         <Box mt={3}>
           <details>
             <summary>Debug: Full Payload</summary>
@@ -639,7 +639,6 @@ export const AboutmeInt = (props, context) => {
               {JSON.stringify(data, null, 2)}
             </pre>
           </details>
-
         </Box>
       </Window.Content>
     </Window>

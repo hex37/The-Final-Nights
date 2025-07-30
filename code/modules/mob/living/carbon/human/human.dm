@@ -37,6 +37,7 @@
 	if(!CONFIG_GET(flag/disable_human_mood))
 		AddComponent(/datum/component/mood)
 	if(!GetComponent(/datum/component/about_me))
+		// NOVA EDIT ADDITION
 		AddComponent(/datum/component/about_me)
 
 /mob/living/carbon/human/Destroy()
