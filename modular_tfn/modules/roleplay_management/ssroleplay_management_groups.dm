@@ -1,5 +1,5 @@
 // ================================================================
-// RP Management Subsystem - Groups (ssrpmanagement_groups.dm)
+// RP Management Subsystem - Groups (ssroleplay_management_groups.dm)
 // ================================================================
 // Handles:
 //   - Canonical group registration
@@ -7,7 +7,7 @@
 //   - Runtime group lookup and modification
 // ================================================================
 
-/datum/controller/subsystem/rpmanagement/var/list/ROLE_GROUP_MAPPINGS = list(
+/datum/controller/subsystem/roleplay_management/var/list/ROLE_GROUP_MAPPINGS = list(
     // -------------------
     // Camarilla
     // -------------------
@@ -78,11 +78,11 @@
 
 
 // ---------------- INITIALIZATION ----------------
-/datum/controller/subsystem/rpmanagement/Initialize()
+/datum/controller/subsystem/roleplay_management/Initialize()
     ..()
     InitAllGroups()
 
-/datum/controller/subsystem/rpmanagement/proc/InitAllGroups()
+/datum/controller/subsystem/roleplay_management/proc/InitAllGroups()
     var/created = "", skipped = ""
     for (var/group_key in canonical_groups)
         if (!(group_key in GLOB.groups))
@@ -95,25 +95,25 @@
 
 
 // ---------------- LOOKUP / REGISTRATION ----------------
-/datum/controller/subsystem/rpmanagement/proc/get_group_by_key(key)
+/datum/controller/subsystem/roleplay_management/proc/get_group_by_key(key)
     return is_valid_key(key) ? GLOB.groups[key] : null
 
-/datum/controller/subsystem/rpmanagement/proc/register_group(datum/group/G)
+/datum/controller/subsystem/roleplay_management/proc/register_group(datum/group/G)
     if (G && G.id && is_valid_key(G.id))
         GLOB.groups[G.id] = G
 
-/datum/controller/subsystem/rpmanagement/proc/unregister_group(datum/group/G)
+/datum/controller/subsystem/roleplay_management/proc/unregister_group(datum/group/G)
     if (G?.id)
         GLOB.groups -= G.id
 
-/datum/controller/subsystem/rpmanagement/proc/get_canonical_group_key_for_type(typepath)
+/datum/controller/subsystem/roleplay_management/proc/get_canonical_group_key_for_type(typepath)
     for (var/k in canonical_groups)
         if (canonical_groups[k] == typepath)
             return k
     return null
 
 // ---------------- ROLE-BASED ASSIGNMENT ----------------
-/datum/controller/subsystem/rpmanagement/proc/ensure_groups_from_role(character_key, mob/living/carbon/human/owner)
+/datum/controller/subsystem/roleplay_management/proc/ensure_groups_from_role(character_key, mob/living/carbon/human/owner)
 	if (!character_key || !owner) return
 
 	var/datum/aboutme_record/R = ensure_aboutme_datum_for_key(character_key, owner)
@@ -191,7 +191,7 @@
 			R.group_keys += gk
 
 /// Cleanly removes a character from a specific group, including leadership/officer/member status, deleting the relationshoip, and key etc.
-/datum/controller/subsystem/rpmanagement/proc/clear_group_relationship(character_key, datum/group/G)
+/datum/controller/subsystem/roleplay_management/proc/clear_group_relationship(character_key, datum/group/G)
 	if (!character_key || !G) return
 
 	// Remove from group
@@ -220,11 +220,11 @@
 
 
 // ---------------- GROUP PARSER ----------------
-/datum/controller/subsystem/rpmanagement/proc/role_to_groups(role)
+/datum/controller/subsystem/roleplay_management/proc/role_to_groups(role)
     if (!role) return list()
 
     var/list/results = list()
-    var/entry = SSrpmanagement.ROLE_GROUP_MAPPINGS[lowertext(trim(role))]
+    var/entry = SSroleplay_management.ROLE_GROUP_MAPPINGS[lowertext(trim(role))]
     if (!islist(entry)) return results
 
     for (var/group_type in entry)
@@ -273,7 +273,7 @@
 
 
 // ---------------- CLEANUP ----------------
-/datum/controller/subsystem/rpmanagement/proc/remove_key_from_all_groups(character_key)
+/datum/controller/subsystem/roleplay_management/proc/remove_key_from_all_groups(character_key)
     if (!character_key) return
     for (var/group_id in GLOB.groups)
         var/datum/group/G = GLOB.groups[group_id]

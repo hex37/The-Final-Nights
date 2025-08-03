@@ -1,4 +1,4 @@
-// THIS IS A NOVA SECTOR UI FILE
+// THIS IS A TFN UI FILE
 // ====================
 // AboutMeInt.jsx - Annotated
 // ====================
@@ -189,8 +189,11 @@ const EntryCard = ({ icon, name, subtitle, desc, fields = [], buttons = [], stre
       {icon && <img src={icon} alt="icon" style={{ height: 24, verticalAlign: 'middle', marginRight: 6 }} />}
       {name}
       {subtitle && <span style={{ color: '#aaa', fontWeight: 400, marginLeft: 8 }}>{subtitle}</span>}
-      {typeof strength === 'number' &&
-        <span style={{ float: 'right', fontWeight: 'bold', color: strength >= 50 ? '#8dbb36ff' : '#bbb' }}>{strength}</span>}
+      {strength !== undefined && strength !== null && strength !== "" && (
+        <span style={{ float: 'right', fontWeight: 'bold', color: (typeof strength === "number" && strength >= 50) ? '#8dbb36ff' : '#bbb' }}>
+          {strength}
+        </span>
+      )}
     </Box>
     {desc && <Box mb={1} italic>{desc}</Box>}
     {fields.map(({ label, value }, i) =>
@@ -321,24 +324,51 @@ const REL_TYPE_UI = [
   { key: 'party', label: 'Coterie/Party' },
   { key: 'group', label: 'Group' }, // Optional, only if you use "group" as a fallback
 ];
+// Format relationship strength for display
+function formatStrength(strength) {
+  if (typeof strength === "number") {
+    // Display number, color-coded (or just as a number)
+    return strength;
+  }
+  if (typeof strength === "string" && strength.match(/^-?\d+/)) {
+    // If it starts with a number, split it
+    const parts = strength.split(":");
+    // Show both number and label, e.g. "25: Acquaintance"
+    return <span><b>{parts[0]}</b>{parts[1] ? `: ${parts[1]}` : ""}</span>;
+  }
+  // Fallback (e.g. custom text)
+  return strength || "";
+}
 
 const groupRelationshipsByType = relList => {
   const byType = {};
   (Array.isArray(relList) ? relList : []).forEach(rel => {
-    const t = rel?.relationship_type || 'other';
+    // Use 'group' for group relationships, otherwise the rtype, fallback to 'unknown'
+    const t = rel?.rtype === 'group' ? 'group'
+            : rel?.rtype || 'unknown';
     (byType[t] ??= []).push(rel);
   });
   return byType;
 };
 
+const prettifyRelType = type => {
+  // Match REL_TYPE_UI for pretty labels, fallback to Title Case
+  const match = REL_TYPE_UI.find(x => x.key === type);
+  return match ? match.label : (type ? type.charAt(0).toUpperCase() + type.slice(1) : '');
+};
+
+
+
+
+
 const RelationshipsSection = ({ relationships = [], act }) => {
   const [openType, setOpenType] = useLocalState('aboutme_reltype_open', '');
-  let relArray = Array.isArray(relationships) ? relationships : [];
-
+  const relArray = Array.isArray(relationships) ? relationships : [];
   const grouped = groupRelationshipsByType(relArray);
-  const noRels = !relArray.length;
+
   const knownKeys = REL_TYPE_UI.map(x => x.key);
 
+  // Standard sections in UI order
   const standardRendered = REL_TYPE_UI.map(({ key, label }) => {
     const rels = grouped[key] || [];
     return rels.length ? (
@@ -352,9 +382,9 @@ const RelationshipsSection = ({ relationships = [], act }) => {
           <EntryCard
             key={rel.id || i}
             name={rel.name}
-            subtitle={prettifyGroupType(rel.relationship_type)}
+            subtitle={prettifyRelType(key)}
             desc={rel.desc}
-            strength={rel.strength}
+            strength={formatStrength(rel.strength)}
             fields={[]}
           />
         )}
@@ -362,13 +392,14 @@ const RelationshipsSection = ({ relationships = [], act }) => {
     ) : null;
   });
 
+  // Unknown/Custom relationship types
   const unknownTypes = Object.keys(grouped).filter(k => !knownKeys.includes(k));
   const unknownRendered = unknownTypes.map(key => {
     const rels = grouped[key] || [];
     return rels.length ? (
       <CollapsibleCategory
         key={key}
-        label={prettifyGroupType(key)}
+        label={prettifyRelType(key)}
         open={openType === key}
         onClick={() => setOpenType(openType === key ? '' : key)}
       >
@@ -376,7 +407,7 @@ const RelationshipsSection = ({ relationships = [], act }) => {
           <EntryCard
             key={rel.id || i}
             name={rel.name}
-            subtitle={prettifyGroupType(rel.relationship_type)}
+            subtitle={prettifyRelType(key)}
             desc={rel.desc}
             strength={rel.strength}
             fields={[]}
@@ -390,13 +421,14 @@ const RelationshipsSection = ({ relationships = [], act }) => {
     <Section title="Relationships">
       {standardRendered}
       {unknownRendered}
-      {noRels && <Box italic>No relationships defined.</Box>}
+      {!relArray.length && <Box italic>No relationships defined.</Box>}
       <Box mt={2}>
         <Button icon="wrench" content="Change Relationship" onClick={() => act('change_relationship')} mb={2} />
       </Box>
     </Section>
   );
 };
+
 
 // ====================
 // Chronicle Tab Section
@@ -574,14 +606,8 @@ export const AboutmeInt = (props, context) => {
             <summary>Welcome to the New About Me Panel! (Early Testing)</summary>
             <div style={{ marginTop: 8 }}>
               WARNING: Only Round to Round for now. Take Screenshots!<br />
-              Tabs: Each tab has a Button leading to Branching Options!<br />
-              Overview! Veiw and Manage your character details! <br />
-              Groups! Manage and interact with your groups! <br />
-              Relationships! Manage your group and personal relationships! <br />
-              Chronicles! Interact with your, or a group's, chronicle! <br />
-              Memories! Share, create, and manage your memories! <br />
-              Give us feedback to help us sort out any issues! <br />
-              Explore, see whats possible! <br />
+              Tabs: Each tab has a Button leads to Branching Options!<br />
+              Overview, Groups, Relationships, Chronicles, Memories!
             </div>
           </details>
         </Box>
@@ -595,31 +621,31 @@ export const AboutmeInt = (props, context) => {
           <Box mt={2}>
             {tab === 'overview' && (
               <>
-                <Box italic mb={1}>View, access, and edit your core character details, mid-round. (Very Expandable Features Pending! Like Path Management. Masquerade management by faction leaders, and more!)</Box>
+                <Box italic mb={1}>View and access your core character details, mid-round.</Box>
                 <OverviewSection overview={overview} status={data.status} alignment={data.alignment} act={act} />
               </>
             )}
             {tab === 'groups' && (
               <>
-                <Box italic mb={1}>Join, Leave, Create or Manage Groups, based on group-role. All Public Organizations/Parties are public human-facing. (Status, is a statement by the leader, of the group's current objective, meant to be easily obtained through the "gravevine" of the group. Leaders may use parties for orders instead.)</Box>
+                <Box italic mb={1}>Join, Leave, and Manage Your Groups!</Box>
                 <GroupsSection groups={groups} act={act} currentCkey={overview?.general?.name || ''} />
               </>
             )}
             {tab === 'relationships' && (
               <>
-                <Box italic mb={1}>See how your character relates to others as well as group loyalties and ties based on your character and role.</Box>
+                <Box italic mb={1}>Relationships! Manage Group relationships in Groups tab.</Box>
                 <RelationshipsSection relationships={relationships} act={act} />
               </>
             )}
             {tab === 'chronicle' && (
               <>
-                <Box italic mb={1}>Record, share, and explore major group-wide, shared, or personal events.</Box>
+                <Box italic mb={1}>Personal and Group Chronicles/Events! Tell stories! Staff may spotlight personal/group chronicles for round end!</Box>
                 <ChronicleSection chronicleEvents={chronicleEvents} act={act} />
               </>
             )}
             {tab === 'memories' && (
               <>
-                <Box italic mb={1}>Create, track, and share character memories you've experienced, in this round. (Warning: No round to round saving is implimented, yet.)</Box>
+                <Box italic mb={1}>Memories! Simple for now!</Box>
                 <MemoriesTabsSection memories={memories} act={act} />
               </>
             )}

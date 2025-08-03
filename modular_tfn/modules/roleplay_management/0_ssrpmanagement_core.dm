@@ -1,5 +1,5 @@
 // ================================================================
-// RP Management Subsystem - Core (ssrpmanagement_core.dm)
+// RP Management Subsystem - Core (ssroleplay_management_core.dm)
 // ================================================================
 // This file defines:
 //   - Core subsystem declaration
@@ -13,26 +13,12 @@ GLOBAL_LIST_EMPTY(groups)
 GLOBAL_LIST_EMPTY(relationships)
 GLOBAL_LIST_EMPTY(chronicles)
 GLOBAL_LIST_EMPTY(memories)
-
 GLOBAL_LIST_EMPTY(valid_character_keys)
 GLOBAL_LIST_EMPTY(aboutme_records)
 GLOBAL_LIST_EMPTY(aboutme_components)
 
+//List of group keys and their pre-made datums for ensuring that canon-groups exist.
 GLOBAL_LIST_EMPTY(canonical_groups)
-
-// ---------------- GROUP CATEGORY STRUCTURE ----------------
-var/list/group_categories = list(
-	GROUP_TYPE_CITY = list(),
-	GROUP_TYPE_FACTION = list(),
-	GROUP_TYPE_SECT = list(),
-	GROUP_TYPE_CLAN = list(),
-	GROUP_TYPE_TRIBE = list(),
-	GROUP_TYPE_ORGANIZATION = list(),
-	GROUP_TYPE_PARTY = list(),
-	GROUP_TYPE_PLAYER = list(),
-	"unknown" = list()
-)
-
 // ---------------- CANONICAL Initialization GROUP KEYS ----------------
 var/global/list/canonical_groups = list(
 	// Cities
@@ -97,36 +83,33 @@ var/global/list/canonical_groups = list(
 	GROUP_KEY_ORG_TZIMISCE           = /datum/group/organization/tzimisce,
 	GROUP_KEY_ORG_TRIAD              = /datum/group/organization/triad
 )
-
-
 // ---------------- SUBSYSTEM DEF ----------------
-SUBSYSTEM_DEF(rpmanagement)
+SUBSYSTEM_DEF(roleplay_management)
 	name = "RP Management"
 	init_order = INIT_ORDER_DEFAULT
 	wait = 10
 
-/datum/controller/subsystem/rpmanagement
+/datum/controller/subsystem/roleplay_management
 
-/datum/controller/subsystem/rpmanagement/Initialize()
+/datum/controller/subsystem/roleplay_management/Initialize()
 	..()
-	SSrpmanagement.InitAllGroups()
+	SSroleplay_management.InitAllGroups()
 
-/datum/controller/subsystem/rpmanagement/fire()
+/datum/controller/subsystem/roleplay_management/fire()
 	..()
 	for (var/group_id in GLOB.groups)
 		var/datum/group/G = GLOB.groups[group_id]
 		if (!G?.active_votes || !length(G.active_votes)) continue
 		G.resolve_votes()
 
-
 // ---------------- LOOKUPS & UTILITIES ----------------
-/datum/controller/subsystem/rpmanagement/proc/get_aboutme_component_by_key(character_key)
+/datum/controller/subsystem/roleplay_management/proc/get_aboutme_component_by_key(character_key)
 	for (var/datum/component/about_me/C in GLOB.aboutme_components)
 		if (C.character_key == character_key)
 			return C
 	return null
 
-/datum/controller/subsystem/rpmanagement/proc/get_aboutme_record(character_key)
+/datum/controller/subsystem/roleplay_management/proc/get_aboutme_record(character_key)
 	if (!character_key || !is_valid_character_key(character_key))
 		return null
 
@@ -138,18 +121,24 @@ SUBSYSTEM_DEF(rpmanagement)
 
 	return GLOB.aboutme_records[character_key]
 
-/datum/controller/subsystem/rpmanagement/proc/ensure_aboutme_datum_for_key(character_key, mob/living/carbon/human/owner)
+/datum/controller/subsystem/roleplay_management/proc/ensure_aboutme_datum_for_key(character_key, mob/living/carbon/human/owner)
 	if (!character_key) return null
 	return get_aboutme_record(character_key)
 
 // ---------------- VALIDATION ----------------
-/datum/controller/subsystem/rpmanagement/proc/is_valid_key(key)
+/datum/controller/subsystem/roleplay_management/proc/is_valid_key(key)
 	return istext(key) && length(key) > 3
 
-/datum/controller/subsystem/rpmanagement/proc/is_valid_character_key(character_key)
+/datum/controller/subsystem/roleplay_management/proc/is_valid_character_key(character_key)
 	return istext(character_key) && (character_key in GLOB.valid_character_keys)
 
 /// Adds only if not already known
-/datum/controller/subsystem/rpmanagement/proc/register_valid_character_key(character_key)
+/datum/controller/subsystem/roleplay_management/proc/register_valid_character_key(character_key)
 	if (istext(character_key) && !(character_key in GLOB.valid_character_keys))
 		GLOB.valid_character_keys += character_key
+
+/datum/controller/subsystem/roleplay_management/proc/get_relationship_by_id(rel_id)
+	// Returns the relationship object with the given id, or null if not found
+	if (!rel_id || !(rel_id in GLOB.relationships))
+		return null
+	return GLOB.relationships[rel_id]

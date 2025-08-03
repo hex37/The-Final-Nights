@@ -55,9 +55,8 @@
 
 
 #define RELATIONSHIP_TAGS_ALLOWED list( \
-	"group", "trusted", "romantic", "bloodbond", "business", \
-	"secret", "public", "camarilla", "anarch", "sabbat", \
-	"independent", "clan", "rivalry", "political", \
+	"trusted", "romantic", "bloodbond", "business", \
+	"secret", "public", "clan", "rivalry", "political", \
 	"mentor", "target", "ally", "danger" \
 )
 
