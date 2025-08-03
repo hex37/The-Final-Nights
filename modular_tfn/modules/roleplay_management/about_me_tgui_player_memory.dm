@@ -46,7 +46,7 @@
 	M.date_occurred = time2text(world.realtime, "YYYY-MM-DD hh:mm")
 
 	R.memory_keys += M.id
-	SSrpmanagement.register_memory(M)
+	SSroleplay_management.register_memory(M)
 
 	to_chat(user, "<span class='notice'>Memory '[summary]' created.</span>")
 	message_admins("[key_name(user)] created memory '[summary]'.")
@@ -60,7 +60,7 @@
 
 	var/list/edit_map = list()
 	for (var/key in R.memory_keys)
-		var/datum/memory/M = SSrpmanagement.get_memory_by_key(key)
+		var/datum/memory/M = SSroleplay_management.get_memory_by_key(key)
 		if (M && M.is_visible_to(user, src.character_key))
 			edit_map["[M.summary] ([M.date_occurred])"] = M
 
@@ -87,7 +87,7 @@
 
 		if ("Delete")
 			R.memory_keys -= M.id
-			SSrpmanagement.unregister_memory(M)
+			SSroleplay_management.unregister_memory(M)
 			qdel(M)
 			to_chat(user, "<span class='alert'>Memory deleted.</span>")
 			message_admins("[key_name(user)] deleted memory [M.id].")
@@ -101,7 +101,7 @@
 
 	var/list/edit_map = list()
 	for (var/key in R.memory_keys)
-		var/datum/memory/M = SSrpmanagement.get_memory_by_key(key)
+		var/datum/memory/M = SSroleplay_management.get_memory_by_key(key)
 		if (M && M.is_visible_to(user, src.character_key))
 			edit_map[M.summary] = M
 
@@ -131,7 +131,7 @@
 
 	to_chat(user, "<b>Memory Archive:</b>")
 	for (var/key in R.memory_keys)
-		var/datum/memory/M = SSrpmanagement.get_memory_by_key(key)
+		var/datum/memory/M = SSroleplay_management.get_memory_by_key(key)
 		if (!M || !M.is_visible_to(user, src.character_key)) continue
 
 		to_chat(user, "<hr><b>[M.summary]</b><br><i>[M.date_occurred]</i><br>[M.details]<br><b>Tags:</b> [jointext(M.tags, ", ")]")

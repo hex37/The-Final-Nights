@@ -8,109 +8,109 @@
 // ================================================================
 
 /datum/controller/subsystem/roleplay_management/var/list/ROLE_GROUP_MAPPINGS = list(
-    // -------------------
-    // Camarilla
-    // -------------------
-    "prince"            = list("sect" = "Camarilla", "is_leader" = TRUE),
-    "seneschal"         = list("sect" = "Camarilla", "is_officer" = TRUE),
-    "harpy"             = list("sect" = "Camarilla", "is_officer" = TRUE),
-    "sheriff"           = list("sect" = "Camarilla"),
-    "hound"             = list("sect" = "Camarilla"),
-    "tower employee"    = list("sect" = "Camarilla"),
+	// -------------------
+	// Camarilla
+	// -------------------
+	"prince"            = list("sect" = "Camarilla", "is_leader" = TRUE),
+	"seneschal"         = list("sect" = "Camarilla", "is_officer" = TRUE),
+	"harpy"             = list("sect" = "Camarilla", "is_officer" = TRUE),
+	"sheriff"           = list("sect" = "Camarilla"),
+	"hound"             = list("sect" = "Camarilla"),
+	"tower employee"    = list("sect" = "Camarilla"),
 
-    "primogen malkavian"        = list("clan" = "malkavian", "is_leader" = TRUE),
-    "primogen nosferatu"        = list("clan" = "nosferatu", "is_leader" = TRUE),
-    "primogen toreador"         = list("clan" = "toreador", "is_leader" = TRUE),
-    "primogen ventrue"          = list("clan" = "ventrue", "is_leader" = TRUE),
-    "primogen lasombra"         = list("clan" = "lasombra", "is_leader" = TRUE),
-    "primogen banu haqim"       = list("clan" = "banu_haqim", "is_leader" = TRUE),
+	"primogen malkavian"        = list("clan" = "malkavian", "is_leader" = TRUE),
+	"primogen nosferatu"        = list("clan" = "nosferatu", "is_leader" = TRUE),
+	"primogen toreador"         = list("clan" = "toreador", "is_leader" = TRUE),
+	"primogen ventrue"          = list("clan" = "ventrue", "is_leader" = TRUE),
+	"primogen lasombra"         = list("clan" = "lasombra", "is_leader" = TRUE),
+	"primogen banu haqim"       = list("clan" = "banu_haqim", "is_leader" = TRUE),
 
-    "chantry regent"            = list("clan" = "tremere", "is_leader" = TRUE),
-    "chantry gargoyle"          = list("clan" = "tremere", "is_officer" = TRUE),
-    "chantry archivist"         = list("clan" = "tremere"),
+	"chantry regent"            = list("clan" = "tremere", "is_leader" = TRUE),
+	"chantry gargoyle"          = list("clan" = "tremere", "is_officer" = TRUE),
+	"chantry archivist"         = list("clan" = "tremere"),
 
-    "capo"              = list("clan" = "giovanni", "is_leader" = TRUE),
-    "la squadra"        = list("clan" = "giovanni", "is_officer" = TRUE),
-    "la famiglia"       = list("clan" = "giovanni"),
+	"capo"              = list("clan" = "giovanni", "is_leader" = TRUE),
+	"la squadra"        = list("clan" = "giovanni", "is_officer" = TRUE),
+	"la famiglia"       = list("clan" = "giovanni"),
 
-    // -------------------
-    // Anarchs
-    // -------------------
-    "baron"             = list("sect" = "Anarchs", "is_leader" = TRUE),
-    "emissary"          = list("sect" = "Anarchs", "is_officer" = TRUE),
-    "sweeper"           = list("sect" = "Anarchs"),
-    "bruiser"           = list("sect" = "Anarchs"),
+	// -------------------
+	// Anarchs
+	// -------------------
+	"baron"             = list("sect" = "Anarchs", "is_leader" = TRUE),
+	"emissary"          = list("sect" = "Anarchs", "is_officer" = TRUE),
+	"sweeper"           = list("sect" = "Anarchs"),
+	"bruiser"           = list("sect" = "Anarchs"),
 
-    // -------------------
-    // Sabbat
-    // -------------------
-    "archbishop"        = list("sect" = "Sabbat", "is_leader" = TRUE),
-    "bishop"            = list("sect" = "Sabbat", "is_officer" = TRUE),
-    "templar"           = list("sect" = "Sabbat", "is_officer" = TRUE),
-    "ductus"            = list("sect" = "Sabbat"),
+	// -------------------
+	// Sabbat
+	// -------------------
+	"archbishop"        = list("sect" = "Sabbat", "is_leader" = TRUE),
+	"bishop"            = list("sect" = "Sabbat", "is_officer" = TRUE),
+	"templar"           = list("sect" = "Sabbat", "is_officer" = TRUE),
+	"ductus"            = list("sect" = "Sabbat"),
 
-    // -------------------
-    // Garou Septs
-    // -------------------
-    "painted city councillor" = list("tribe" = "Painted City", "is_leader" = TRUE),
-    "amberglade councillor"   = list("tribe" = "Amberglade", "is_leader" = TRUE),
+	// -------------------
+	// Garou Septs
+	// -------------------
+	"painted city councillor" = list("tribe" = "Painted City", "is_leader" = TRUE),
+	"amberglade councillor"   = list("tribe" = "Amberglade", "is_leader" = TRUE),
 
-    // -------------------
-    // Organizations - Endron
-    // -------------------
-    "endron branch lead" = list("organization" = "Endron", "is_leader" = TRUE),
-    "endron executive"   = list("organization" = "Endron", "is_officer" = TRUE),
-    "endron employee"    = list("organization" = "Endron"),
+	// -------------------
+	// Organizations - Endron
+	// -------------------
+	"endron branch lead" = list("organization" = "Endron", "is_leader" = TRUE),
+	"endron executive"   = list("organization" = "Endron", "is_officer" = TRUE),
+	"endron employee"    = list("organization" = "Endron"),
 
-    // -------------------
-    // Organizations - Police
-    // -------------------
-    "police chief"       = list("organization" = "Police", "is_leader" = TRUE),
-    "police sergeant"    = list("organization" = "Police", "is_officer" = TRUE),
-    "police officer"     = list("organization" = "Police"),
+	// -------------------
+	// Organizations - Police
+	// -------------------
+	"police chief"       = list("organization" = "Police", "is_leader" = TRUE),
+	"police sergeant"    = list("organization" = "Police", "is_officer" = TRUE),
+	"police officer"     = list("organization" = "Police"),
 
-    // -------------------
-    // Organizations - Hospital
-    // -------------------
-    "clinic director"    = list("organization" = "hospital", "is_leader" = TRUE),
-    "doctor"             = list("organization" = "hospital")
+	// -------------------
+	// Organizations - Hospital
+	// -------------------
+	"clinic director"    = list("organization" = "hospital", "is_leader" = TRUE),
+	"doctor"             = list("organization" = "hospital")
 )
 
 
 // ---------------- INITIALIZATION ----------------
 /datum/controller/subsystem/roleplay_management/Initialize()
-    ..()
-    InitAllGroups()
+	..()
+	InitAllGroups()
 
 /datum/controller/subsystem/roleplay_management/proc/InitAllGroups()
-    var/created = "", skipped = ""
-    for (var/group_key in canonical_groups)
-        if (!(group_key in GLOB.groups))
-            var/typepath = canonical_groups[group_key]
-            GLOB.groups[group_key] = new typepath()
-            created += "[group_key], "
-        else
-            skipped += "[group_key], "
-    message_admins("Groups created: [created]\nGroups skipped: [skipped]")
+	var/created = "", skipped = ""
+	for (var/group_key in canonical_groups)
+		if (!(group_key in GLOB.groups))
+			var/typepath = canonical_groups[group_key]
+			GLOB.groups[group_key] = new typepath()
+			created += "[group_key], "
+		else
+			skipped += "[group_key], "
+	message_admins("Groups created: [created]\nGroups skipped: [skipped]")
 
 
 // ---------------- LOOKUP / REGISTRATION ----------------
 /datum/controller/subsystem/roleplay_management/proc/get_group_by_key(key)
-    return is_valid_key(key) ? GLOB.groups[key] : null
+	return is_valid_key(key) ? GLOB.groups[key] : null
 
 /datum/controller/subsystem/roleplay_management/proc/register_group(datum/group/G)
-    if (G && G.id && is_valid_key(G.id))
-        GLOB.groups[G.id] = G
+	if (G && G.id && is_valid_key(G.id))
+		GLOB.groups[G.id] = G
 
 /datum/controller/subsystem/roleplay_management/proc/unregister_group(datum/group/G)
-    if (G?.id)
-        GLOB.groups -= G.id
+	if (G?.id)
+		GLOB.groups -= G.id
 
 /datum/controller/subsystem/roleplay_management/proc/get_canonical_group_key_for_type(typepath)
-    for (var/k in canonical_groups)
-        if (canonical_groups[k] == typepath)
-            return k
-    return null
+	for (var/k in canonical_groups)
+		if (canonical_groups[k] == typepath)
+			return k
+	return null
 
 // ---------------- ROLE-BASED ASSIGNMENT ----------------
 /datum/controller/subsystem/roleplay_management/proc/ensure_groups_from_role(character_key, mob/living/carbon/human/owner)
@@ -221,64 +221,64 @@
 
 // ---------------- GROUP PARSER ----------------
 /datum/controller/subsystem/roleplay_management/proc/role_to_groups(role)
-    if (!role) return list()
+	if (!role) return list()
 
-    var/list/results = list()
-    var/entry = SSroleplay_management.ROLE_GROUP_MAPPINGS[lowertext(trim(role))]
-    if (!islist(entry)) return results
+	var/list/results = list()
+	var/entry = SSroleplay_management.ROLE_GROUP_MAPPINGS[lowertext(trim(role))]
+	if (!islist(entry)) return results
 
-    for (var/group_type in entry)
-        if (!(group_type in list(GROUP_TYPE_SECT, GROUP_TYPE_CLAN, GROUP_TYPE_TRIBE, GROUP_TYPE_ORGANIZATION, GROUP_TYPE_PARTY)))
-            continue
+	for (var/group_type in entry)
+		if (!(group_type in list(GROUP_TYPE_SECT, GROUP_TYPE_CLAN, GROUP_TYPE_TRIBE, GROUP_TYPE_ORGANIZATION, GROUP_TYPE_PARTY)))
+			continue
 
-        var/group_raw = entry[group_type]
-        if (!istext(group_raw) || !length(group_raw)) continue
+		var/group_raw = entry[group_type]
+		if (!istext(group_raw) || !length(group_raw)) continue
 
-        var/group_key
+		var/group_key
 
-        switch (group_type)
-            if (GROUP_TYPE_SECT)
-                group_key = GROUP_KEY_SECT(group_raw)
-            if (GROUP_TYPE_CLAN)
-                group_key = GROUP_KEY_CLAN(group_raw)
-            if (GROUP_TYPE_TRIBE)
-                group_key = GROUP_KEY_TRIBE(group_raw)
-            if (GROUP_TYPE_ORGANIZATION)
-                switch(lowertext(group_raw))
-                    if ("hospital") group_key = GROUP_KEY_ORG_HOSPITAL
-                    if ("police") group_key = GROUP_KEY_ORG_POLICE
-                    if ("government") group_key = GROUP_KEY_ORG_GOVERNMENT
-                    if ("military") group_key = GROUP_KEY_ORG_MILITARY
-                    if ("bikergang") group_key = GROUP_KEY_ORG_BIKERGANG
-                    if ("corporation", "corp") group_key = GROUP_KEY_ORG_CORP
-                    if ("warehouse") group_key = GROUP_KEY_ORG_WAREHOUSE
-                    if ("church") group_key = GROUP_KEY_ORG_CHURCH
-                    if ("civicservices") group_key = GROUP_KEY_ORG_CIVICSERVICES
-                    if ("nationalsecurity") group_key = GROUP_KEY_ORG_NATIONALSECURITY
-                    if ("tzimisce") group_key = GROUP_KEY_ORG_TZIMISCE
-                    if ("triad") group_key = GROUP_KEY_ORG_TRIAD
-                    else group_key = "org_[lowertext(replacetext(group_raw, " ", "_"))]" // fallback for undefined orgs
+		switch (group_type)
+			if (GROUP_TYPE_SECT)
+				group_key = GROUP_KEY_SECT(group_raw)
+			if (GROUP_TYPE_CLAN)
+				group_key = GROUP_KEY_CLAN(group_raw)
+			if (GROUP_TYPE_TRIBE)
+				group_key = GROUP_KEY_TRIBE(group_raw)
+			if (GROUP_TYPE_ORGANIZATION)
+				switch(lowertext(group_raw))
+					if ("hospital") group_key = GROUP_KEY_ORG_HOSPITAL
+					if ("police") group_key = GROUP_KEY_ORG_POLICE
+					if ("government") group_key = GROUP_KEY_ORG_GOVERNMENT
+					if ("military") group_key = GROUP_KEY_ORG_MILITARY
+					if ("bikergang") group_key = GROUP_KEY_ORG_BIKERGANG
+					if ("corporation", "corp") group_key = GROUP_KEY_ORG_CORP
+					if ("warehouse") group_key = GROUP_KEY_ORG_WAREHOUSE
+					if ("church") group_key = GROUP_KEY_ORG_CHURCH
+					if ("civicservices") group_key = GROUP_KEY_ORG_CIVICSERVICES
+					if ("nationalsecurity") group_key = GROUP_KEY_ORG_NATIONALSECURITY
+					if ("tzimisce") group_key = GROUP_KEY_ORG_TZIMISCE
+					if ("triad") group_key = GROUP_KEY_ORG_TRIAD
+					else group_key = "org_[lowertext(replacetext(group_raw, " ", "_"))]" // fallback for undefined orgs
 
-            if (GROUP_TYPE_PARTY)
-                group_key = "party_[lowertext(replacetext(group_raw, " ", "_"))]"
+			if (GROUP_TYPE_PARTY)
+				group_key = "party_[lowertext(replacetext(group_raw, " ", "_"))]"
 
-        results += list(list(
-            "group_key" = group_key,
-            "group_type" = group_type,
-            "is_leader" = entry["is_leader"] || FALSE,
-            "is_officer" = entry["is_officer"] || FALSE
-        ))
+		results += list(list(
+			"group_key" = group_key,
+			"group_type" = group_type,
+			"is_leader" = entry["is_leader"] || FALSE,
+			"is_officer" = entry["is_officer"] || FALSE
+		))
 
-    return results
+	return results
 
 
 // ---------------- CLEANUP ----------------
 /datum/controller/subsystem/roleplay_management/proc/remove_key_from_all_groups(character_key)
-    if (!character_key) return
-    for (var/group_id in GLOB.groups)
-        var/datum/group/G = GLOB.groups[group_id]
-        if (!G) continue
-        G.leaders -= character_key
-        G.officers -= character_key
-        G.members -= character_key
-        G.member_names -= character_key
+	if (!character_key) return
+	for (var/group_id in GLOB.groups)
+		var/datum/group/G = GLOB.groups[group_id]
+		if (!G) continue
+		G.leaders -= character_key
+		G.officers -= character_key
+		G.members -= character_key
+		G.member_names -= character_key

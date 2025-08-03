@@ -18,15 +18,15 @@
 		id = "[lowertext(trim(name))]_[world.time]_[rand(1,1000000)]"
 	if (!date_created)
 		date_created = "[world.realtime]"
-	SSrpmanagement.register_relationship(src)
+	SSroleplay_management.register_relationship(src)
 	message_admins("([id]) created with type: [rtype], strength: [strength]")
 
 /datum/relationships/Destroy()
-	SSrpmanagement.unregister_relationship(src)
+	SSroleplay_management.unregister_relationship(src)
 	..()
 
 /datum/relationships/proc/is_visible_to(mob/user, character_key)
-	var/datum/aboutme_record/rec = SSrpmanagement.get_aboutme_datum_for_key(character_key)
+	var/datum/aboutme_record/rec = SSroleplay_management.get_aboutme_datum_for_key(character_key)
 	if (!rec) return FALSE
 	return ((character_key == source_character) || (character_key == target_character) || (group_target_id) && (group_target_id in rec.group_keys))
 
@@ -34,7 +34,7 @@
 /datum/relationships/proc/GetFormattedUI()
 	var/target_display = target_character
 	if (group_target_id)
-		var/datum/group/G = SSrpmanagement.get_group_by_key(group_target_id)
+		var/datum/group/G = SSroleplay_management.get_group_by_key(group_target_id)
 		target_display = G?.name || group_target_id
 
 	return list(

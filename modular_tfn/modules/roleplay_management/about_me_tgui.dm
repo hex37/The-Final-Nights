@@ -23,16 +23,16 @@
 // UI Lifecycle Methods (Required for TGUI)
 // ==============================================================================
 /datum/component/about_me/ui_state(mob/user)
-    return GLOB.always_state
+	return GLOB.always_state
 
 /datum/component/about_me/ui_data(mob/user)
-    try
-        return get_full_payload()
-    catch (var/exception/e)
-        return list("error" = "ui_data exception: [e]")
+	try
+		return get_full_payload()
+	catch (var/exception/e)
+		return list("error" = "ui_data exception: [e]")
 
 /datum/component/about_me/ui_static_data(mob/user)
-    return list()
+	return list()
 
 // ==============================================================================
 // On UI Open: Initializes the record, groups, and chronicle for the player
@@ -45,8 +45,8 @@
 			character_key = "[raw_key]_character_key"
 			ckey = ckey(H.client?.key)
 	if (owner?.client && character_key)
-		SSrpmanagement.register_valid_character_key(character_key)
-		SSrpmanagement.initialize_aboutme_for(character_key, owner, src)
+		SSroleplay_management.register_valid_character_key(character_key)
+		SSroleplay_management.initialize_aboutme_for(character_key, owner, src)
 	// Open or update the About Me interface
 	ui = SStgui.try_update_ui(user, src, ui)
 	if (!ui)
@@ -54,25 +54,25 @@
 		ui.open()
 
 /datum/component/about_me/ui_close(mob/user)
-    . = ..()
+	. = ..()
 
 // ==============================================================================
 // UI Button Entry Point: Player "About Me" action icon
 // ==============================================================================
 /datum/action/about_me
-    name = "About Me"
-    desc = "Press to view your About Me Menu."
-    button_icon_state = "masquerade"
-    check_flags = NONE
-    var/datum/component/about_me/about_me_component
+	name = "About Me"
+	desc = "Press to view your About Me Menu."
+	button_icon_state = "masquerade"
+	check_flags = NONE
+	var/datum/component/about_me/about_me_component
 
 /datum/action/about_me/New()
-    . = ..()
+	. = ..()
 
 /datum/action/about_me/Trigger(trigger_flags)
-    about_me_component = owner.GetComponent(/datum/component/about_me)
-    if (about_me_component)
-        about_me_component.ui_interact(owner)
+	about_me_component = owner.GetComponent(/datum/component/about_me)
+	if (about_me_component)
+		about_me_component.ui_interact(owner)
 
 
 // ==============================================================================

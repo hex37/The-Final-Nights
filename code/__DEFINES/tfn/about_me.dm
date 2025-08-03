@@ -1,8 +1,7 @@
-// aboutme_defines.dm
+//These are Defines for RP Management, About Me, and supporting datums.
+// About Me Component, and Record, as well as Groups, Chronciles, Relationships, and Memories.
 
-// =========================
 // GROUP TYPE DEFINES
-// =========================
 #define GROUP_TYPE_CITY             "city"
 #define GROUP_TYPE_FACTION          "faction"
 #define GROUP_TYPE_SECT             "sect"
@@ -164,7 +163,6 @@
 #define GROUP_KEY_TRIBE_STARGAZERS          "tribe_stargazers"
 
 // Organizations
-// Organizations (expanded to match roles used)
 #define GROUP_KEY_ORG_GOVERNMENT         "org_government"
 #define GROUP_KEY_ORG_POLICE             "org_police"
 #define GROUP_KEY_ORG_HOSPITAL           "org_hospital"
@@ -177,6 +175,3 @@
 #define GROUP_KEY_ORG_NATIONALSECURITY   "org_nationalsecurity"
 #define GROUP_KEY_ORG_TZIMISCE           "org_tzimisce"
 #define GROUP_KEY_ORG_TRIAD              "org_triad"
-
-
-// You can define player-made groups dynamically in runtime.

@@ -71,7 +71,7 @@
 		var/datum/relationships/my_rel = null
 		for (var/rid in R.relationship_keys)
 			if (rid in this_group.group_relationship_keys)
-				var/datum/relationships/test_rel = SSrpmanagement.get_relationship_by_key(rid)
+				var/datum/relationships/test_rel = SSroleplay_management.get_relationship_by_key(rid)
 				if (test_rel?.source_character == character_key && test_rel?.group_target_id == this_group.id)
 					my_rel = test_rel
 					break
@@ -140,7 +140,7 @@
 				var/list/valid_targets = list()
 				for (var/target_key in GLOB.aboutme_records)
 					if (this_group.has_member(target_key)) continue
-					var/datum/component/about_me/C = SSrpmanagement.get_aboutme_component_by_key(target_key)
+					var/datum/component/about_me/C = SSroleplay_management.get_aboutme_component_by_key(target_key)
 					if (!C?.owner || !ismob(C.owner)) continue
 					var/mob/living/carbon/human/M = C.owner
 					var/display_name = M.true_real_name || M.real_name || target_key
@@ -152,7 +152,7 @@
 				if (!choice || !istext(choice)) continue
 				var/target_key = valid_targets[choice]
 				var/officer_key = R.character_key
-				var/datum/component/about_me/TargetC = SSrpmanagement.get_aboutme_component_by_key(target_key)
+				var/datum/component/about_me/TargetC = SSroleplay_management.get_aboutme_component_by_key(target_key)
 				if (!TargetC?.owner || !ismob(TargetC.owner))
 					to_chat(user, "<span class='warning'>Could not find target's mob to send invite.</span>")
 					continue
@@ -164,7 +164,7 @@
 				var/list/loyalty_report = list()
 				for (var/rid in this_group.group_relationship_keys)
 					if (!(rid in R.relationship_keys)) continue
-					var/datum/relationships/rel = SSrpmanagement.get_relationship_by_key(rid)
+					var/datum/relationships/rel = SSroleplay_management.get_relationship_by_key(rid)
 					if (!rel || rel.group_target_id != this_group.id) continue
 					var/rkey = rel.source_character
 					var/role = "Unknown"
@@ -261,7 +261,7 @@
 	else if (G.gtype == GROUP_TYPE_ORGANIZATION)
 		to_chat(user, "<span class='notice'>Your application has been sent to [G.name]'s leadership. Please speak with them IC to complete the process.</span>")
 		for (var/key in G.leaders + G.officers)
-			var/datum/component/about_me/C = SSrpmanagement.get_aboutme_component_by_key(key)
+			var/datum/component/about_me/C = SSroleplay_management.get_aboutme_component_by_key(key)
 			if (C?.owner && ismob(C.owner))
 				to_chat(C.owner, "<span class='alert'>[display_name] has applied to join your organization: [G.name].</span>")
 		message_admins("[key_name(user)] applied to join public organization group: [G.name] ([group_id]).")
@@ -277,7 +277,7 @@
 		var/datum/group/G = GLOB.groups[group_id]
 		if (!G) continue
 		var/gtype = G.gtype
-		var/strength = SSrpmanagement.get_relationship_strength(character_key, group_id)
+		var/strength = SSroleplay_management.get_relationship_strength(character_key, group_id)
 		// Cannot just leave core groups, some are loyalty based.
 		if (gtype == GROUP_TYPE_CITY)
 			leave_options["(Cannot Leave) [G.name] - You have to walk out of the city, just reside here, or die."] = null
@@ -308,7 +308,7 @@
 			to_chat(user, "<span class='alert'>You were the only leader of [selected_group.name]. The party has been disbanded.</span>")
 			message_admins("[key_name(user)] disbanded party group [selected_group.name] ([group_id]) by leaving as last leader.")
 			GLOB.groups -= group_id
-			SSrpmanagement.unregister_group(selected_group)
+			SSroleplay_management.unregister_group(selected_group)
 			R.group_keys -= group_id
 			return src.prompt_manage_groups(user)
 	// Normal leave (remove all roles)
@@ -349,9 +349,9 @@
 	G.members += character_key
 	G.member_names[character_key] = display_name
 	GLOB.groups[G.id] = G
-	SSrpmanagement.register_group(G)
+	SSroleplay_management.register_group(G)
 	R.group_keys += G.id
-	SSrpmanagement.ensure_group_relationship(character_key, G, 100)
+	SSroleplay_management.ensure_group_relationship(character_key, G, 100)
 	to_chat(user, "<span class='notice'>You have created and joined a new party: [G.name]</span>")
 	message_admins("[key_name(user)] created party group: [G.name] ([G.id])")
 	return src.prompt_manage_groups(user)

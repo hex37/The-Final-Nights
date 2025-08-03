@@ -1,115 +1,115 @@
 //Base Group Datum
 /datum/group
-    var/is_public = FALSE
+	var/is_public = FALSE
 	//True means anyone can join this group, and the player promises to be at least a little loyal 20,
 	//False means the active leader and officers have to vote approve it.
-    var/id
-    var/name = "Some Group"
-    var/gtype
-    var/desc
-    var/tags
-    var/leader_name
-    var/list/leaders = list()   // List of ckeys
-    var/list/officers = list()  // List of ckeys
-    var/list/members = list()   // List of ckeys
-    var/list/group_relationship_keys = list()
-    var/orders = "" //These are changeable orders, that the leader can choose.
-    var/list/member_names = list() // character_key => display_name
-    var/ispublic = TRUE
-    var/list/chronicle_keys = list()
-    var/list/active_votes = list() // id => /datum/group_vote
+	var/id
+	var/name = "Some Group"
+	var/gtype
+	var/desc
+	var/tags
+	var/leader_name
+	var/list/leaders = list()   // List of ckeys
+	var/list/officers = list()  // List of ckeys
+	var/list/members = list()   // List of ckeys
+	var/list/group_relationship_keys = list()
+	var/orders = "" //These are changeable orders, that the leader can choose.
+	var/list/member_names = list() // character_key => display_name
+	var/ispublic = TRUE
+	var/list/chronicle_keys = list()
+	var/list/active_votes = list() // id => /datum/group_vote
 
 /datum/group/New()
-    ..()
-    if (!id)
-        id = "[type]_[world.time]_[rand(1,1000000)]" // guarantee unique; feel free to use your own scheme!
+	..()
+	if (!id)
+		id = "[type]_[world.time]_[rand(1,1000000)]" // guarantee unique; feel free to use your own scheme!
 
 /datum/group/Destroy()
-    SSrpmanagement.unregister_group(src)
-    ..()
+	SSroleplay_management.unregister_group(src)
+	..()
 
 /datum/group/proc/can_be_viewed_by(mob/user, character_key)
-    return (character_key in members) || (character_key in officers) || (character_key in leaders)
+	return (character_key in members) || (character_key in officers) || (character_key in leaders)
 
 
 
 /datum/group/proc/GetFormattedUI()
-    var/list/leader_names = list()
-    var/list/officer_names = list()
-    var/list/member_names = list()
+	var/list/leader_names = list()
+	var/list/officer_names = list()
+	var/list/member_names = list()
 
-    for (var/key in leaders)
-        var/datum/component/about_me/C = SSrpmanagement.get_aboutme_component_by_key(key)
-        var/display = C?.owner?.real_name || member_names[key] || key
-        if (!C || !C.owner || !ismob(C.owner))
-            display += " (DC)"
-        leader_names += display
+	for (var/key in leaders)
+		var/datum/component/about_me/C = SSroleplay_management.get_aboutme_component_by_key(key)
+		var/display = C?.owner?.real_name || member_names[key] || key
+		if (!C || !C.owner || !ismob(C.owner))
+			display += " (DC)"
+		leader_names += display
 
-    for (var/key in officers)
-        var/datum/component/about_me/C = SSrpmanagement.get_aboutme_component_by_key(key)
-        var/display = C?.owner?.real_name || member_names[key] || key
-        if (!C || !C.owner || !ismob(C.owner))
-            display += " (DC)"
-        officer_names += display
+	for (var/key in officers)
+		var/datum/component/about_me/C = SSroleplay_management.get_aboutme_component_by_key(key)
+		var/display = C?.owner?.real_name || member_names[key] || key
+		if (!C || !C.owner || !ismob(C.owner))
+			display += " (DC)"
+		officer_names += display
 
-    for (var/key in members)
-        var/datum/component/about_me/C = SSrpmanagement.get_aboutme_component_by_key(key)
-        var/display = C?.owner?.real_name || member_names[key] || key
-        if (!C || !C.owner || !ismob(C.owner))
-            display += " (DC)"
-        member_names += display
+	for (var/key in members)
+		var/datum/component/about_me/C = SSroleplay_management.get_aboutme_component_by_key(key)
+		var/display = C?.owner?.real_name || member_names[key] || key
+		if (!C || !C.owner || !ismob(C.owner))
+			display += " (DC)"
+		member_names += display
 
-    return list(
-        "id"          = id,
-        "name"        = name,
-        "type"        = gtype || "unknown",
-        "desc"        = desc,
-        "tags"        = tags,
-        "leader_name" = leader_name,
-        "leaders"     = leader_names,
-        "officers"    = officer_names,
-        "members"     = member_names,
-        "orders"      = orders
-    )
+	return list(
+		"id"          = id,
+		"name"        = name,
+		"type"        = gtype || "unknown",
+		"desc"        = desc,
+		"tags"        = tags,
+		"leader_name" = leader_name,
+		"leaders"     = leader_names,
+		"officers"    = officer_names,
+		"members"     = member_names,
+		"orders"      = orders
+	)
 
 
 
 /datum/group/proc/get_named_roles(keys)
-    var/list/named = list()
-    for (var/key in keys)
-        named += member_names[key] || key
-    return named
+	var/list/named = list()
+	for (var/key in keys)
+		named += member_names[key] || key
+	return named
 
 /datum/group/proc/add_member_key(character_key, display_name = null)
-    if (!character_key) return
+	if (!character_key) return
 
-    if (!(character_key in members))
-        members += character_key
-    if (display_name)
-        member_names[character_key] = display_name
+	if (!(character_key in members))
+		members += character_key
+	if (display_name)
+		member_names[character_key] = display_name
 
-    SSrpmanagement.ensure_group_relationship(character_key, src, 50)
+	SSroleplay_management.ensure_group_relationship(character_key, src, 50)
 
 
 /datum/group/proc/add_leader(character_key, display_name = null)
-    if (!character_key) return
-    if (!(character_key in leaders))
-        leaders += character_key
-    if (!(character_key in members))
-        members += character_key
-    if (display_name)
-        member_names[character_key] = display_name
+	if (!character_key) return
+	if (!(character_key in leaders))
+		leaders += character_key
+	if (!(character_key in members))
+		members += character_key
+	if (display_name)
+		member_names[character_key] = display_name
 
-    SSrpmanagement.ensure_group_relationship(character_key, src, 100)
+	SSroleplay_management.ensure_group_relationship(character_key, src, 100)
 
 /datum/group/proc/add_officer(character_key, display_name = null)
-    if (!character_key) return
-    if (!(character_key in officers))
-        officers += character_key
-    if (!(character_key in members))
-        members += character_key
-    if (display_name)
-        member_names[character_key] = display_name
+	if (!character_key) return
+	if (!(character_key in officers))
+		officers += character_key
+	if (!(character_key in members))
+		members += character_key
+	if (display_name)
+		member_names[character_key] = display_name
 
 
 /// Checks if a character is a member, officer, or leader
@@ -121,7 +121,7 @@
 	if (!character_key || !(character_key in members)) return
 	if (!(character_key in officers))
 		officers += character_key
-		SSrpmanagement.ensure_group_relationship(character_key, src, 75)
+		SSroleplay_management.ensure_group_relationship(character_key, src, 75)
 	return
 
 /datum/group/proc/transfer_leadership_to(character_key)
@@ -166,12 +166,12 @@
 	officers -= character_key
 	leaders -= character_key
 	member_names -= character_key
-	SSrpmanagement.clear_group_relationship(character_key, src)
+	SSroleplay_management.clear_group_relationship(character_key, src)
 	return
 
 /datum/group/proc/to_chat_group(msg, datum/group/G)
 	for (var/ckey in G.members + G.officers + G.leaders)
-		var/datum/component/about_me/C = SSrpmanagement.get_aboutme_component_by_key(ckey)
+		var/datum/component/about_me/C = SSroleplay_management.get_aboutme_component_by_key(ckey)
 		if (C?.owner && ismob(C.owner))
 			to_chat(C.owner, "<span class='notice'>[msg]</span>")
 
@@ -179,8 +179,8 @@
 /datum/group/proc/invite_member_prompt(officer_key, target_key)
 	if (!officer_key || !target_key) return FALSE
 
-	var/datum/component/about_me/C_officer = SSrpmanagement.get_aboutme_component_by_key(officer_key)
-	var/datum/component/about_me/C_target = SSrpmanagement.get_aboutme_component_by_key(target_key)
+	var/datum/component/about_me/C_officer = SSroleplay_management.get_aboutme_component_by_key(officer_key)
+	var/datum/component/about_me/C_target = SSroleplay_management.get_aboutme_component_by_key(target_key)
 
 	if (!C_officer?.owner || !ismob(C_officer.owner)) return FALSE
 	if (!C_target?.owner || !ismob(C_target.owner)) return FALSE
@@ -199,7 +199,7 @@
 
 	if (choice == "Accept")
 		add_member_key(target_key, target_mob.true_real_name)
-		var/datum/aboutme_record/R = SSrpmanagement.get_aboutme_record(target_key)
+		var/datum/aboutme_record/R = SSroleplay_management.get_aboutme_record(target_key)
 		if (R && !(id in R.group_keys))
 			R.group_keys += id
 
@@ -215,45 +215,45 @@
 
 
 /datum/group_vote
-    var/id
-    var/group_id
-    var/vote_type // e.g., "promote_leader", "promote_officer"
-    var/target_character_key
-    var/initiator_key
-    var/list/votes = list() // ckey => TRUE/FALSE
-    var/start_time
-    var/duration = 600 // 60 seconds
+	var/id
+	var/group_id
+	var/vote_type // e.g., "promote_leader", "promote_officer"
+	var/target_character_key
+	var/initiator_key
+	var/list/votes = list() // ckey => TRUE/FALSE
+	var/start_time
+	var/duration = 600 // 60 seconds
 
 /datum/group_vote/New(group_id, vote_type, target_key, initiator)
-    ..()
-    src.start_time = world.time
-    id = "[vote_type]_[target_key]_[world.time]"
-    src.group_id = group_id
-    src.vote_type = vote_type
-    src.target_character_key = target_key
-    src.initiator_key = initiator
+	..()
+	src.start_time = world.time
+	id = "[vote_type]_[target_key]_[world.time]"
+	src.group_id = group_id
+	src.vote_type = vote_type
+	src.target_character_key = target_key
+	src.initiator_key = initiator
 
 /datum/group_vote/proc/add_vote(ckey, value)
-    if (isnull(value)) return
-    votes[ckey] = value
+	if (isnull(value)) return
+	votes[ckey] = value
 
-    var/datum/group/G = SSrpmanagement.get_group_by_key(src.group_id)
-    if (G && is_complete(G))
-        G.resolve_votes()
+	var/datum/group/G = SSroleplay_management.get_group_by_key(src.group_id)
+	if (G && is_complete(G))
+		G.resolve_votes()
 
 /datum/group_vote/proc/has_voted(ckey)
-    return ckey in votes
+	return ckey in votes
 
 /datum/group_vote/proc/is_expired()
-    return (world.time - start_time) > duration
+	return (world.time - start_time) > duration
 
 /datum/group_vote/proc/is_complete(datum/group/G)
-    if (!G) return FALSE
-    var/list/eligible = G.members + G.officers + G.leaders
-    for (var/ckey in eligible)
-        if (!(ckey in votes))
-            return FALSE
-    return TRUE
+	if (!G) return FALSE
+	var/list/eligible = G.members + G.officers + G.leaders
+	for (var/ckey in eligible)
+		if (!(ckey in votes))
+			return FALSE
+	return TRUE
 
 /datum/group_vote/proc/get_result()
 	var/votes_yes = 0
@@ -272,7 +272,7 @@
 	if (length(all_members) <= 1 && vote_type == "promote_officer" && initiator_key == target_key)
 		if (!(initiator_key in src.officers))
 			src.officers += initiator_key
-			var/datum/component/about_me/C = SSrpmanagement.get_aboutme_component_by_key(initiator_key)
+			var/datum/component/about_me/C = SSroleplay_management.get_aboutme_component_by_key(initiator_key)
 			if (C?.owner && ismob(C.owner))
 				to_chat(C.owner, "<span class='notice'>You have been promoted to Officer of [src.name] as its only member.</span>")
 		return null
@@ -284,7 +284,7 @@
 	for (var/c_key in all_members)
 		if (c_key == initiator_key)
 			continue
-		var/datum/component/about_me/C = SSrpmanagement.get_aboutme_component_by_key(c_key)
+		var/datum/component/about_me/C = SSroleplay_management.get_aboutme_component_by_key(c_key)
 		if (!C || !ismob(C.owner)) continue
 		to_chat(C.owner, "<span class='notice'>A new vote has started in [src.name]!</span>")
 		C.prompt_vote_on_group(V)
@@ -304,11 +304,11 @@
 		var/name_text = member_names[target_key] || target_key
 
 		var/datum/relationships/target_rel = null
-		var/datum/aboutme_record/R = SSrpmanagement.get_aboutme_record(target_key)
+		var/datum/aboutme_record/R = SSroleplay_management.get_aboutme_record(target_key)
 		if (R)
 			for (var/rid in R.relationship_keys)
 				if (rid in src.group_relationship_keys)
-					var/datum/relationships/test_rel = SSrpmanagement.get_relationship_by_key(rid)
+					var/datum/relationships/test_rel = SSroleplay_management.get_relationship_by_key(rid)
 					if (test_rel?.source_character == target_key && test_rel?.group_target_id == src.id)
 						target_rel = test_rel
 						break

@@ -65,7 +65,7 @@
 
 	var/list/admin_groups = list()
 	for (var/group_id in R.group_keys)
-		var/datum/group/G = SSrpmanagement.get_group_by_key(group_id)
+		var/datum/group/G = SSroleplay_management.get_group_by_key(group_id)
 		if (!G) continue
 		if ((src.character_key in G.leaders) || (src.character_key in G.officers))
 			admin_groups["[G.name] ([G.gtype])"] = G
@@ -121,7 +121,7 @@
 
 	to_chat(user, "<b>Chronicle Entries:</b>")
 	for (var/key in chronicle_ids)
-		var/datum/chronicle/C = SSrpmanagement.get_chronicle_by_key(key)
+		var/datum/chronicle/C = SSroleplay_management.get_chronicle_by_key(key)
 		if (!C || !C.is_visible_to(user, src.character_key)) continue
 
 		var/date = C.date_started || "Unknown"
