@@ -217,6 +217,11 @@ GLOBAL_LIST_EMPTY(p25_tranceivers)
 	desc = "A P25 radio transceiver configured for ... some waitresses and a barback?"
 	p25_network = "bar"
 
+/obj/machinery/p25transceiver/endron
+	name = "endron P25 transceiver"
+	desc = "A P25 radio transceiver configured for general communications."
+	p25_network = "endron"
+
 // ==============================
 // Police Transceiver
 // ==============================
@@ -488,6 +493,8 @@ GLOBAL_LIST_EMPTY(p25_tranceivers)
 			return "Clinic Radio Transceiver"
 		if("tower")
 			return "Tower Radio Transceiver"
+		if("endron")
+			return "Endron Radio Transceiver"
 		else
 			return "Radio Transceiver"
 
@@ -514,6 +521,8 @@ GLOBAL_LIST_EMPTY(p25_tranceivers)
 			return "CRT"
 		if("tower")
 			return "TRT"
+		if("endron")
+			return "ERT"
 		else
 			return "RT"
 
@@ -597,7 +606,7 @@ GLOBAL_LIST_EMPTY(p25_tranceivers)
 	var/garble = FALSE
 	if(iskindred(speaker))
 		var/mob/living/carbon/human/speaker_man = speaker
-		if(speaker_man.clane?.name == "Lasombra")
+		if(speaker_man.clan?.name == CLAN_LASOMBRA)
 			message = scramble_lasombra_message(message,speaker_man)
 			garble = TRUE
 

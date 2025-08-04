@@ -43,3 +43,14 @@
 	locked = TRUE
 	lock_id = "cappadocian"
 	lockpick_difficulty = 8
+
+/obj/structure/vampdoor/wood/sabbat
+	name = "Wooden Door"
+	locked = TRUE
+	lock_id = "sabbat"
+	lockpick_difficulty = 8
+
+/obj/structure/vampdoor/wood/millennium_common
+	locked = TRUE
+	lock_id = "milleniumCommon"
+	lockpick_difficulty = 12
