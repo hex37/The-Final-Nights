@@ -1,15 +1,21 @@
 // ============================================================================
-// About Me: Player Input - Group Management
-// ============================================================================
-// This file handles:
-//   - Joining and leaving groups
-//   - Viewing player's current group affiliations, and interacting with them.
-//   - Group administration tools for leaders/officers
-// These are triggered from the "Manage Groups" button in the Groups tab.
-// Groups are managed via GLOB.groups and tracked in the character's aboutme_record via key lists held in the component.
+// About Me: Player Input - Group Management (aboutme_tgui_player_group.dm)
+// ----------------------------------------------------------------------------
+// Handles all TGUI-driven group actions from the About Me panel:
+//   - Join, leave, create party/coterie groups
+//   - View and interact with player's current groups
+//   - Group administration tools for leaders and officers
+//   - Voting, loyalty, member invites, and leader/officer management
+//
+// These procs are invoked by UI actions in the Groups tab.
+// Groups are managed via GLOB.groups and tracked in each character's aboutme_record.
 // ============================================================================
 
-//Starting point, this shouldn't have to be changed, just add new switch choices where needed.
+/**
+ * Main entrypoint for group management UI.
+ * Prompts the user to pick a group action: view, join, leave, or create.
+ * Switches to the correct follow-up proc based on selection.
+ */
 /datum/component/about_me/proc/prompt_manage_groups(mob/user)
 	var/choice = tgui_input_list(user, "What group action?", "Manage Groups", list(
 		"My Groups", "Join Group", "Leave Group", "Create Party", "Back"
@@ -21,7 +27,11 @@
 		if ("Leave Group") return src.prompt_manage_groups_leave(user)
 		if ("Create Party") return src.prompt_manage_groups_create(user)
 
-//Opens all groups that can be interacted with in this menu, based on keys they have.
+
+/**
+ * Lists all groups the player can interact with (excluding city/faction unless officer/leader).
+ * Allows the player to select a group for member/leader/officer actions.
+ */
 /datum/component/about_me/proc/prompt_manage_groups_my(mob/user)
 	var/datum/aboutme_record/R = src.get_record()
 	if (!R)
@@ -36,11 +46,7 @@
 	for (var/group_id in R.group_keys)
 		var/datum/group/G = GLOB.groups[group_id]
 		if (!G) continue
-
-		// Filter out City/Faction unless they're a leader or officer, only set by staff, or as the result of war chronicles.
-		//(example: Prince, Baron, and Bishop conflict over ruling the kindred faction.)
-		//Huge membership numbers. All characters of a species are in the factions.
-		//Gifted leadership allows the creation of officers.
+		// Filter out city/faction unless this user is officer/leader
 		var/is_leader = (character_key in G.leaders)
 		var/is_officer = (character_key in G.officers)
 		if ((G.gtype == GROUP_TYPE_CITY || G.gtype == GROUP_TYPE_FACTION) && !is_leader && !is_officer)
@@ -51,23 +57,25 @@
 		return src.prompt_manage_groups(user)
 	while (TRUE)
 		var/group_key = tgui_input_list(user, "Select a group to interact with:", "My Groups", group_map)
-		if (isnull(group_key))
-			break
+		if (isnull(group_key)) break
 		var/datum/group/G = group_map[group_key]
-		if (!istype(G, /datum/group))
-			break
+		if (!istype(G, /datum/group)) break
 		src.prompt_my_group_view(user, G, R)
 
 
-
-/// Opens options for the selected group.
+/**
+ * Opens interactive options for the selected group:
+ * - Member actions: Loyalty, propose officer vote
+ * - Officer actions: Review loyalty, invite, promote leader vote
+ * - Leader actions: Orders, promote/demote/remove members
+ */
 /datum/component/about_me/proc/prompt_my_group_view(mob/user, datum/group/this_group, datum/aboutme_record/R)
 	if (!this_group || !R?.character_key) return
 	var/character_key = R.character_key
 	var/is_leader = (character_key in this_group.leaders)
 	var/is_officer = (character_key in this_group.officers)
 	while (TRUE)
-		// Resolve character's specific relationship to this group, for options, and to use in character to group adjustments.
+		// Find this character's group relationship for loyalty
 		var/datum/relationships/my_rel = null
 		for (var/rid in R.relationship_keys)
 			if (rid in this_group.group_relationship_keys)
@@ -76,19 +84,17 @@
 					my_rel = test_rel
 					break
 		var/strength = my_rel?.strength || 0
-		//Member Options.
+		// Dynamic options based on role
 		var/list/options = list("(Member) Loyalty: Raise", "(Member) Loyalty: Lower", "(Member) Promote Officer Vote")
-		//Officer and Leader Options.
 		if (is_officer || is_leader)
 			options += list("(Officer) Review Group Loyalty", "(Officer) Invite Member", "(Officer) Promote Leader Vote")
-		//Leader Options.
 		if (is_leader)
 			options += list("(Leader) Set Orders", "(Leader) Promote Member", "(Leader) Demote Member", "(Leader) Remove Member")
 		options += "Back"
 		var/selection = tgui_input_list(user, "[this_group.name] — Loyalty: [strength]", "Group View", options)
 		if (isnull(selection) || selection == "Back") break
 		switch(selection)
-			// ---------------------
+			// -- Loyalty adjustment (members)
 			if ("(Member) Loyalty: Raise", "(Member) Loyalty: Lower")
 				var/delta = (selection == "(Member) Loyalty: Raise") ? 10 : -10
 				var/reason = tgui_input_text(user, "Why are you adjusting loyalty?", "Adjust Loyalty", encode = FALSE)
@@ -99,7 +105,8 @@
 				my_rel.strength = clamp(my_rel.strength + delta, 0, 100)
 				my_rel.desc = "Loyalty adjusted: [reason]"
 				to_chat(user, "<span class='notice'>Loyalty to [this_group.name] is now [my_rel.strength].</span>")
-			// ---------------------
+
+			// -- Propose officer vote (members)
 			if ("(Member) Promote Officer Vote")
 				var/list/candidates = list()
 				for (var/key in this_group.members)
@@ -118,10 +125,11 @@
 				to_chat(user, "<span class='notice'>Vote to promote [candidate_choice] to officer started.</span>")
 				message_admins("[key_name(user)] started a vote to promote [candidate_choice] in [this_group.name].")
 
+			// -- Propose leader vote (officers/leaders)
 			if ("(Officer) Promote Leader Vote")
 				var/list/candidates = list()
 				for (var/key in this_group.officers)
-					if (!(key in this_group.leaders)) // Only allow promoting non-leader officers
+					if (!(key in this_group.leaders))
 						candidates[this_group.member_names[key] || key] = key
 				if (!length(candidates))
 					to_chat(user, "<span class='warning'>No eligible officers available for promotion to leader.</span>")
@@ -136,6 +144,7 @@
 				to_chat(user, "<span class='notice'>Vote to promote [candidate_choice] to leader started.</span>")
 				message_admins("[key_name(user)] started a vote to promote [candidate_choice] to Leader in [this_group.name].")
 
+			// -- Officer: Invite member
 			if ("(Officer) Invite Member")
 				var/list/valid_targets = list()
 				for (var/target_key in GLOB.aboutme_records)
@@ -160,6 +169,7 @@
 				to_chat(user, "<span class='notice'>Sent invite to [choice].</span>")
 				message_admins("[key_name(user)] sent an invite to [choice] for [this_group.name].")
 
+			// -- Officer: Review group loyalty
 			if ("(Officer) Review Group Loyalty")
 				var/list/loyalty_report = list()
 				for (var/rid in this_group.group_relationship_keys)
@@ -177,13 +187,15 @@
 					to_chat(user, "<span class='warning'>No valid loyalty entries found for this group.</span>")
 				else
 					to_chat(user, "<b>Loyalty Overview for [this_group.name]</b><br>[jointext(loyalty_report, "<br>")]")
-			// ---------------------
+
+			// -- Leader: Set orders string for the group
 			if ("(Leader) Set Orders")
 				var/input = tgui_input_text(user, "Set new orders for [this_group.name]:", "Set Orders", this_group.orders, encode = FALSE)
 				if (!isnull(input))
 					this_group.orders = input
 					to_chat(user, "<span class='notice'>Orders updated for [this_group.name].</span>")
-			// ---------------------
+
+			// -- Leader: Promote member to officer
 			if ("(Leader) Promote Member")
 				var/list/promote_candidates = list()
 				for (var/key in this_group.members)
@@ -198,11 +210,12 @@
 				this_group.add_officer(target_key, this_group.member_names[target_key])
 				to_chat(user, "<span class='notice'>Promoted [promote_choice] to Officer.</span>")
 				message_admins("[key_name(user)] promoted [promote_choice] to Officer in [this_group.name].")
-			// ---------------------
+
+			// -- Leader: Demote officer to member
 			if ("(Leader) Demote Member")
 				var/list/demote_targets = list()
 				for (var/key in this_group.officers)
-					if (!(key in this_group.leaders)) // Don't demote dual-role leaders
+					if (!(key in this_group.leaders))
 						demote_targets[this_group.member_names[key] || key] = key
 				if (!length(demote_targets))
 					to_chat(user, "<span class='warning'>No officers available to demote.</span>")
@@ -213,7 +226,8 @@
 				this_group.demote_officer(target_key)
 				to_chat(user, "<span class='notice'>Demoted [demote_choice] to Member.</span>")
 				message_admins("[key_name(user)] demoted [demote_choice] to Member in [this_group.name].")
-			// ---------------------
+
+			// -- Leader: Remove member from group
 			if ("(Leader) Remove Member")
 				var/list/remove_targets = list()
 				for (var/key in this_group.members + this_group.officers + this_group.leaders)
@@ -229,7 +243,12 @@
 				to_chat(user, "<span class='notice'>Removed [remove_choice] from [this_group.name].</span>")
 				message_admins("[key_name(user)] removed [remove_choice] from [this_group.name].")
 
-/// Allows the player to join/apply for public organizations or party groups only.
+
+/**
+ * Shows all public organizations/parties the player can join or apply to.
+ * - Parties are joined directly.
+ * - Public organizations send a request to leadership, requiring IC approval.
+ */
 /datum/component/about_me/proc/prompt_manage_groups_join(mob/user)
 	var/datum/aboutme_record/R = src.get_record()
 	if (!R) return
@@ -239,7 +258,7 @@
 	for (var/group_id in GLOB.groups)
 		var/datum/group/G = GLOB.groups[group_id]
 		if (!G || !G.is_public || (group_id in R.group_keys)) continue
-		// Only show public orgs and parties (sect/faction/city/clan/tribe hidden entirely)
+		// Only show public orgs and parties (sect/faction/city/clan/tribe hidden)
 		if (G.gtype == GROUP_TYPE_PARTY)
 			join_options["Join Party: [G.name]"] = G.id
 		else if (G.gtype == GROUP_TYPE_ORGANIZATION)
@@ -267,7 +286,11 @@
 		message_admins("[key_name(user)] applied to join public organization group: [G.name] ([group_id]).")
 	return src.prompt_manage_groups(user)
 
-/// Allows the player to leave eligible groups.
+
+/**
+ * Allows the player to leave eligible groups (except city, faction, clan, tribe, or high-loyalty orgs).
+ * Disbands private party if leaving as last leader.
+ */
 /datum/component/about_me/proc/prompt_manage_groups_leave(mob/user)
 	var/datum/aboutme_record/R = src.get_record()
 	if (!R) return
@@ -278,7 +301,7 @@
 		if (!G) continue
 		var/gtype = G.gtype
 		var/strength = SSroleplay_management.get_relationship_strength(character_key, group_id)
-		// Cannot just leave core groups, some are loyalty based.
+		// Core groups, or those with high loyalty, cannot be left
 		if (gtype == GROUP_TYPE_CITY)
 			leave_options["(Cannot Leave) [G.name] - You have to walk out of the city, just reside here, or die."] = null
 			continue
@@ -322,7 +345,11 @@
 
 	return src.prompt_manage_groups(user)
 
-/// Allows the player to create a new party group, only if they don't already lead one.
+
+/**
+ * Allows the player to create a new party/coterie group, if they don't already lead one.
+ * Party/coterie groups are always private, with the creator as first leader/member.
+ */
 /datum/component/about_me/proc/prompt_manage_groups_create(mob/user)
 	var/datum/aboutme_record/R = src.get_record()
 	if (!R) return
@@ -355,3 +382,4 @@
 	to_chat(user, "<span class='notice'>You have created and joined a new party: [G.name]</span>")
 	message_admins("[key_name(user)] created party group: [G.name] ([G.id])")
 	return src.prompt_manage_groups(user)
+

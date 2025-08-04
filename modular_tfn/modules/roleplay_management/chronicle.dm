@@ -1,3 +1,21 @@
+/**
+ * Chronicle datum.
+ * - id:                Unique chronicle ID (auto-generated on creation).
+ * - title:             Display name for the chronicle/event/story arc.
+ * - ctype:             Chronicle type ("event", "arc", "plot", etc).
+ * - desc:              Description or summary of the event or arc.
+ * - tags:              List of arbitrary tags for sorting/search.
+ * - date_started:      When the chronicle/event began (string).
+ * - date_ended:        When the chronicle/event ended (string, optional).
+ * - host_key:          Key of the host (character or group); who “owns” this chronicle.
+ * - related_characters: List of character_keys involved in the event.
+ * - related_groups:    List of group IDs involved in the event.
+ * - related_memories:  List of memory IDs attached to this chronicle.
+ *
+ * Chronicles represent shared RP history: memorable events, stories, or arcs.
+ * They link to multiple memories, characters, and groups, and are registered globally.
+ */
+// ============================================================================
 /datum/chronicle
 	var/id = null
 	var/title = "Chronicle"
@@ -6,11 +24,15 @@
 	var/list/tags = list()
 	var/date_started = ""
 	var/date_ended = ""
-	var/list/host_key = "" //character or group key.
-	var/list/related_characters = list() // shared character_keys
-	var/list/related_groups = list()     // shared group ids
-	var/list/related_memories = list()   // memory ids shared to this chronicle
+	var/list/host_key = "" // character or group key (who “owns” the chronicle)
+	var/list/related_characters = list() // All character_keys in this chronicle
+	var/list/related_groups = list()     // All group ids linked
+	var/list/related_memories = list()   // All memory ids attached
 
+/**
+ * Chronicle constructor.
+ * Accepts all key fields as arguments, generates a unique id and registers globally.
+ */
 /datum/chronicle/New(
 	host_key_arg = null,
 	title_arg = "Chronicle",
@@ -36,14 +58,23 @@
 
 	SSroleplay_management.register_chronicle(src)
 
-
+/**
+ * Unregisters this chronicle from global subsystem on deletion.
+ */
 /datum/chronicle/Destroy()
 	SSroleplay_management.unregister_chronicle(src)
 	..()
 
+/**
+ * Checks if this chronicle is visible to the given character.
+ * (Override for custom access logic; currently always TRUE.)
+ */
 /datum/chronicle/proc/is_visible_to(mob/user, character_key)
 	return TRUE
 
+/**
+ * Returns a UI-ready list of chronicle data for frontend use.
+ */
 /datum/chronicle/proc/GetFormattedUI()
 	return list(
 		"id"                = id,
@@ -57,4 +88,3 @@
 		"related_groups"    = islist(related_groups) ? related_groups.Copy() : list(),
 		"related_memories"  = islist(related_memories) ? related_memories.Copy() : list()
 	)
-

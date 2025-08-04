@@ -1,3 +1,19 @@
+// ============================================================================
+// About Me: Player Input - Chronicle Management (aboutme_tgui_player_chronicle.dm)
+// ----------------------------------------------------------------------------
+// Handles creation and viewing of personal and group chronicle entries from the
+// About Me panel. Allows:
+//   - Adding/viewing personal chronicle entries (character's own story)
+//   - Adding/viewing group chronicle entries (officer/leader-only)
+//   - UI input is routed here by TGUI act via aboutme_tgui.dm.
+// ----------------------------------------------------------------------------
+// NOTE: Chronicles are shared event logs, intended for memorable IC events and RP.
+// ============================================================================
+
+/**
+ * Main entry point: Opens the Chronicle action menu for the player.
+ * Lets the user choose between managing their personal or a group chronicle.
+ */
 /datum/component/about_me/proc/prompt_interact_chronicle(mob/user)
 	message_admins("[key_name(user)] opened the Chronicle interaction panel.")
 
@@ -10,15 +26,16 @@
 	if (isnull(choice) || choice == "Back") return
 
 	switch(choice)
-		if ("Manage Personal Chronicle")
-			return src.prompt_manage_personal_chronicle(user)
-		if ("Manage Group Chronicle")
-			return src.prompt_manage_group_chronicle(user)
+		if ("Manage Personal Chronicle") return src.prompt_manage_personal_chronicle(user)
+		if ("Manage Group Chronicle")    return src.prompt_manage_group_chronicle(user)
 
 	message_admins("[key_name(user)] selected Chronicle option: [choice]")
 	return TRUE
 
-
+/**
+ * Handles adding and viewing entries in the player's personal chronicle.
+ * Only visible to the player and staff.
+ */
 /datum/component/about_me/proc/prompt_manage_personal_chronicle(mob/user)
 	var/datum/aboutme_record/R = src.get_record()
 	if (!R) return
@@ -59,6 +76,10 @@
 
 	return src.prompt_manage_personal_chronicle(user)
 
+/**
+ * Handles adding and viewing entries in a group chronicle.
+ * Only available to group leaders or officers.
+ */
 /datum/component/about_me/proc/prompt_manage_group_chronicle(mob/user)
 	var/datum/aboutme_record/R = src.get_record()
 	if (!R) return
@@ -114,6 +135,10 @@
 
 	return src.prompt_manage_group_chronicle(user)
 
+/**
+ * Utility: Shows a list of chronicle entries with details to the user.
+ * Filters for visibility (e.g. group members, player for personal, etc).
+ */
 /datum/component/about_me/proc/view_chronicles(mob/user, list/chronicle_ids)
 	if (!length(chronicle_ids))
 		to_chat(user, "<span class='notice'>No chronicle entries found.</span>")
@@ -129,6 +154,3 @@
 		to_chat(user, "<hr><b>[C.title]</b><br><i>[date]</i><br>[desc]")
 
 	return
-
-
-

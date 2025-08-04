@@ -1,33 +1,59 @@
 // ==============================================================================
 // CANONICAL ABOUT ME DATA RECORDS (aboutme_record.dm)
-// -- Represents persistent character data tracked across sessions,
-//for now just mounted to the subsystem access by the about me compontent and system, designed to support future saves
-// -- Serves as the canonical truth, all edits and references funnel here. (Role changes always should be supported and dyanamic.)
-// -- Created and managed by SSRPmanagement
+// ------------------------------------------------------------------------------
+//  - Represents persistent character data across sessions, round to round for now.
+//  - Serves as the canonical "truth" for all character-related info shown in the About Me panel.
+//  - Tracks editable overview fields, group affiliations, relationships, memories, and chronicles.
+//  - All edits and access funnel through this datum, supporting future saves and dynamic role/group changes.
+//  - Managed and created by the RP Management subsystem.
 // ==============================================================================
 
 /datum/aboutme_record
-	//These will update based on saved information.
+	// --------------------------------------------------------------------------
+	// Initialization Flags (used to track setup actions)
+	// --------------------------------------------------------------------------
+	/// TRUE if this character has their personal chronicle set up.
 	var/has_initialized_personal_chronicle = FALSE
+	/// TRUE if this character has had group membership established from their role.
 	var/has_initialized_groups_from_role = FALSE
+	/// TRUE if this character has had an initial entry memory generated.
 	var/has_initialized_entry_memory = FALSE
-	// Unique persistent key for this character
+
+	// --------------------------------------------------------------------------
+	// Identity Key (unique, persistent per character)
+	// --------------------------------------------------------------------------
+	/// Unique persistent key for this character (matches about_me.component's character_key)
 	var/character_key = null
-	// ========== Editable Overview Fields ==========
+
+	// --------------------------------------------------------------------------
+	// Editable Overview Fields (player-editable "About Me" info)
+	// --------------------------------------------------------------------------
 	var/edit_display_name = null
 	var/edit_goals = null
 	var/edit_personal_quote = null
 	var/edit_gender = null
 	var/edit_physical_desc = null
-	// ========== Canonical Associations ==========
-	var/list/group_keys = list()       // Group IDs this character belongs to
-	var/list/relationship_keys = list() // Relationship IDs this character is part of
-	var/list/chronicle_keys = list()    // Chronicle (event) IDs tied to this character
-	var/list/memory_keys = list()       // Memory IDs tied to this character
+
+	// --------------------------------------------------------------------------
+	// Canonical Associations (group, relationship, chronicle, memory keys)
+	// --------------------------------------------------------------------------
+	/// List of group IDs this character belongs to
+	var/list/group_keys = list()
+	/// List of relationship IDs for this character (player ↔ player or player ↔ group)
+	var/list/relationship_keys = list()
+	/// List of chronicle (event) IDs associated with this character
+	var/list/chronicle_keys = list()
+	/// List of memory IDs owned by this character
+	var/list/memory_keys = list()
+
 
 // ==============================================================================
-// PAYLOAD BUILDING: Return full UI-safe payload for the TGUI panel
+// PAYLOAD BUILDING: Returns full UI-safe payload for the TGUI panel
 // ==============================================================================
+
+/// Assembles and returns the full About Me payload for the TGUI panel.
+/// Contains overview, groups, relationships, chronicle, and categorized memories.
+/// @param owner The mob/living associated with this record.
 /datum/aboutme_record/proc/update_payload(mob/living/carbon/human/owner)
 	return list(
 		"overview" = build_overview_data(owner),
@@ -37,6 +63,9 @@
 		"memories" = get_ui_memories_by_tag(owner)
 	)
 
+
+/// Builds a dictionary of overview data for the panel's Overview tab.
+/// Pulls from both saved fields and live mob state (name, species, stats, codes, etc).
 /datum/aboutme_record/proc/build_overview_data(mob/living/carbon/human/owner)
 	var/list/general = list(
 		"name"            = (edit_display_name && edit_display_name != "") ? edit_display_name : (owner.real_name || "Unknown"),
@@ -47,21 +76,20 @@
 		"goals"           = edit_goals || "",
 		"personal_quote"  = edit_personal_quote || ""
 	)
-	// Bank Account Code (if available)
+	// --- Role-specific codes Everyone gets a bank account code, then roles for bank, panic room, armory, etc
 	for (var/datum/vtm_bank_account/account in GLOB.bank_account_list)
 		if (owner.bank_id == account.bank_id)
 			general["bank_account_code"] = account.code
 			break
 		var/role = owner?.mind?.assigned_role
-		// Armory code: Only for Prince, Sheriff, Seneschal
+		// Armory/Panic Room: Only for Prince, Sheriff, Seneschal
 		var/obj/keypad/armory/armory = find_keypad(/obj/keypad/armory)
 		if (armory && (role in list("Prince", "Sheriff", "Seneschal")))
 			general["armory_code"] = armory.pincode
-		// Panic room code: Same roles as armory
 		var/obj/keypad/panic_room/panic = find_keypad(/obj/keypad/panic_room)
-		if (panic && (role in list("Prince", "Sheriff", "Seneschal")))
+		if (panic && (role in list("Prince")))
 			general["panic_room_code"] = panic.pincode
-		// Bank vault code: Capo always gets it, La Squadra 50% of the time
+		// Bank Vault: Capo always, La Squadra sometimes
 		var/obj/structure/vaultdoor/pincode/bank/bankdoor = find_door_pin(/obj/structure/vaultdoor/pincode/bank)
 		if (bankdoor)
 			if (role == "Capo")
@@ -69,7 +97,7 @@
 			else if (role == "La Squadra" && prob(50))
 				general["bank_vault_code"] = bankdoor.pincode
 
-	// Reconstruct stats from the /mob/living variables
+	// --- Player stats from mob/living
 	var/list/stats = list(
 		"Physique"     = owner.get_total_physique(),
 		"Dexterity"    = owner.get_total_dexterity(),
@@ -80,7 +108,8 @@
 		"Cruelty"      = owner.get_total_blood(),
 	)
 	general["stats"] = stats
-	// Species-specific data block
+
+	// --- Species-specific details (Kindred, Garou, etc)
 	var/list/species_block = list(
 		"clan" = "", "generation" = "", "masquerade" = "", "morality_path" = "", "morality_score" = "",
 		"disciplines" = list(), "regnant" = "", "regnant_clan" = "",
@@ -94,9 +123,7 @@
 		species_block["masquerade"] = "[owner.masquerade]"
 		species_block["morality_path"] = owner.morality_path?.name || ""
 		species_block["morality_score"] = owner.morality_path?.score || ""
-		// Future implementation:
-		// species_block["regnant"]      = owner.mind?.enslaved_to || "Unknown"
-		// species_block["regnant_clan"] = owner.mind?.enslaved_to?.clane?.name || "Unknown"
+		// species_block["regnant"] and ["regnant_clan"] planned for future
 		if (K && islist(K.disciplines))
 			for (var/datum/discipline/D in K.disciplines)
 				species_block["disciplines"] += list(list(
@@ -106,9 +133,11 @@
 				))
 	return list("general" = general, "species" = species_block)
 
+
 // ==============================================================================
-// UI PAYLOAD HELPERS: Filter and return what the viewer can see
+// UI PAYLOAD HELPERS: Filter and return only what the viewer can see
 // ==============================================================================
+/// Groups a list of groups by their type (for UI display organization).
 /datum/aboutme_record/proc/group_by_type(list/groups)
 	var/list/by_type = list()
 	for (var/G in groups)
@@ -119,6 +148,7 @@
 		by_type[type] += G
 	return by_type
 
+/// Returns all groups this character is a member of, organized by type, and formatted for UI.
 /datum/aboutme_record/proc/get_ui_groups(mob/living/carbon/human/owner)
 	var/list/group_objects = list()
 	for (var/group_key in src.group_keys)
@@ -130,14 +160,16 @@
 		group_objects[type] += G.GetFormattedUI()
 	return list("group_objects" = group_objects)
 
+/// Returns all relationships for this character that are visible to the viewer, formatted for UI.
 /datum/aboutme_record/proc/get_ui_relationships(mob/living/carbon/human/owner)
 	var/list/output = list()
 	for (var/key in src.relationship_keys)
 		var/datum/relationships/R = SSroleplay_management.get_relationship_by_key(key)
 		if (!R || !R.visible) continue
-		output += list(R.GetFormattedUI()) // <-- wrap in list()
+		output += list(R.GetFormattedUI())
 	return output
 
+/// Returns all chronicle (event) entries visible to the viewer, including participant/group names.
 /datum/aboutme_record/proc/get_ui_chronicles(mob/user)
 	var/list/visible = list()
 	for (var/key in chronicle_keys)
@@ -154,10 +186,10 @@
 		var/event_data = C.GetFormattedUI()
 		event_data["related_characters"] = char_names
 		event_data["related_groups"] = group_names
-		visible += list(event_data) // <- wrap it explicitly!
+		visible += list(event_data)
 	return list("events" = visible)
 
-/// Categorized memory payload
+/// Returns categorized memories, filtered for viewer visibility, organized by tag/category.
 /datum/aboutme_record/proc/get_ui_memories_by_tag(mob/user)
 	var/list/by_tag = list(
 		"memories_all" = list(),
@@ -169,23 +201,31 @@
 		var/datum/memory/M = SSroleplay_management.get_memory_by_key(key)
 		if (!M || !M.is_visible_to(user, character_key)) continue
 		var/mem_ui = M.GetFormattedUI()
-		by_tag["memories_all"] += list(mem_ui) // <- wrap here!
+		by_tag["memories_all"] += list(mem_ui)
 		for (var/tag in M.tags)
 			if (tag in by_tag)
-				by_tag[tag] += list(mem_ui) // <- and here!
+				by_tag[tag] += list(mem_ui)
 	return by_tag
 
 // ==============================================================================
 // EDITABLE FIELDS: Called by TGUI to update values
 // ==============================================================================
+
+/// Sets the character's display name (shown in Overview tab).
 /datum/aboutme_record/proc/set_display_name(n)        edit_display_name = n
+/// Sets the character's personal goals.
 /datum/aboutme_record/proc/set_goals(n)               edit_goals = n
+/// Sets the character's personal quote.
 /datum/aboutme_record/proc/set_personal_quote(n)      edit_personal_quote = n
+/// Sets the character's gender field.
 /datum/aboutme_record/proc/set_gender(n)              edit_gender = n
+/// Sets the character's physical description field.
 /datum/aboutme_record/proc/set_physical_desc(n)       edit_physical_desc = n
 
 // ==============================================================================
 // UTILITY HELPERS
 // ==============================================================================
+
+/// Returns a copy of all current group keys for this character (used for checks, UI, etc).
 /datum/aboutme_record/proc/get_current_group_keys(owner)
 	return group_keys.Copy()

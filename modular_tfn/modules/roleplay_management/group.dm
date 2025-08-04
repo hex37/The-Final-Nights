@@ -1,38 +1,77 @@
-//Base Group Datum
+// ============================================================================
+// Base Group Datum and Voting System (group.dm)
+// ----------------------------------------------------------------------------
+// Core group representation for About Me and RP Management.
+//   - Stores membership, leadership, officer roles, member names, and group meta
+//   - Tracks group relationships, chronicles, and active votes
+//   - Provides add/remove/promotion/demotion APIs for all group roles
+//   - Handles group invites and notification
+//
+// Voting logic handled by /datum/group_vote:
+//   - Supports officer and leader promotion votes within a group
+//   - Tracks votes, results, expiration, and automatic resolution
+// ============================================================================
+
+/**
+ * Base group datum.
+ * - is_public:      If TRUE, anyone can join this group; if FALSE, leaders/officers must approve.
+ * - id:             Unique group ID (auto-generated if not set).
+ * - name:           Group display name.
+ * - gtype:          Group type (e.g., "clan", "sect", "organization", "party").
+ * - desc:           Description of the group.
+ * - tags:           Tags for type filtering and group searches.
+ * - leader_name:    Display name for the main leader (optional).
+ * - leaders:        List of character_keys for group leaders.
+ * - officers:       List of character_keys for group officers.
+ * - members:        List of character_keys for regular group members.
+ * - group_relationship_keys: All relationship datums connecting this group to characters.
+ * - orders:         Orders/motto/instructions set by group leadership (editable).
+ * - member_names:   Map of character_key => display_name, for all group members.
+ * - ispublic:       (Legacy, use is_public instead) TRUE if public, else restricted.
+ * - chronicle_keys: List of chronicle/event IDs linked to this group.
+ * - active_votes:   List of active group_vote datums (id => /datum/group_vote), for role voting.
+ *
+ * All core group logic, membership changes, role management, and relationship logic
+ * are defined on this base datum and inherited by specific group types (clan, org, etc).
+ */
+
 /datum/group
-	var/is_public = FALSE
-	//True means anyone can join this group, and the player promises to be at least a little loyal 20,
-	//False means the active leader and officers have to vote approve it.
-	var/id
+	var/is_public = FALSE       // If TRUE, anyone can join; else, requires leader/officer approval.
+	var/id                      // Unique group ID.
 	var/name = "Some Group"
-	var/gtype
+	var/gtype                   // Group type (e.g., "clan", "organization", etc.)
 	var/desc
 	var/tags
 	var/leader_name
-	var/list/leaders = list()   // List of ckeys
-	var/list/officers = list()  // List of ckeys
-	var/list/members = list()   // List of ckeys
-	var/list/group_relationship_keys = list()
-	var/orders = "" //These are changeable orders, that the leader can choose.
+	var/list/leaders = list()   // List of character_keys (leaders)
+	var/list/officers = list()  // List of character_keys (officers)
+	var/list/members = list()   // List of character_keys (regular members)
+	var/list/group_relationship_keys = list() // List of all group relationship datums
+	var/orders = ""             // Group orders, editable by leaders
 	var/list/member_names = list() // character_key => display_name
-	var/ispublic = TRUE
-	var/list/chronicle_keys = list()
-	var/list/active_votes = list() // id => /datum/group_vote
+	var/ispublic = TRUE         // Legacy: duplicate of is_public, but keep for now
+	var/list/chronicle_keys = list()   // Chronicle/event IDs for this group
+	var/list/active_votes = list()     // id => /datum/group_vote
 
+/// On creation, guarantees a unique group id.
 /datum/group/New()
 	..()
 	if (!id)
-		id = "[type]_[world.time]_[rand(1,1000000)]" // guarantee unique; feel free to use your own scheme!
+		id = "[type]_[world.time]_[rand(1,1000000)]" // guarantee uniqueness
 
+/// On deletion, clean up registration.
 /datum/group/Destroy()
 	SSroleplay_management.unregister_group(src)
 	..()
 
+/// Checks if this group can be viewed by a user (based on character_key).
 /datum/group/proc/can_be_viewed_by(mob/user, character_key)
 	return (character_key in members) || (character_key in officers) || (character_key in leaders)
 
-
-
+/**
+ * Returns a UI-safe formatted data structure for this group.
+ * Includes leader/officer/member names, orders, etc.
+ */
 /datum/group/proc/GetFormattedUI()
 	var/list/leader_names = list()
 	var/list/officer_names = list()
@@ -72,14 +111,16 @@
 		"orders"      = orders
 	)
 
-
-
+/**
+ * Returns display names for a given list of character_keys.
+ */
 /datum/group/proc/get_named_roles(keys)
 	var/list/named = list()
 	for (var/key in keys)
 		named += member_names[key] || key
 	return named
 
+/// Adds a character to members (and registers initial group relationship).
 /datum/group/proc/add_member_key(character_key, display_name = null)
 	if (!character_key) return
 
@@ -90,7 +131,7 @@
 
 	SSroleplay_management.ensure_group_relationship(character_key, src, 50)
 
-
+/// Adds a character as group leader (also ensures they are a member).
 /datum/group/proc/add_leader(character_key, display_name = null)
 	if (!character_key) return
 	if (!(character_key in leaders))
@@ -102,6 +143,7 @@
 
 	SSroleplay_management.ensure_group_relationship(character_key, src, 100)
 
+/// Adds a character as group officer (also ensures they are a member).
 /datum/group/proc/add_officer(character_key, display_name = null)
 	if (!character_key) return
 	if (!(character_key in officers))
@@ -111,12 +153,11 @@
 	if (display_name)
 		member_names[character_key] = display_name
 
-
-/// Checks if a character is a member, officer, or leader
+/// Checks if a character is a member, officer, or leader in this group.
 /datum/group/proc/has_member(character_key)
 	return (character_key in src.members) || (character_key in src.officers) || (character_key in src.leaders)
 
-/// Promote a member to officer
+/// Promote a member to officer.
 /datum/group/proc/promote_to_officer(character_key)
 	if (!character_key || !(character_key in members)) return
 	if (!(character_key in officers))
@@ -124,42 +165,42 @@
 		SSroleplay_management.ensure_group_relationship(character_key, src, 75)
 	return
 
+/// Transfers group leadership to a new character (demotes all old leaders to officer, sets new leader).
 /datum/group/proc/transfer_leadership_to(character_key)
 	if (!character_key || !(character_key in members)) return
 
-	// Step 1: Demote all current leaders to officers
+	// Demote all current leaders to officers
 	for (var/L in leaders)
 		if (!(L in officers))
 			officers += L
-	leaders.Cut() // Clear current leader list
-	// Step 2: Promote new leader
+	leaders.Cut()
+	// Promote new leader
 	if (!(character_key in leaders))
 		leaders += character_key
 	officers -= character_key
 	to_chat_group("[member_names[character_key] || character_key] is now the Leader of [name].", src)
 
-
-/// Demote an officer to regular member
+/// Demote an officer to regular member.
 /datum/group/proc/demote_officer(character_key)
 	if (!character_key) return
 	officers -= character_key
 	return
 
-/// Promote a member or officer to leader
+/// Promote a member or officer to leader.
 /datum/group/proc/promote_to_leader(character_key)
 	if (!character_key || !(character_key in members)) return
 	if (!(character_key in leaders))
 		leaders += character_key
-		officers -= character_key // remove officer role if present
+		officers -= character_key
 	return
 
-/// Demote a leader (does not remove from members)
+/// Demote a leader (does not remove from membership).
 /datum/group/proc/demote_leader(character_key)
 	if (!character_key) return
 	leaders -= character_key
 	return
 
-/// Removes a character entirely from the group
+/// Removes a character entirely from all roles in this group and relationship.
 /datum/group/proc/remove_member_key(character_key)
 	if (!character_key) return
 	members -= character_key
@@ -169,13 +210,19 @@
 	SSroleplay_management.clear_group_relationship(character_key, src)
 	return
 
+/**
+ * Broadcasts a message to all online group members (any role).
+ */
 /datum/group/proc/to_chat_group(msg, datum/group/G)
 	for (var/ckey in G.members + G.officers + G.leaders)
 		var/datum/component/about_me/C = SSroleplay_management.get_aboutme_component(ckey)
 		if (C?.owner && ismob(C.owner))
 			to_chat(C.owner, "<span class='notice'>[msg]</span>")
 
-
+/**
+ * Officer invites a target character to the group.
+ * Returns TRUE if accepted, FALSE if declined or invalid.
+ */
 /datum/group/proc/invite_member_prompt(officer_key, target_key)
 	if (!officer_key || !target_key) return FALSE
 
@@ -213,7 +260,13 @@
 		message_admins("[key_name(user)]'s invitation to [target_mob.true_real_name] was declined.")
 		return FALSE
 
+// ============================================================================
+// Voting System for Groups (promotion/demotion via in-character voting)
+// ============================================================================
 
+/**
+ * Group voting datum. Tracks one active vote for officer/leader promotion.
+ */
 /datum/group_vote
 	var/id
 	var/group_id
@@ -233,6 +286,7 @@
 	src.target_character_key = target_key
 	src.initiator_key = initiator
 
+/// Add a vote for this vote datum.
 /datum/group_vote/proc/add_vote(ckey, value)
 	if (isnull(value)) return
 	votes[ckey] = value
@@ -241,12 +295,15 @@
 	if (G && is_complete(G))
 		G.resolve_votes()
 
+/// Returns TRUE if the given ckey has already voted.
 /datum/group_vote/proc/has_voted(ckey)
 	return ckey in votes
 
+/// Returns TRUE if the vote has expired (duration passed).
 /datum/group_vote/proc/is_expired()
 	return (world.time - start_time) > duration
 
+/// Returns TRUE if all eligible members have voted.
 /datum/group_vote/proc/is_complete(datum/group/G)
 	if (!G) return FALSE
 	var/list/eligible = G.members + G.officers + G.leaders
@@ -255,6 +312,7 @@
 			return FALSE
 	return TRUE
 
+/// Returns a result object: number of yes/no votes.
 /datum/group_vote/proc/get_result()
 	var/votes_yes = 0
 	var/votes_no = 0
@@ -266,8 +324,12 @@
 			votes_no++
 	return list("yes" = votes_yes, "no" = votes_no)
 
+/**
+ * Starts a new vote in the group (for promotion to officer/leader).
+ * Auto-promotes sole members, otherwise creates a group_vote datum.
+ */
 /datum/group/proc/start_vote(vote_type, target_key, initiator_key)
-	// If the group only has one member (including initiator), auto-promote them.
+	// If only one member (initiator), auto-promote them.
 	var/all_members = list() + src.members + src.officers + src.leaders
 	if (length(all_members) <= 1 && vote_type == "promote_officer" && initiator_key == target_key)
 		if (!(initiator_key in src.officers))
@@ -280,19 +342,22 @@
 	var/datum/group_vote/V = new(src.id, vote_type, target_key, initiator_key)
 	V.votes[initiator_key] = "yes"
 	src.active_votes[V.id] = V
-	// Notify all members (excluding initiator)
+	// Notify all members (except initiator)
 	for (var/c_key in all_members)
-		if (c_key == initiator_key)
-			continue
+		if (c_key == initiator_key) continue
 		var/datum/component/about_me/C = SSroleplay_management.get_aboutme_component(c_key)
 		if (!C || !ismob(C.owner)) continue
 		to_chat(C.owner, "<span class='notice'>A new vote has started in [src.name]!</span>")
 		C.prompt_vote_on_group(V)
-	// Automatically resolve vote after duration
+	// Automatically resolve after vote duration
 	spawn(V.duration + 5)
 		resolve_votes()
 	return V
 
+/**
+ * Checks and resolves all active votes for this group (promotion or failure).
+ * Broadcasts results and updates roles.
+ */
 /datum/group/proc/resolve_votes()
 	for (var/vote_id in active_votes)
 		var/datum/group_vote/V = active_votes[vote_id]
@@ -335,6 +400,3 @@
 					to_chat_group("Vote to promote [name_text] to Leader in [name] failed.", src)
 
 		active_votes -= vote_id
-
-
-

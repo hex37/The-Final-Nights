@@ -1,3 +1,20 @@
+// ============================================================================
+// About Me: Player Input - Memory Management (aboutme_tgui_player_memory.dm)
+// ----------------------------------------------------------------------------
+// Handles creation, editing, tagging, sharing, and viewing of memories (journal
+// entries, secrets, RP notes) from the About Me TGUI panel.
+// - Procs here are triggered by UI actions in the Memories tab.
+// - Each memory is a flexible, taggable record visible to the player and optionally others.
+// ----------------------------------------------------------------------------
+// Notes:
+//   • Tags are entered as comma-separated strings for organization/search.
+//   • Future expansion could support memory sharing with other players/groups.
+// ============================================================================
+
+/**
+ * Main entrypoint for the Memories tab management UI.
+ * Lets the player choose to create, edit/delete, tag/share, or view memories.
+ */
 /datum/component/about_me/proc/prompt_manage_memories(mob/user)
 	message_admins("[key_name(user)] opened the Memory manager.")
 
@@ -12,15 +29,18 @@
 	if (isnull(choice) || choice == "Back") return
 
 	switch(choice)
-		if ("Create New Memory") return src.prompt_create_memory(user)
-		if ("Edit or Delete Memory") return src.prompt_edit_memory(user)
-		if ("Tag or Share Memory") return src.prompt_tag_share_memory(user)
-		if ("View All Memories") return src.prompt_view_memories(user)
+		if ("Create New Memory")      return src.prompt_create_memory(user)
+		if ("Edit or Delete Memory")  return src.prompt_edit_memory(user)
+		if ("Tag or Share Memory")    return src.prompt_tag_share_memory(user)
+		if ("View All Memories")      return src.prompt_view_memories(user)
 
 	message_admins("[key_name(user)] selected Memory option: [choice]")
 	return TRUE
 
-
+/**
+ * Prompts the player to create a new memory record.
+ * Memory must have a summary/title and details. Tags are optional.
+ */
 /datum/component/about_me/proc/prompt_create_memory(mob/user)
 	var/datum/aboutme_record/R = src.get_record()
 	if (!R) return
@@ -34,7 +54,7 @@
 	var/tags_input = tgui_input_text(user, "Memory tags (comma-separated):", "Tags", "")
 	var/list/taglist = list()
 	if (length(tags_input))
-		for (var/T in splittext(tags_input, ",")) // if you want to validate, define MEMORY_TAGS_ALLOWED
+		for (var/T in splittext(tags_input, ",")) // Add tag validation if needed
 			var/tag = lowertext(trim(T))
 			taglist += tag
 
@@ -52,8 +72,10 @@
 	message_admins("[key_name(user)] created memory '[summary]'.")
 	return src.prompt_manage_memories(user)
 
-
-
+/**
+ * Prompts the player to edit or delete one of their memories.
+ * Can modify summary/details, or delete the memory entirely.
+ */
 /datum/component/about_me/proc/prompt_edit_memory(mob/user)
 	var/datum/aboutme_record/R = src.get_record()
 	if (!R || !length(R.memory_keys)) return to_chat(user, "<span class='notice'>You have no memories.</span>")
@@ -94,7 +116,10 @@
 
 	return src.prompt_edit_memory(user)
 
-
+/**
+ * Prompts the player to retag or share a memory (currently only tags supported).
+ * Updates the tags associated with a memory.
+ */
 /datum/component/about_me/proc/prompt_tag_share_memory(mob/user)
 	var/datum/aboutme_record/R = src.get_record()
 	if (!R || !length(R.memory_keys)) return to_chat(user, "<span class='notice'>You have no memories.</span>")
@@ -113,7 +138,7 @@
 	var/tag_input = tgui_input_text(user, "New tags (comma-separated):", "Tags", jointext(M.tags, ", "))
 	var/list/taglist = list()
 	if (length(tag_input))
-		for (var/T in splittext(tag_input, ",")) // you can add validation if needed
+		for (var/T in splittext(tag_input, ",")) // Add tag validation if needed
 			var/tag = lowertext(trim(T))
 			taglist += tag
 	M.tags = taglist
@@ -122,7 +147,10 @@
 	message_admins("[key_name(user)] retagged memory [M.id].")
 	return src.prompt_manage_memories(user)
 
-
+/**
+ * Shows all memories to the player (one-page archive view).
+ * Only shows memories visible to the current user.
+ */
 /datum/component/about_me/proc/prompt_view_memories(mob/user)
 	var/datum/aboutme_record/R = src.get_record()
 	if (!R || !length(R.memory_keys))

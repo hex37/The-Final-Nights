@@ -1,6 +1,20 @@
-//These are Defines for RP Management, About Me, and supporting datums.
-// About Me Component, and Record, as well as Groups, Chronciles, Relationships, and Memories.
-// GROUP TYPE DEFINES
+// ==============================================================================
+// ABOUT ME / RP MANAGEMENT DEFINES (roleplay_management.dm)
+// ------------------------------------------------------------------------------
+// Central defines and macros for:
+//   - About Me component and record system
+//   - Groups, Chronicles, Relationships, Memories
+//   - Canonical group keys, tags, relationship types, memory tags, etc.
+// ------------------------------------------------------------------------------
+// This file is imported by all About Me and RP Management subsystems.
+// Split/extend as needed when the system grows.
+//
+// * When adding new group, relationship, or memory types, register the macro here!
+// ==============================================================================
+
+// ------------------------------------------------------------------------------
+// GROUP TYPES: Used for type/classification of all groups
+// ------------------------------------------------------------------------------
 #define GROUP_TYPE_CITY             "city"
 #define GROUP_TYPE_FACTION          "faction"
 #define GROUP_TYPE_SECT             "sect"
@@ -8,10 +22,11 @@
 #define GROUP_TYPE_TRIBE            "tribe"
 #define GROUP_TYPE_ORGANIZATION     "organization"
 #define GROUP_TYPE_PARTY            "party"
-#define GROUP_TYPE_PLAYER           "player_created"
-// =========================
-// GROUP TAGS (used in type filtering)
-// =========================
+#define GROUP_TYPE_PLAYER           "player_created" // For player-made groups
+
+// ------------------------------------------------------------------------------
+// GROUP TAGS: Used for type-based filtering and identification
+// ------------------------------------------------------------------------------
 #define GROUP_TAG_CITY              "group_tag_city"
 #define GROUP_TAG_FACTION           "group_tag_faction"
 #define GROUP_TAG_SECT              "group_tag_sect"
@@ -19,9 +34,10 @@
 #define GROUP_TAG_TRIBE             "group_tag_tribe"
 #define GROUP_TAG_ORG               "group_tag_org"
 #define GROUP_TAG_PARTY             "group_tag_party"
-// =========================
-// RELATIONSHIP TYPES
-// =========================
+
+// ------------------------------------------------------------------------------
+// RELATIONSHIP TYPES: Used for both logic and UI presentation
+// ------------------------------------------------------------------------------
 #define RELATIONSHIP_ALLY           "ally"
 #define RELATIONSHIP_ENEMY          "enemy"
 #define RELATIONSHIP_RIVAL          "rival"
@@ -32,9 +48,8 @@
 #define RELATIONSHIP_SUSPECT        "suspect"
 #define RELATIONSHIP_UNKNOWN        "unknown"
 #define RELATIONSHIP_GROUP          "group"
-// =========================
-// RELATIONSHIP UI Type List
-// =========================
+
+// List of all allowed relationship types, for validation and UI dropdowns
 #define RELATIONSHIP_TYPE_KEYS list( \
 	RELATIONSHIP_ALLY, \
 	RELATIONSHIP_ENEMY, \
@@ -47,14 +62,17 @@
 	RELATIONSHIP_UNKNOWN, \
 	RELATIONSHIP_GROUP \
 )
+
+// Tags that can be associated with relationships for sorting/filtering
 #define RELATIONSHIP_TAGS_ALLOWED list( \
 	"trusted", "romantic", "bloodbond", "business", \
 	"secret", "public", "clan", "rivalry", "political", \
 	"mentor", "target", "ally", "danger" \
 )
-// =========================
-// MEMORY TAGS
-// =========================
+
+// ------------------------------------------------------------------------------
+// MEMORY TAGS: Used to categorize and filter character memories
+// ------------------------------------------------------------------------------
 #define MEMORY_TAG_BACKGROUND       "background"
 #define MEMORY_TAG_CURRENT          "current"
 #define MEMORY_TAG_RECENT           "recent"
@@ -64,31 +82,43 @@
 #define MEMORY_TAG_RELATIONSHIP     "relationship"
 #define MEMORY_TAG_CHARACTER        "character_memories"
 #define MEMORY_TAG_ALL              "memories_all"
-// =========================
-// ACCESS ROLES
-// =========================
+
+// ------------------------------------------------------------------------------
+// ACCESS ROLES: Standardized group access levels
+// ------------------------------------------------------------------------------
 #define ACCESS_ROLE_LEADER          "leader"
 #define ACCESS_ROLE_OFFICER         "officer"
 #define ACCESS_ROLE_MEMBER          "member"
 #define ACCESS_ROLE_NONE            "none"
-// =========================
-// FILE PATH HELPERS
-// =========================
-#define SAVEFILE_ROOT_PATH              "data/player_saves"
+
+// ------------------------------------------------------------------------------
+// FILE PATH HELPERS: Used for persistent save/load, and TGUI hooks
+// ------------------------------------------------------------------------------
+#define SAVEFILE_ROOT_PATH          "data/player_saves"
 #define SAVEFILE_ABOUTME_PATH(ckey, character_key) "[SAVEFILE_ROOT_PATH]/[ckey]/aboutme/[character_key].sav"
 #define TGUI_ABOUTME_ID             "AboutmeInt"
 #define SUBSYSTEM_ABOUTME_TAG       "aboutme_rp"
-#define GROUP_KEY_SECT(SECT) "sect_[lowertext(replacetext(SECT, " ", "_"))]"
-#define GROUP_KEY_CLAN(CLAN) "clan_[lowertext(replacetext(CLAN, " ", "_"))]"
-#define GROUP_KEY_TRIBE(TRIBE) "tribe_[lowertext(replacetext(TRIBE, " ", "_"))]"
-// City
-#define GROUP_KEY_CITY "city_sanfrancisco"
-// Factions
+
+// ------------------------------------------------------------------------------
+// GROUP KEY MACROS: Used to generate and reference canonical group keys
+//   (Most are dynamic, using the group name, but some are static.)
+// ------------------------------------------------------------------------------
+#define GROUP_KEY_SECT(SECT)        "sect_[lowertext(replacetext(SECT, " ", "_"))]"
+#define GROUP_KEY_CLAN(CLAN)        "clan_[lowertext(replacetext(CLAN, " ", "_"))]"
+#define GROUP_KEY_TRIBE(TRIBE)      "tribe_[lowertext(replacetext(TRIBE, " ", "_"))]"
+
+// ------------------------------------------------------------------------------
+// STATIC GROUP KEYS: Standard, always-present groups for canonical orgs and species
+// ------------------------------------------------------------------------------
+#define GROUP_KEY_CITY              "city_sanfrancisco"
+
+// -- Factions
 #define GROUP_KEY_FACTION_UNKNOWING "faction_citizen"
 #define GROUP_KEY_FACTION_KINDRED   "faction_kindred"
 #define GROUP_KEY_FACTION_FERA      "faction_fera"
 #define GROUP_KEY_FACTION_HUNTERS   "faction_hunters"
-// Sects
+
+// -- Sects
 #define GROUP_KEY_SECT_INDEPENDENT  "sect_independent"
 #define GROUP_KEY_SECT_CAMARILLA    "sect_camarilla"
 #define GROUP_KEY_SECT_ANARCHS      "sect_anarchs"
@@ -96,25 +126,27 @@
 #define GROUP_KEY_SECT_PAINTEDCITY  "sect_paintedcity"
 #define GROUP_KEY_SECT_AMBERGLADE   "sect_amberglade"
 #define GROUP_KEY_SECT_POISONEDSHORE "sect_poisonedshore"
-// Clans
-#define GROUP_KEY_CLAN_CAITIF       "clan_caitif"
-#define GROUP_KEY_CLAN_VENTRUE      "clan_ventrue"
-#define GROUP_KEY_CLAN_BRUJAH       "clan_brujah"
-#define GROUP_KEY_CLAN_TRUE_BRUJAH  "clan_true_brujah"
-#define GROUP_KEY_CLAN_TOREADOR     "clan_toreador"
-#define GROUP_KEY_CLAN_MALKAVIAN    "clan_malkavian"
-#define GROUP_KEY_CLAN_NOSFERATU    "clan_nosferatu"
-#define GROUP_KEY_CLAN_GANGREL      "clan_gangrel"
-#define GROUP_KEY_CLAN_TREMERE      "clan_tremere"
-#define GROUP_KEY_CLAN_LASOMBRA     "clan_lasombra"
-#define GROUP_KEY_CLAN_TZIMISCE     "clan_tzimisce"
-#define GROUP_KEY_CLAN_MINISTRY     "clan_ministry"
-#define GROUP_KEY_CLAN_GIOVANNI     "clan_giovanni"
-#define GROUP_KEY_CLAN_SALUBRI      "clan_salubri"
+
+// -- Clans
+#define GROUP_KEY_CLAN_CAITIF               "clan_caitif"
+#define GROUP_KEY_CLAN_VENTRUE              "clan_ventrue"
+#define GROUP_KEY_CLAN_BRUJAH               "clan_brujah"
+#define GROUP_KEY_CLAN_TRUE_BRUJAH          "clan_true_brujah"
+#define GROUP_KEY_CLAN_TOREADOR             "clan_toreador"
+#define GROUP_KEY_CLAN_MALKAVIAN            "clan_malkavian"
+#define GROUP_KEY_CLAN_NOSFERATU            "clan_nosferatu"
+#define GROUP_KEY_CLAN_GANGREL              "clan_gangrel"
+#define GROUP_KEY_CLAN_TREMERE              "clan_tremere"
+#define GROUP_KEY_CLAN_LASOMBRA             "clan_lasombra"
+#define GROUP_KEY_CLAN_TZIMISCE             "clan_tzimisce"
+#define GROUP_KEY_CLAN_MINISTRY             "clan_ministry"
+#define GROUP_KEY_CLAN_GIOVANNI             "clan_giovanni"
+#define GROUP_KEY_CLAN_SALUBRI              "clan_salubri"
 #define GROUP_KEY_CLAN_DAUGHTERS_OF_CACOPHONY "clan_daughters_of_cacophony"
-#define GROUP_KEY_CLAN_BAALI        "clan_baali"
-#define GROUP_KEY_CLAN_BANU_HAQIM        "clan_banu_haqim"
-// Tribes
+#define GROUP_KEY_CLAN_BAALI                "clan_baali"
+#define GROUP_KEY_CLAN_BANU_HAQIM           "clan_banu_haqim"
+
+// -- Tribes
 #define GROUP_KEY_TRIBE_RONIN               "tribe_ronin"
 #define GROUP_KEY_TRIBE_BLACKFURIES         "tribe_blackfuries"
 #define GROUP_KEY_TRIBE_BLACKSPIRALDANCERS  "tribe_blackspiraldancers"
@@ -131,7 +163,8 @@
 #define GROUP_KEY_TRIBE_SILENTSTRIDERS      "tribe_silentstriders"
 #define GROUP_KEY_TRIBE_SILVERFANGS         "tribe_silverfangs"
 #define GROUP_KEY_TRIBE_STARGAZERS          "tribe_stargazers"
-// Organizations
+
+// -- Organizations
 #define GROUP_KEY_ORG_GOVERNMENT         "org_government"
 #define GROUP_KEY_ORG_POLICE             "org_police"
 #define GROUP_KEY_ORG_HOSPITAL           "org_hospital"
@@ -144,3 +177,7 @@
 #define GROUP_KEY_ORG_NATIONALSECURITY   "org_nationalsecurity"
 #define GROUP_KEY_ORG_TZIMISCE           "org_tzimisce"
 #define GROUP_KEY_ORG_TRIAD              "org_triad"
+
+// ==============================================================================
+// END OF DEFINES roleplay_management.dm FILE
+// ==============================================================================

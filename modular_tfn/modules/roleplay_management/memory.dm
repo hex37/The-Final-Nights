@@ -1,6 +1,22 @@
 // ==========================
-// Memory Datum - Core
+// Memory Datum - Core (memory.dm)
 // ==========================
+/**
+ * Memory datum.
+ * - id:            Unique memory ID (auto-generated if not set).
+ * - summary:       Short title/summary for UI display.
+ * - details:       Longer description or details of the memory.
+ * - tags:          List of tags (e.g., "background", "goal", "secret", etc).
+ * - owner_key:     Character_key for the owner of this memory (can be null).
+ * - related_keys:  List of related group, chronicle, relationship, or memory keys.
+ * - date_occurred: Human-readable date/timestamp for the memory.
+ * - source:        Internal tag for memory origin (e.g. "arrival_autogen").
+ * - status:        Current status (e.g., "New", "Shared", etc).
+ *
+ * Memories represent player-authored journal entries, secrets, or log notes.
+ * Each memory is globally registered for About Me and RP subsystem tracking.
+ */
+// ============================================================================
 /datum/memory
 	var/id                // Unique memory ID.
 	var/summary = ""      // Short title or summary for UI.
@@ -11,6 +27,10 @@
 	var/date_occurred = "" // (optional) Human-readable date or timestamp
 	var/source = ""  // internal tag (e.g. "arrival_autogen")
 	var/status = "New"
+
+/**
+ * Constructor: Generates a unique id/date if missing, registers the memory.
+ */
 /datum/memory/New(character_key)
 	..()
 
@@ -23,16 +43,23 @@
 
 	SSroleplay_management.register_memory(src)
 
-
-
+/**
+ * On deletion, unregister this memory from the global registry.
+ */
 /datum/memory/Destroy()
 	SSroleplay_management.unregister_memory(src)
 	..()
 
+/**
+ * Determines if the given character can see this memory.
+ * (Override for secrets, privacy, etc. Currently always TRUE.)
+ */
 /datum/memory/proc/is_visible_to(mob/user, character_key)
 	return TRUE
 
-
+/**
+ * Returns a UI-ready data structure for frontend/archival use.
+ */
 /datum/memory/proc/GetFormattedUI()
 	return list(
 		"id"            = id,
@@ -44,4 +71,3 @@
 		"date_occurred" = date_occurred,
 		"status"        = status
 	)
-

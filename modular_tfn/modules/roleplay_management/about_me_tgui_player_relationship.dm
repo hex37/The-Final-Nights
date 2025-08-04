@@ -1,10 +1,16 @@
 // ============================================================================
-// About Me: Player Input - Mutual Relationship Management (Player ↔ Player)
-// ============================================================================
-// Only handles player-to-player (mutual) relationships, not groups.
-// Group relationships are managed in the Groups tab/UI.
+// About Me: Player Input - Mutual Relationship Management (aboutme_tgui_player_relationship.dm)
+// ----------------------------------------------------------------------------
+// Handles creation and removal of mutual player-to-player relationships.
+// - Only for character ↔ character (mutual) ties, not group affiliations.
+// - Group relationships are handled separately in the Groups tab/UI.
+// - Procs here are called from the Relationships tab in About Me.
 // ============================================================================
 
+/**
+ * Main entry point: Opens the mutual relationship management menu for the player.
+ * Lets the player choose to create or remove a mutual relationship.
+ */
 /datum/component/about_me/proc/prompt_change_relationship(mob/user)
 	message_admins("[key_name(user)] opened the Relationship editor.")
 	var/list/options = list(
@@ -15,17 +21,18 @@
 	var/choice = tgui_input_list(user, "Choose a relationship action:", "Manage Relationships", options, null, 0, GLOB.always_state)
 	if (isnull(choice) || choice == "Back") return
 	switch(choice)
-		if ("Create Mutual Relationship")
-			return src.prompt_add_mutual_relationship(user)
-		if ("Remove Relationship")
-			return src.prompt_remove_personal_relationship(user)
+		if ("Create Mutual Relationship") return src.prompt_add_mutual_relationship(user)
+		if ("Remove Relationship")        return src.prompt_remove_personal_relationship(user)
 	return TRUE
 
-/// Creates a mutual relationship between the user and another character (if one doesn't already exist).
+/**
+ * Allows the player to propose and create a new mutual relationship with another character.
+ * Handles target selection, relationship type, loyalty/strength, tag, and confirmation.
+ */
 /datum/component/about_me/proc/prompt_add_mutual_relationship(mob/user)
 	var/datum/aboutme_record/R = src.get_record()
 	if (!R) return
-	// Build options for valid target characters (excluding self and those with an existing relationship)
+	// Build valid targets: no self, no duplicate relationships, only live players.
 	var/list/char_options = list()
 	for (var/target_key in GLOB.aboutme_records)
 		if (target_key == src.character_key) continue
@@ -38,17 +45,17 @@
 	if (!length(char_options))
 		to_chat(user, "<span class='warning'>No valid characters available to form a new relationship with.</span>")
 		return src.prompt_change_relationship(user)
-	// Pick target
+	// Target selection
 	var/char_choice = tgui_input_list(user, "Choose a character:", "Character", char_options)
 	if (!char_choice || !istext(char_choice)) return src.prompt_change_relationship(user)
 	var/target_key = char_options[char_choice]
-	// Pick type
+	// Relationship type selection
 	var/list/type_choices = list()
 	for (var/t in RELATIONSHIP_TYPE_KEYS)
 		if (t != "group") type_choices += t
 	var/rtype = tgui_input_list(user, "Select relationship type:", "Relationship Type", type_choices)
 	if (isnull(rtype)) return src.prompt_change_relationship(user)
-	// Pick strength
+	// Loyalty/strength selection
 	var/list/strength_options = list(
 		"-100: Nemesis/Hatred" = -100,
 		"-75: Enemy" = -75,
@@ -65,12 +72,11 @@
 	// Find display label for summary
 	var/strength_label = ""
 	for (var/L in strength_options)
-		if (strength_options[L] == strength)
-			strength_label = L; break
-	// Pick tag (one only, for simplicity)
+		if (strength_options[L] == strength) strength_label = L; break
+	// Pick tag (one only)
 	var/tag = tgui_input_list(user, "Select relationship tag.", "Tag", RELATIONSHIP_TAGS_ALLOWED)
 	var/list/taglist = tag ? list(tag) : list()
-	// Confirmation summary
+	// Confirmation summary shown to target
 	var/summary = "[user.name] wants to form a mutual relationship with you.\n"
 	summary += "Type: [rtype]\n"
 	summary += "Loyalty/Strength: [strength_label]\n"
@@ -94,13 +100,16 @@
 	}
 	// Create shared relationship datum
 	src.create_mutual_relationship(target_key, rtype, strength, taglist, user, Target)
-	// Notify both
+	// Notify both players and log for staff
 	to_chat(user, "<span class='notice'>Mutual relationship created with [Target.name].</span>")
 	to_chat(Target, "<span class='notice'>You accepted a mutual relationship with [user.name].</span>")
 	message_admins("[key_name(user)] and [key_name(Target)] created a mutual relationship (type: [rtype], loyalty: [strength]).")
 	return src.prompt_change_relationship(user)
 
-/// Actually creates and registers the shared relationship datum
+/**
+ * Actually creates and registers the shared relationship datum between two characters.
+ * Registers to both aboutme_records for mutual tracking.
+ */
 /datum/component/about_me/proc/create_mutual_relationship(target_key, rtype, strength, taglist, mob/living/carbon/human/user, mob/living/carbon/human/Target)
 	var/datum/relationships/rel = new
 	rel.source_character = src.character_key
@@ -110,14 +119,17 @@
 	rel.tags = taglist
 	rel.name = "[user.name] ↔ [Target.name]"
 	rel.mutual = TRUE
-	// Register to both records
+	// Register in both records
 	var/datum/aboutme_record/R = src.get_record()
 	var/datum/aboutme_record/TargetR = SSroleplay_management.get_aboutme_datum_for_key(target_key)
 	if (R) R.relationship_keys += rel.id
 	if (TargetR) TargetR.relationship_keys += rel.id
 	SSroleplay_management.register_relationship(rel)
 
-/// Returns a map of all personal (non-group) relationships you are part of, keyed by display name
+/**
+ * Returns a map of all personal (non-group) relationships this player is part of.
+ * Keyed by display name. Used for editing/removal UI.
+ */
 /datum/component/about_me/proc/get_personal_relationships(mob/user)
 	var/datum/aboutme_record/R = src.get_record()
 	var/list/edit_map = list()
@@ -130,7 +142,10 @@
 		edit_map[label] = rel
 	return edit_map
 
-
+/**
+ * Prompts the player to pick a mutual relationship to remove.
+ * Handles all removal logic, including notifications and admin logging.
+ */
 /datum/component/about_me/proc/prompt_remove_personal_relationship(mob/user)
 	message_admins("Relationship Remove: [key_name(user)] opened the remove relationship menu.")
 
@@ -177,9 +192,10 @@
 
 	return src.prompt_change_relationship(user)
 
-
-
-/// Checks if there is already a relationship (in either direction) between you and another key.
+/**
+ * Checks if there is already a mutual relationship between this character and another key.
+ * Returns TRUE if found, FALSE if not.
+ */
 /datum/component/about_me/proc/has_relationship_with(other_key)
 	var/datum/aboutme_record/R = src.get_record()
 	if (!R) return FALSE
@@ -189,4 +205,3 @@
 		if ((rel.source_character == src.character_key && rel.target_character == other_key) || (rel.source_character == other_key && rel.target_character == src.character_key))
 			return TRUE
 	return FALSE
-
