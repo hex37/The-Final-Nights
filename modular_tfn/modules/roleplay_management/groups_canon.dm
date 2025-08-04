@@ -271,8 +271,6 @@
     desc = "The officials, clerks, and leaders who keep the city running."
     leader_name = "Mayor, City Council, and Commissioners"
     orders = "Maintain city operations and liaise with other departments."
-    // Roles: Mayor (leader), City Council (officers: includes CEOs, Endron, Hospital, PD, etc.), Commissioners/Lawyers (officers)
-    //        Tower Employee, Citizen (members)
 
 // --- Police Department ---
 /datum/group/organization/policedepartment
@@ -281,8 +279,6 @@
     desc = "The police officers sworn to serve and protect the city."
     leader_name = "Chief of Police"
     orders = "Patrol and monitor suspicious activity. Keep the peace."
-    // Roles: Police Chief (leader), Police Sergeant, Emergency Dispatcher (officers)
-    //        Police Officer (members)
 
 // --- Hospital Staff ---
 /datum/group/organization/hospital
@@ -291,8 +287,6 @@
     desc = "Doctors, nurses, and medical professionals of San Francisco."
     leader_name = "Chief Medical Officer"
     orders = "ER is on high alert for unusual injuries. Coordinate with PD for blood shortage."
-    // Roles: Chief Medical Officer (leader), Clinic Director (officer)
-    //        Doctor (members)
 
 // --- Military ---
 /datum/group/organization/military
@@ -301,7 +295,6 @@
     desc = "National Guard soldiers stationed in the city."
     leader_name = "Colonel of the Garrison"
     orders = "Secure key assets, provide emergency support, and maintain martial readiness."
-    // Roles: Colonel (leader), (future military jobs: officer/member)
 
 // --- Warehouse Union ---
 /datum/group/organization/warehouse
@@ -311,7 +304,6 @@
     desc = "The dock workers, warehouse staff, and logistics crew who keep shipments moving."
     leader_name = "Union Boss"
     orders = "Loadouts run every third shift. Watch for smuggling or Kindred tampering."
-    // Roles: Union Boss (leader), Dealer (officer), Supply Technician, Dock Worker (members)
 
 // --- Church ---
 /datum/group/organization/church
@@ -321,8 +313,6 @@
     desc = "A growing congregation known for its aid work and strange sermons."
     leader_name = "Father MacGowan"
     orders = "Open soup kitchen at dusk. Midnight mass ongoing. Beware interlopers."
-    // Roles: Father MacGowan (leader), Priest, Church Curator, Church Caretaker (officers)
-    //        Congregation/volunteers (members)
 
 // --- Civic Services ---
 /datum/group/organization/civicservices
@@ -331,7 +321,6 @@
     desc = "Garbage collection, grid maintenance, and vital city infrastructure roles."
     leader_name = "Dept. of Public Works Superintendent"
     orders = "Keep power and water flowing. Strike threats under observation."
-    // Roles: Superintendent (leader), Foreman (officer), Street Janitor, Taxi Driver, Club Worker, Graveyard Keeper (members)
 
 // --- National Security ---
 /datum/group/organization/nationalsecurity
@@ -340,7 +329,6 @@
     desc = "A shadowy national security task force. Their exact purpose is classified."
     leader_name = "Special Agent-in-Charge"
     orders = "Maintain surveillance on supernatural hotspots and potential threats."
-    // Roles: Agent-in-Charge (leader), Senior Agent (officer), Federal Investigator (member)
 
 // ========================================================================
 // Major Sects/Factions and Public/Front Organizations
@@ -353,7 +341,6 @@
     desc = "A luxury skyscraper housing elite city interests, corporate headquarters, and influential private residents."
     leader_name = "Tower Executive Committee"
     orders = "Maintain exclusivity, organize Tower events, and support major city projects."
-    // Roles: Prince (leader), Seneschal, Harpy, Sheriff, Primogen (officers), Tower Employee, Resident, Notable Guests (members)
 
 // --- Anarch Faction: Anarchy Rose Bar ---
 /datum/group/organization/anarchyrose
@@ -362,7 +349,6 @@
     desc = "A raucous, music-filled dive in the heart of the city, headquarters for alternative culture, bikes, and rebellion."
     leader_name = "Baron & Management"
     orders = "Host live music, biker rallies, and support 'local causes' (sometimes of questionable legality)."
-    // Roles: Baron (leader), Emissary, Sweeper, Bruiser (officers), Bartender, Biker, Musician, Regulars (members)
 
 // --- Sabbat Faction: Church of the New Flesh ---
 /datum/group/organization/sabbatcult
@@ -371,7 +357,6 @@
     desc = "A secretive cult masquerading as an underground faith community, rumored to practice bizarre rites."
     leader_name = "High Priest/Archbishop"
     orders = "Spread the doctrine, conduct rituals, recruit among the desperate and lost."
-    // Roles: Archbishop/High Priest (leader), Ductus, Priest (officers), Initiate, Fanatic, Acolyte (members)
 
 // --- Tremere Cover: Historic Society ---
 /datum/group/organization/historicsociety
@@ -381,8 +366,6 @@
     desc = "A respected nonprofit dedicated to preserving and studying the city’s heritage, archives, and cultural secrets."
     leader_name = "Society President"
     orders = "Catalog rare artifacts, run city tours, and consult on historical matters for the city council."
-    // Roles: Society President (Chantry Regent, leader), Head Archivist (Archivist, officer),
-    //        Facilities Manager (Gargoyle, officer), Junior Historians, Volunteers (members)
 
 // --- Giovanni Front: Bank of San Francisco ---
 /datum/group/organization/giovannibank
@@ -392,8 +375,6 @@
     desc = "The most discreet, prestigious, and old-money financial institution in the city, with international reach."
     leader_name = "Chairman of the Board"
     orders = "Protect client secrets. Ensure all debts are paid."
-    // Roles: Capo (Chairman/leader), La Squadra (officer), La Famiglia (teller/member), Account Manager
-
 // --- Endron/Corporation Front ---
 /datum/group/organization/endron
     id = GROUP_KEY_ORG_ENDRON
@@ -401,8 +382,6 @@
     desc = "The local headquarters of Endron Energy, the city's largest utility and a front for deeper interests."
     leader_name = "Site CEO"
     orders = "Secure energy operations. Maintain plausible deniability for special projects."
-    // Roles: Site CEO (leader), Endron Executive (officer), Chief of Security, Internal Affairs (officer), Endron Employee (member)
-
 // --- Amberglade Faction: Golden Gate National Park HQ ---
 /datum/group/organization/amberglade
     id = GROUP_KEY_ORG_AMBERGLADE
@@ -410,8 +389,6 @@
     desc = "The park’s management office, responsible for rangers, programs, and wildlife protection."
     leader_name = "Head Ranger"
     orders = "Preserve the wild, protect the park, and welcome only the worthy."
-    // Roles: Head Ranger (leader), Keeper, Warder, Truthcatcher (officers), Park Ranger, Volunteer, Guide (members)
-
 // --- Painted City Faction: Mall & Techshop ---
 /datum/group/organization/paintedcitymall
     id = GROUP_KEY_ORG_PAINTEDCITYMALL
@@ -419,8 +396,6 @@
     desc = "A sprawling, high-tech urban hub for shopping, innovation, and urban renewal. Home to many secrets."
     leader_name = "Mall Director"
     orders = "Promote innovation and commerce, keep the peace, monitor for trouble."
-    // Roles: Mall Director (leader), Techshop Manager, Security Chief, Keeper (officers), Shop Owner, Mall Staff, Customer (members)
-
 // --- Tzimisce Front/Organization: Flesh & Form Institute ---
 /datum/group/organization/tzimisce
     is_public = TRUE
@@ -429,8 +404,6 @@
     desc = "A renowned plastic surgery and body modification clinic, catering to elite and eccentric tastes alike. The Institute boasts discretion, artistry, and 'miraculous' results for those who can pay."
     leader_name = "Dr. Voivode (Chief Surgeon)"
     orders = "Redefine beauty. Welcome all who seek transformation, but discretion is paramount. VIP clients receive 'special' services."
-    // Roles: Chief Surgeon (Voivode, leader), Koldun Specialist (officer), Surgical Consultant, Body Sculptor, Client Relations, and Patients (members)
-
 // --- Triad Front/Organization ---
 /datum/group/organization/triad
     is_public = TRUE
@@ -439,4 +412,3 @@
     desc = "An influential criminal syndicate with deep roots in the city’s underworld."
     leader_name = "Dragon Head"
     orders = "Control territory, run operations, enforce loyalty."
-    // Roles: Dragon Head (leader), Red Pole, White Paper Fan (officers), Soldier, Associate (members)
