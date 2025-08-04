@@ -119,6 +119,16 @@ const OverviewSection = ({ overview = {}, status, alignment, act }) => {
   // --- END DYNAMIC SPECIES INFO BLOCK ---
 
   const disciplines = species.disciplines ?? [];
+    // Only show if there's something to display:
+  const speciesFields = getSpeciesFields(speciesName, species);
+  const hasSpeciesInfo =
+    speciesName && speciesName !== "Unknown" && speciesName !== "Human" &&
+    speciesFields.length > 0;
+
+  // Only show disciplines/gifts if available:
+  const hasDisciplines =
+    (species.disciplines && Array.isArray(species.disciplines) && species.disciplines.length > 0) ||
+    (species.gifts && Array.isArray(species.gifts) && species.gifts.length > 0);
 
   return (
     <Section fill title="Overview">
@@ -188,7 +198,7 @@ const OverviewSection = ({ overview = {}, status, alignment, act }) => {
       )}
 
       {/* Collapsible Species Information (Dynamic) */}
-      {speciesName && (
+      {hasSpeciesInfo && (
         <Box mb={2}>
           <Box
             bold
@@ -200,7 +210,7 @@ const OverviewSection = ({ overview = {}, status, alignment, act }) => {
           </Box>
           {speciesOpen && (
             <LabeledList>
-              {getSpeciesFields(speciesName, species).map(({ label, value }, i) =>
+              {speciesFields.map(({ label, value }, i) =>
                 <LabeledList.Item key={i} label={label}>{value}</LabeledList.Item>
               )}
             </LabeledList>
@@ -208,30 +218,41 @@ const OverviewSection = ({ overview = {}, status, alignment, act }) => {
         </Box>
       )}
 
-      {/* Collapsible Disciplines */}
-      <Box mt={2}>
-        <Box
-          bold
-          underline
-          style={{ cursor: 'pointer', userSelect: 'none' }}
-          onClick={() => setDisciplinesOpen(o => !o)}
-        >
-          {disciplinesOpen ? '▼' : '►'} Disciplines
+      {/* Collapsible Disciplines/Gifts */}
+      {hasDisciplines && (
+        <Box mt={2}>
+          <Box
+            bold
+            underline
+            style={{ cursor: 'pointer', userSelect: 'none' }}
+            onClick={() => setDisciplinesOpen(o => !o)}
+          >
+            {disciplinesOpen ? '▼' : '►'} Disciplines / Gifts
+          </Box>
+          {disciplinesOpen && (
+            <>
+              {species.disciplines && species.disciplines.length > 0 && (
+                <Table>
+                  {species.disciplines.map((d, i) =>
+                    <Table.Row key={i}>
+                      <Table.Cell bold>{d.name}</Table.Cell>
+                      <Table.Cell>Lv. {d.level}</Table.Cell>
+                      <Table.Cell>{d.desc}</Table.Cell>
+                    </Table.Row>
+                  )}
+                </Table>
+              )}
+              {species.gifts && species.gifts.length > 0 && (
+                <ul style={{ margin: 0, paddingLeft: 18 }}>
+                  {species.gifts.map((g, i) =>
+                    <li key={i}><b>{g.name}</b>{g.desc ? ` – ${g.desc}` : ""}</li>
+                  )}
+                </ul>
+              )}
+            </>
+          )}
         </Box>
-        {disciplinesOpen && (Array.isArray(disciplines) && disciplines.length > 0 ? (
-          <Table>
-            {disciplines.map((d, i) =>
-              <Table.Row key={i}>
-                <Table.Cell bold>{d.name}</Table.Cell>
-                <Table.Cell>Lv. {d.level}</Table.Cell>
-                <Table.Cell>{d.desc}</Table.Cell>
-              </Table.Row>
-            )}
-          </Table>
-        ) : (
-          <Box italic>No disciplines known.</Box>
-        ))}
-      </Box>
+      )}
 
       {/* Bonded/Regnant display */}
       {(regnant || regnant_clan) && (regnant !== "Unknown" || regnant_clan !== "Unknown") && (
@@ -243,6 +264,7 @@ const OverviewSection = ({ overview = {}, status, alignment, act }) => {
       )}
     </Section>
   );
+
 };
 
 
