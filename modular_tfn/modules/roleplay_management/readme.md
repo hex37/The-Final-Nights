@@ -85,14 +85,14 @@ All human mobs get the `about_me` component (`aboutme_core.dm`) in `ComponentIni
 
 ### **Key Concepts**
 
-- **Tab-Based, Expandable UI:** Each About Me section (overview, groups, relationships, etc) is fully modular and easy to expand.
-- **No Hard References:** All data is keyed and accessed by character or group key, allowing cross-round persistence (when implemented).
-- **Voting & Group Management:** Groups support officer/leader voting, invite flows, and loyalty-based leaving/restriction logic.
+- **Tab-Based, Expandable UI:** Each About Me section (overview, groups, relationships, etc) is fully modular and easy to expand, if one breaks the rest should survive.
+- **No Hard References:** All data is keyed and accessed by character's keys or group keys, allowing cross-round persistence (when implemented).
+- **Voting & Group Management:** Groups support officer/leader voting, later dynamic votes, as well as loyalty-based leaving/restriction logic for certain types of groups.
 - **Story-Driven:** Players and staff can log events, memories, and relationships in-game, supporting RP-focused narrative play.
 
 ### **Modular Layout**
 
-All code lives in `modular_tfn/modules/aboutme/` (except for TGUI and defines), following Nova’s modular standards for future-proofing.
+All code lives in `modular_tfn/modules/aboutme/` (except for TGUI and roleplay_management.dm defines), following TFN’s modular standards for future-proofing.
 
 ### **Credits**
 
