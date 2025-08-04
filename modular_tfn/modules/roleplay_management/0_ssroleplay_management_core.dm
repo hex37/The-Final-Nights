@@ -1,5 +1,5 @@
 // ================================================================
-// RP Management Subsystem - Core (ssroleplay_management_core.dm)
+// RP Management Subsystem - Core (0_ssroleplay_management_core.dm)
 // ================================================================
 // This file defines:
 //   - Core subsystem declaration
@@ -7,7 +7,6 @@
 //   - Subsystem verbs (debug, UI inspection)
 //   - Shared validation and AboutMe access utilities
 // ================================================================
-
 // ---------------- GLOBAL REGISTRIES ----------------
 GLOBAL_LIST_EMPTY(groups)
 GLOBAL_LIST_EMPTY(relationships)
@@ -16,7 +15,6 @@ GLOBAL_LIST_EMPTY(memories)
 GLOBAL_LIST_EMPTY(valid_character_keys)
 GLOBAL_LIST_EMPTY(aboutme_records)
 GLOBAL_LIST_EMPTY(aboutme_components)
-
 //List of group keys and their pre-made datums for ensuring that canon-groups exist.
 GLOBAL_LIST_EMPTY(canonical_groups)
 // ---------------- CANONICAL Initialization GROUP KEYS ----------------
@@ -36,22 +34,24 @@ var/global/list/canonical_groups = list(
 	GROUP_KEY_SECT_PAINTEDCITY   = /datum/group/sect/paintedcity,
 	GROUP_KEY_SECT_AMBERGLADE    = /datum/group/sect/amberglade,
 	GROUP_KEY_SECT_POISONEDSHORE = /datum/group/sect/poisonedshore,
-	// Clans
-	GROUP_KEY_CLAN_VENTRUE      = /datum/group/clan/ventrue,
-	GROUP_KEY_CLAN_BRUJAH       = /datum/group/clan/brujah,
-	GROUP_KEY_CLAN_TOREADOR     = /datum/group/clan/toreador,
-	GROUP_KEY_CLAN_MALKAVIAN    = /datum/group/clan/malkavian,
-	GROUP_KEY_CLAN_NOSFERATU    = /datum/group/clan/nosferatu,
-	GROUP_KEY_CLAN_GANGREL      = /datum/group/clan/gangrel,
-	GROUP_KEY_CLAN_TREMERE      = /datum/group/clan/tremere,
-	GROUP_KEY_CLAN_LASOMBRA     = /datum/group/clan/lasombra,
-	GROUP_KEY_CLAN_TZIMISCE     = /datum/group/clan/tzimisce,
-	GROUP_KEY_CLAN_MINISTRY     = /datum/group/clan/ministry,
-	GROUP_KEY_CLAN_GIOVANNI     = /datum/group/clan/giovanni,
-	GROUP_KEY_CLAN_SALUBRI      = /datum/group/clan/salubri,
-	GROUP_KEY_CLAN_DAUGHTERS_OF_CACOPHONY = /datum/group/clan/daughters_of_cacophony,
-	GROUP_KEY_CLAN_BAALI        = /datum/group/clan/baali,
-	GROUP_KEY_CLAN_CAITIF       = /datum/group/clan/caitif,
+    // Clans
+    GROUP_KEY_CLAN_VENTRUE      = /datum/group/clan/ventrue,
+    GROUP_KEY_CLAN_BRUJAH       = /datum/group/clan/brujah,
+    GROUP_KEY_CLAN_TRUE_BRUJAH  = /datum/group/clan/true_brujah,
+    GROUP_KEY_CLAN_BANU_HAQIM   = /datum/group/clan/banu_haqim,
+    GROUP_KEY_CLAN_TOREADOR     = /datum/group/clan/toreador,
+    GROUP_KEY_CLAN_MALKAVIAN    = /datum/group/clan/malkavian,
+    GROUP_KEY_CLAN_NOSFERATU    = /datum/group/clan/nosferatu,
+    GROUP_KEY_CLAN_GANGREL      = /datum/group/clan/gangrel,
+    GROUP_KEY_CLAN_TREMERE      = /datum/group/clan/tremere,
+    GROUP_KEY_CLAN_LASOMBRA     = /datum/group/clan/lasombra,
+    GROUP_KEY_CLAN_TZIMISCE     = /datum/group/clan/tzimisce,
+    GROUP_KEY_CLAN_MINISTRY     = /datum/group/clan/ministry,
+    GROUP_KEY_CLAN_GIOVANNI     = /datum/group/clan/giovanni,
+    GROUP_KEY_CLAN_SALUBRI      = /datum/group/clan/salubri,
+    GROUP_KEY_CLAN_DAUGHTERS_OF_CACOPHONY = /datum/group/clan/daughters_of_cacophony,
+    GROUP_KEY_CLAN_BAALI        = /datum/group/clan/baali,
+    GROUP_KEY_CLAN_CAITIF       = /datum/group/clan/caitif,
 	// Tribes
 	GROUP_KEY_TRIBE_RONIN               = /datum/group/tribe/ronin,
 	GROUP_KEY_TRIBE_BLACKFURIES         = /datum/group/tribe/blackfuries,
@@ -69,7 +69,7 @@ var/global/list/canonical_groups = list(
 	GROUP_KEY_TRIBE_SILENTSTRIDERS      = /datum/group/tribe/silentstriders,
 	GROUP_KEY_TRIBE_SILVERFANGS         = /datum/group/tribe/silverfangs,
 	GROUP_KEY_TRIBE_STARGAZERS          = /datum/group/tribe/stargazers,
-	// Organizations (complete list)
+	// Organizations
 	GROUP_KEY_ORG_GOVERNMENT         = /datum/group/organization/government,
 	GROUP_KEY_ORG_POLICE             = /datum/group/organization/policedepartment,
 	GROUP_KEY_ORG_HOSPITAL           = /datum/group/organization/hospital,
@@ -83,12 +83,12 @@ var/global/list/canonical_groups = list(
 	GROUP_KEY_ORG_TZIMISCE           = /datum/group/organization/tzimisce,
 	GROUP_KEY_ORG_TRIAD              = /datum/group/organization/triad
 )
+
 // ---------------- SUBSYSTEM DEF ----------------
 SUBSYSTEM_DEF(roleplay_management)
 	name = "RP Management"
 	init_order = INIT_ORDER_DEFAULT
 	wait = 10
-
 /datum/controller/subsystem/roleplay_management
 
 /datum/controller/subsystem/roleplay_management/Initialize()
@@ -103,7 +103,7 @@ SUBSYSTEM_DEF(roleplay_management)
 		G.resolve_votes()
 
 // ---------------- LOOKUPS & UTILITIES ----------------
-/datum/controller/subsystem/roleplay_management/proc/get_aboutme_component_by_key(character_key)
+/datum/controller/subsystem/roleplay_management/proc/get_aboutme_component(character_key)
 	for (var/datum/component/about_me/C in GLOB.aboutme_components)
 		if (C.character_key == character_key)
 			return C
@@ -112,19 +112,17 @@ SUBSYSTEM_DEF(roleplay_management)
 /datum/controller/subsystem/roleplay_management/proc/get_aboutme_record(character_key)
 	if (!character_key || !is_valid_character_key(character_key))
 		return null
-
 	if (!(character_key in GLOB.aboutme_records))
 		var/datum/aboutme_record/R = new()
 		R.character_key = character_key
 		GLOB.aboutme_records[character_key] = R
-		register_valid_character_key(character_key)
-
+		check_register_valid_character_key(character_key)
 	return GLOB.aboutme_records[character_key]
 
 /datum/controller/subsystem/roleplay_management/proc/ensure_aboutme_datum_for_key(character_key, mob/living/carbon/human/owner)
-	if (!character_key) return null
+	if (!character_key)
+		return null
 	return get_aboutme_record(character_key)
-
 // ---------------- VALIDATION ----------------
 /datum/controller/subsystem/roleplay_management/proc/is_valid_key(key)
 	return istext(key) && length(key) > 3
@@ -132,8 +130,8 @@ SUBSYSTEM_DEF(roleplay_management)
 /datum/controller/subsystem/roleplay_management/proc/is_valid_character_key(character_key)
 	return istext(character_key) && (character_key in GLOB.valid_character_keys)
 
-/// Adds only if not already known
-/datum/controller/subsystem/roleplay_management/proc/register_valid_character_key(character_key)
+/// Adds only if not already known and it works.
+/datum/controller/subsystem/roleplay_management/proc/check_register_valid_character_key(character_key)
 	if (istext(character_key) && !(character_key in GLOB.valid_character_keys))
 		GLOB.valid_character_keys += character_key
 

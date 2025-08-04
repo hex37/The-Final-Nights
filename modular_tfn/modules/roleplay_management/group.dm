@@ -39,21 +39,21 @@
 	var/list/member_names = list()
 
 	for (var/key in leaders)
-		var/datum/component/about_me/C = SSroleplay_management.get_aboutme_component_by_key(key)
+		var/datum/component/about_me/C = SSroleplay_management.get_aboutme_component(key)
 		var/display = C?.owner?.real_name || member_names[key] || key
 		if (!C || !C.owner || !ismob(C.owner))
 			display += " (DC)"
 		leader_names += display
 
 	for (var/key in officers)
-		var/datum/component/about_me/C = SSroleplay_management.get_aboutme_component_by_key(key)
+		var/datum/component/about_me/C = SSroleplay_management.get_aboutme_component(key)
 		var/display = C?.owner?.real_name || member_names[key] || key
 		if (!C || !C.owner || !ismob(C.owner))
 			display += " (DC)"
 		officer_names += display
 
 	for (var/key in members)
-		var/datum/component/about_me/C = SSroleplay_management.get_aboutme_component_by_key(key)
+		var/datum/component/about_me/C = SSroleplay_management.get_aboutme_component(key)
 		var/display = C?.owner?.real_name || member_names[key] || key
 		if (!C || !C.owner || !ismob(C.owner))
 			display += " (DC)"
@@ -171,7 +171,7 @@
 
 /datum/group/proc/to_chat_group(msg, datum/group/G)
 	for (var/ckey in G.members + G.officers + G.leaders)
-		var/datum/component/about_me/C = SSroleplay_management.get_aboutme_component_by_key(ckey)
+		var/datum/component/about_me/C = SSroleplay_management.get_aboutme_component(ckey)
 		if (C?.owner && ismob(C.owner))
 			to_chat(C.owner, "<span class='notice'>[msg]</span>")
 
@@ -179,8 +179,8 @@
 /datum/group/proc/invite_member_prompt(officer_key, target_key)
 	if (!officer_key || !target_key) return FALSE
 
-	var/datum/component/about_me/C_officer = SSroleplay_management.get_aboutme_component_by_key(officer_key)
-	var/datum/component/about_me/C_target = SSroleplay_management.get_aboutme_component_by_key(target_key)
+	var/datum/component/about_me/C_officer = SSroleplay_management.get_aboutme_component(officer_key)
+	var/datum/component/about_me/C_target = SSroleplay_management.get_aboutme_component(target_key)
 
 	if (!C_officer?.owner || !ismob(C_officer.owner)) return FALSE
 	if (!C_target?.owner || !ismob(C_target.owner)) return FALSE
@@ -272,7 +272,7 @@
 	if (length(all_members) <= 1 && vote_type == "promote_officer" && initiator_key == target_key)
 		if (!(initiator_key in src.officers))
 			src.officers += initiator_key
-			var/datum/component/about_me/C = SSroleplay_management.get_aboutme_component_by_key(initiator_key)
+			var/datum/component/about_me/C = SSroleplay_management.get_aboutme_component(initiator_key)
 			if (C?.owner && ismob(C.owner))
 				to_chat(C.owner, "<span class='notice'>You have been promoted to Officer of [src.name] as its only member.</span>")
 		return null
@@ -284,7 +284,7 @@
 	for (var/c_key in all_members)
 		if (c_key == initiator_key)
 			continue
-		var/datum/component/about_me/C = SSroleplay_management.get_aboutme_component_by_key(c_key)
+		var/datum/component/about_me/C = SSroleplay_management.get_aboutme_component(c_key)
 		if (!C || !ismob(C.owner)) continue
 		to_chat(C.owner, "<span class='notice'>A new vote has started in [src.name]!</span>")
 		C.prompt_vote_on_group(V)

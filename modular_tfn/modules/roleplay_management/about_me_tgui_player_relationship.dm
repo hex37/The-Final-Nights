@@ -30,7 +30,7 @@
 	for (var/target_key in GLOB.aboutme_records)
 		if (target_key == src.character_key) continue
 		if (src.has_relationship_with(target_key)) continue // Prevent duplicates
-		var/datum/component/about_me/C = SSroleplay_management.get_aboutme_component_by_key(target_key)
+		var/datum/component/about_me/C = SSroleplay_management.get_aboutme_component(target_key)
 		if (!C?.owner || !ismob(C.owner)) continue
 		var/mob/living/carbon/human/M = C.owner
 		var/display_name = M.true_real_name || M.real_name || target_key
@@ -77,7 +77,7 @@
 	if (taglist.len)
 		summary += "Tag: [jointext(taglist, ", ")]\n"
 	// Find and confirm with target
-	var/datum/component/about_me/TargetC = SSroleplay_management.get_aboutme_component_by_key(target_key)
+	var/datum/component/about_me/TargetC = SSroleplay_management.get_aboutme_component(target_key)
 	if (!TargetC?.owner || !ismob(TargetC.owner))
 		to_chat(user, "<span class='warning'>Could not find target to send request.</span>")
 		return src.prompt_change_relationship(user)
@@ -169,7 +169,7 @@
 	SSroleplay_management.clear_personal_relationship(source_key, target_key)
 
 	// Notify both users if possible
-	var/datum/component/about_me/OtherComp = SSroleplay_management.get_aboutme_component_by_key(target_key)
+	var/datum/component/about_me/OtherComp = SSroleplay_management.get_aboutme_component(target_key)
 	if (OtherComp && ismob(OtherComp.parent))
 		to_chat(OtherComp.parent, "<span class='alert'>[user.name] has removed the relationship with you.</span>")
 	to_chat(user, "<span class='alert'>You have removed the relationship with [rel.name].</span>")

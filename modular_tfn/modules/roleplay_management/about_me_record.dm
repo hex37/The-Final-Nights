@@ -145,7 +145,7 @@
 		if (!C || !C.is_visible_to(user, character_key)) continue
 		var/list/char_names = list()
 		for (var/char_key in C.related_characters)
-			var/datum/component/about_me/CMP = SSroleplay_management.get_aboutme_component_by_key(char_key)
+			var/datum/component/about_me/CMP = SSroleplay_management.get_aboutme_component(char_key)
 			char_names += CMP?.owner?.real_name || char_key
 		var/list/group_names = list()
 		for (var/group_key in C.related_groups)
@@ -188,4 +188,4 @@
 // UTILITY HELPERS
 // ==============================================================================
 /datum/aboutme_record/proc/get_current_group_keys(owner)
-	return group_keys.Copy() // could fallback to scanning mob if needed
+	return group_keys.Copy()

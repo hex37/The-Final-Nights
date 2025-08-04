@@ -1,27 +1,28 @@
 // ==============================================================================
 // About Me TGUI Handler (aboutme_tgui.dm)
 // ------------------------------------------------------------------------------
-// Bridge between BYOND backend and About Me TGUI (AboutmeInt.jsx)
-// Handles UI state, data payloads, and action routing
+// A bit of overhead here, tgui is complicated, and this file is very vital.
+// Bridge between backend and Player interactions with the About Me TGUI (AboutmeInt.jsx)
+// Handles UI state, data payloads, and action routing using tgui prompts, and the roleplay_management subsystem procs.
 //
 // System Responsibilities:
 //   - Opens the TGUI window for each mob via `ui_interact()`
-//   - Sends the current payload from the component to the TGUI frontend
-//   - Responds to ui_act() button clicks and routes actions appropriately
+//   - Sends the current payload from the about me component key, and gets the record information payload to the TGUI frontend.
+//   - Responds to ui_act() button clicks and routes actions appropriately.
+//   - Updates live to changes made anywhere in the system.
 //
 // Data & Logic Flow:
 //   [mob] -> has component (/datum/component/about_me)
 //         -> component fetches data from record in SSRPmanagement (via character_key)
-//         -> sends data to TGUI (AboutmeInt.jsx) for rendering
+//         -> sends "permission/view" data to TGUI (AboutmeInt.jsx) for rendering and premade interactions.
 //
 // Editing/Modifying:
-//   - All button actions should be routed via `ui_act()` below
-//   - Actual behavior lives in aboutme_tgui_player_input.dm
+//   - All NEW buttons should be caught in `ui_act()` then routed to an appropriate about_me_tgui_player_(newbutton).dm file.
+//   - Modifying buttons that already exist? See:
+//   - about_me_tgui_player_(overview/group/relationship/chronicle/memory).dm
 // ==============================================================================
 
-// ==============================================================================
 // UI Lifecycle Methods (Required for TGUI)
-// ==============================================================================
 /datum/component/about_me/ui_state(mob/user)
 	return GLOB.always_state
 
@@ -35,7 +36,7 @@
 	return list()
 
 // ==============================================================================
-// On UI Open: Initializes the record, groups, and chronicle for the player
+// On UI Open: Initializes the record. Planned to load up saved data, and prepare to save.
 // ==============================================================================
 /datum/component/about_me/ui_interact(mob/user, datum/tgui/ui)
 	if (!character_key && ismob(parent))
@@ -45,8 +46,8 @@
 			character_key = "[raw_key]_character_key"
 			ckey = ckey(H.client?.key)
 	if (owner?.client && character_key)
-		SSroleplay_management.register_valid_character_key(character_key)
-		SSroleplay_management.initialize_aboutme_for(character_key, owner, src)
+		SSroleplay_management.check_register_valid_character_key(character_key)
+		SSroleplay_management.check_initialize_aboutme_for(character_key, owner, src)
 	// Open or update the About Me interface
 	ui = SStgui.try_update_ui(user, src, ui)
 	if (!ui)

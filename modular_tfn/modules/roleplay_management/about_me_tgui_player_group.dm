@@ -140,7 +140,7 @@
 				var/list/valid_targets = list()
 				for (var/target_key in GLOB.aboutme_records)
 					if (this_group.has_member(target_key)) continue
-					var/datum/component/about_me/C = SSroleplay_management.get_aboutme_component_by_key(target_key)
+					var/datum/component/about_me/C = SSroleplay_management.get_aboutme_component(target_key)
 					if (!C?.owner || !ismob(C.owner)) continue
 					var/mob/living/carbon/human/M = C.owner
 					var/display_name = M.true_real_name || M.real_name || target_key
@@ -152,7 +152,7 @@
 				if (!choice || !istext(choice)) continue
 				var/target_key = valid_targets[choice]
 				var/officer_key = R.character_key
-				var/datum/component/about_me/TargetC = SSroleplay_management.get_aboutme_component_by_key(target_key)
+				var/datum/component/about_me/TargetC = SSroleplay_management.get_aboutme_component(target_key)
 				if (!TargetC?.owner || !ismob(TargetC.owner))
 					to_chat(user, "<span class='warning'>Could not find target's mob to send invite.</span>")
 					continue
@@ -261,7 +261,7 @@
 	else if (G.gtype == GROUP_TYPE_ORGANIZATION)
 		to_chat(user, "<span class='notice'>Your application has been sent to [G.name]'s leadership. Please speak with them IC to complete the process.</span>")
 		for (var/key in G.leaders + G.officers)
-			var/datum/component/about_me/C = SSroleplay_management.get_aboutme_component_by_key(key)
+			var/datum/component/about_me/C = SSroleplay_management.get_aboutme_component(key)
 			if (C?.owner && ismob(C.owner))
 				to_chat(C.owner, "<span class='alert'>[display_name] has applied to join your organization: [G.name].</span>")
 		message_admins("[key_name(user)] applied to join public organization group: [G.name] ([group_id]).")

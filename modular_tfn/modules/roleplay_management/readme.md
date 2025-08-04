@@ -2,7 +2,7 @@
 
 ## <Title AboutMe>
 Module ID: ABOUT_ME_CORE
-[https://github.com/NovaSector/NovaSector/pull/661]
+[https://github.com/The-Final-Nights/The-Final-Nights/pull/661]
 ### Description:
 Hi! Thanks for your interest in this module. I’ll say outright I’m not an experienced programmer or contributor to BYOND projects—but I do have a love for UI. There are likely many oversights or places where things could be done differently on the backend, but I’ve done my best to make the system easy to understand, modify, build on, and adapt.
 
@@ -45,9 +45,9 @@ Added `modular_tfn/modules/aboutme/` folder containing all components, records, 
 - `code/modules/mob/living/carbon/human.dm`:  
   - `proc/ComponentInitialize()`  
     ```dm
-    // NOVA EDIT ADDITION START - ABOUT_ME_CORE
+    // TFN EDIT ADDITION START - ABOUT_ME_CORE
     AddComponent(/datum/component/about_me)
-    // NOVA EDIT ADDITION END
+    // TFN EDIT ADDITION END
     ```
 
 ### Modular Overrides:

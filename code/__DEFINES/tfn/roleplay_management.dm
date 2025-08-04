@@ -1,6 +1,5 @@
 //These are Defines for RP Management, About Me, and supporting datums.
 // About Me Component, and Record, as well as Groups, Chronciles, Relationships, and Memories.
-
 // GROUP TYPE DEFINES
 #define GROUP_TYPE_CITY             "city"
 #define GROUP_TYPE_FACTION          "faction"
@@ -10,7 +9,6 @@
 #define GROUP_TYPE_ORGANIZATION     "organization"
 #define GROUP_TYPE_PARTY            "party"
 #define GROUP_TYPE_PLAYER           "player_created"
-
 // =========================
 // GROUP TAGS (used in type filtering)
 // =========================
@@ -21,7 +19,6 @@
 #define GROUP_TAG_TRIBE             "group_tag_tribe"
 #define GROUP_TAG_ORG               "group_tag_org"
 #define GROUP_TAG_PARTY             "group_tag_party"
-
 // =========================
 // RELATIONSHIP TYPES
 // =========================
@@ -35,7 +32,6 @@
 #define RELATIONSHIP_SUSPECT        "suspect"
 #define RELATIONSHIP_UNKNOWN        "unknown"
 #define RELATIONSHIP_GROUP          "group"
-
 // =========================
 // RELATIONSHIP UI Type List
 // =========================
@@ -51,16 +47,11 @@
 	RELATIONSHIP_UNKNOWN, \
 	RELATIONSHIP_GROUP \
 )
-
-
 #define RELATIONSHIP_TAGS_ALLOWED list( \
 	"trusted", "romantic", "bloodbond", "business", \
 	"secret", "public", "clan", "rivalry", "political", \
 	"mentor", "target", "ally", "danger" \
 )
-
-
-
 // =========================
 // MEMORY TAGS
 // =========================
@@ -73,7 +64,6 @@
 #define MEMORY_TAG_RELATIONSHIP     "relationship"
 #define MEMORY_TAG_CHARACTER        "character_memories"
 #define MEMORY_TAG_ALL              "memories_all"
-
 // =========================
 // ACCESS ROLES
 // =========================
@@ -81,43 +71,23 @@
 #define ACCESS_ROLE_OFFICER         "officer"
 #define ACCESS_ROLE_MEMBER          "member"
 #define ACCESS_ROLE_NONE            "none"
-
 // =========================
 // FILE PATH HELPERS
 // =========================
 #define SAVEFILE_ROOT_PATH              "data/player_saves"
 #define SAVEFILE_ABOUTME_PATH(ckey, character_key) "[SAVEFILE_ROOT_PATH]/[ckey]/aboutme/[character_key].sav"
-
-// =========================
-// TGUI
-// =========================
 #define TGUI_ABOUTME_ID             "AboutmeInt"
-
-// =========================
-// SUBSYSTEM
-// =========================
 #define SUBSYSTEM_ABOUTME_TAG       "aboutme_rp"
-
-// =========================
-// GROUP KEYS (PREMADE)
-// =========================
-// =========================
-// GROUP KEY HELPERS
-// =========================
 #define GROUP_KEY_SECT(SECT) "sect_[lowertext(replacetext(SECT, " ", "_"))]"
 #define GROUP_KEY_CLAN(CLAN) "clan_[lowertext(replacetext(CLAN, " ", "_"))]"
 #define GROUP_KEY_TRIBE(TRIBE) "tribe_[lowertext(replacetext(TRIBE, " ", "_"))]"
-
-
 // City
 #define GROUP_KEY_CITY "city_sanfrancisco"
-
 // Factions
 #define GROUP_KEY_FACTION_UNKNOWING "faction_citizen"
 #define GROUP_KEY_FACTION_KINDRED   "faction_kindred"
 #define GROUP_KEY_FACTION_FERA      "faction_fera"
 #define GROUP_KEY_FACTION_HUNTERS   "faction_hunters"
-
 // Sects
 #define GROUP_KEY_SECT_INDEPENDENT  "sect_independent"
 #define GROUP_KEY_SECT_CAMARILLA    "sect_camarilla"
@@ -126,11 +96,11 @@
 #define GROUP_KEY_SECT_PAINTEDCITY  "sect_paintedcity"
 #define GROUP_KEY_SECT_AMBERGLADE   "sect_amberglade"
 #define GROUP_KEY_SECT_POISONEDSHORE "sect_poisonedshore"
-
 // Clans
 #define GROUP_KEY_CLAN_CAITIF       "clan_caitif"
 #define GROUP_KEY_CLAN_VENTRUE      "clan_ventrue"
 #define GROUP_KEY_CLAN_BRUJAH       "clan_brujah"
+#define GROUP_KEY_CLAN_TRUE_BRUJAH  "clan_true_brujah"
 #define GROUP_KEY_CLAN_TOREADOR     "clan_toreador"
 #define GROUP_KEY_CLAN_MALKAVIAN    "clan_malkavian"
 #define GROUP_KEY_CLAN_NOSFERATU    "clan_nosferatu"
@@ -143,7 +113,7 @@
 #define GROUP_KEY_CLAN_SALUBRI      "clan_salubri"
 #define GROUP_KEY_CLAN_DAUGHTERS_OF_CACOPHONY "clan_daughters_of_cacophony"
 #define GROUP_KEY_CLAN_BAALI        "clan_baali"
-
+#define GROUP_KEY_CLAN_BANU_HAQIM        "clan_banu_haqim"
 // Tribes
 #define GROUP_KEY_TRIBE_RONIN               "tribe_ronin"
 #define GROUP_KEY_TRIBE_BLACKFURIES         "tribe_blackfuries"
@@ -161,7 +131,6 @@
 #define GROUP_KEY_TRIBE_SILENTSTRIDERS      "tribe_silentstriders"
 #define GROUP_KEY_TRIBE_SILVERFANGS         "tribe_silverfangs"
 #define GROUP_KEY_TRIBE_STARGAZERS          "tribe_stargazers"
-
 // Organizations
 #define GROUP_KEY_ORG_GOVERNMENT         "org_government"
 #define GROUP_KEY_ORG_POLICE             "org_police"

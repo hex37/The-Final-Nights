@@ -6,7 +6,6 @@
 // - Group status
 // - Relationships, Memories, Chronicles
 // ================================================================
-
 /client/verb/ViewCharacterAboutMe()
 	set name = "About Me View Character Record"
 	set category = "IC"
@@ -24,12 +23,11 @@
 	if (!key || !(key in GLOB.valid_character_keys))
 		to_chat(src, "<span class='warning'>That key is not valid or doesn't exist.</span>")
 		return
-	var/datum/component/about_me/C = SSroleplay_management.get_aboutme_component_by_key(key)
+	var/datum/component/about_me/C = SSroleplay_management.get_aboutme_component(key)
 	if (!C)
 		to_chat(src, "<span class='warning'>No active About Me component is registered for [key]. That character may not be in-round.</span>")
 		return
 	C.ui_interact(src)
-
 /client/verb/DebugRPManagement()
 	set name = "AboutMe System Overview"
 	set category = "IC"

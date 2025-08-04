@@ -172,6 +172,14 @@
 	id = GROUP_KEY_CLAN_BAALI
 	name = "Clan Baali"
 	desc = "The Baali, infernalists, corrupters, and worshippers of dark powers among the Kindred."
+/datum/group/clan/true_brujah
+    id = GROUP_KEY_CLAN_TRUE_BRUJAH
+    name = "Clan True Brujah"
+    desc = "Clan True Brujah, the masters of time and keepers of ancient secrets among the Kindred."
+/datum/group/clan/banu_haqim
+    id = GROUP_KEY_CLAN_BANU_HAQIM
+    name = "Clan Banu Haqim"
+    desc = "Clan Banu Haqim (Assamites), the judges, assassins, and scholars of Kindred law and blood."
 //Fera Tribes, ronin default, set from character.
 /datum/group/tribe/ronin
 	id = GROUP_KEY_TRIBE_RONIN
@@ -237,8 +245,6 @@
 	id = GROUP_KEY_TRIBE_STARGAZERS
 	name = "Stargazers"
 	desc = "The Stargazers, mystics, philosophers, and seekers of cosmic truth."
-
-
 //Organizations, these are the catch all for smaller groups. Like the PD, Hospital Staff, etc.
 //Set from role, or joining them in round from leaders/officers.
 // --- Government ---
@@ -248,7 +254,6 @@
 	desc = "The officials, clerks, and leaders who keep the city running."
 	leader_name = "Mayor, City Council, and Commissioners"
 	orders = "Maintain city operations and liaise with other departments."
-
 // --- Police Department ---
 /datum/group/organization/policedepartment
 	id = GROUP_KEY_ORG_POLICE
@@ -256,7 +261,6 @@
 	desc = "The police officers sworn to serve and protect the city."
 	leader_name = "Chief of Police"
 	orders = "Patrol and monitor suspicious activity. Keep the peace."
-
 // --- Hospital Staff ---
 /datum/group/organization/hospital
 	id = GROUP_KEY_ORG_HOSPITAL
@@ -264,7 +268,6 @@
 	desc = "Doctors, nurses, and medical professionals of San Francisco."
 	leader_name = "Chief Medical Officer"
 	orders = "ER is on high alert for unusual injuries. Coordinate with PD for blood shortage."
-
 // --- Military ---
 /datum/group/organization/military
 	id = GROUP_KEY_ORG_MILITARY
@@ -272,7 +275,6 @@
 	desc = "National Guard soldiers stationed in the city."
 	leader_name = "Colonel of the Garrison"
 	orders = "Secure key assets, provide emergency support, and maintain martial readiness."
-
 // --- Biker Gang ---
 /datum/group/organization/bikergang
 	id = GROUP_KEY_ORG_BIKERGANG
@@ -280,7 +282,6 @@
 	desc = "A street gang known for controlling parts of the Sunset District."
 	leader_name = "Tiger King"
 	orders = "Watch for rival gang moves near the docks. Keep the streets ours."
-
 // --- Corporation ---
 /datum/group/organization/corporation
 	id = GROUP_KEY_ORG_CORP
@@ -288,7 +289,6 @@
 	desc = "A biotech megacorp with mysterious interests in San Francisco."
 	leader_name = "CEO Amanda Chen"
 	orders = "All research personnel report any police activity or Kindred contact."
-
 // --- Warehouse Union ---
 /datum/group/organization/warehouse
 	is_public = TRUE
@@ -297,7 +297,6 @@
 	desc = "The dock workers, warehouse staff, and logistics crew who keep shipments moving."
 	leader_name = "Union Boss"
 	orders = "Loadouts run every third shift. Watch for smuggling or Kindred tampering."
-
 // --- Church ---
 /datum/group/organization/church
 	is_public = TRUE
@@ -306,7 +305,6 @@
 	desc = "A growing congregation known for its aid work and strange sermons."
 	leader_name = "Father MacGowan"
 	orders = "Open soup kitchen at dusk. Midnight mass ongoing. Beware interlopers."
-
 // --- Civic Services ---
 /datum/group/organization/civicservices
 	id = GROUP_KEY_ORG_CIVICSERVICES
@@ -314,7 +312,6 @@
 	desc = "Garbage collection, grid maintenance, and vital city infrastructure roles."
 	leader_name = "Dept. of Public Works Superintendent"
 	orders = "Keep power and water flowing. Strike threats under observation."
-
 // --- National Security ---
 /datum/group/organization/nationalsecurity
 	id = GROUP_KEY_ORG_NATIONALSECURITY
@@ -322,7 +319,6 @@
 	desc = "A shadowy national security task force. Their exact purpose is classified."
 	leader_name = "Special Agent-in-Charge"
 	orders = "Maintain surveillance on supernatural hotspots and potential threats."
-
 // --- Tzimisce Front ---
 /datum/group/organization/tzimisce
 	id = GROUP_KEY_ORG_TZIMISCE
@@ -330,7 +326,6 @@
 	desc = "A biotech front run by a secretive Kindred cult, dedicated to flesh and form."
 	leader_name = "The Caretaker"
 	orders = "Continue experimentation. Avoid Camarilla interference. Accept only trusted clients."
-
 // --- Triad ---
 /datum/group/organization/triad
 	id = GROUP_KEY_ORG_TRIAD
