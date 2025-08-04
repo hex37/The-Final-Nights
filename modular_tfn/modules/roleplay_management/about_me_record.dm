@@ -127,7 +127,7 @@
 	// Kindred
 	if (iskindred(owner))
 		var/datum/species/kindred/K = owner.dna?.species
-		species_block["clan"]         = owner.clane?.name || "None"
+		species_block["clan"]         = K.clan?.name || "None"
 		species_block["generation"]   = owner.generation || "Unknown"
 		species_block["masquerade"]   = "[owner.masquerade]"
 		species_block["morality_path"] = owner.morality_path?.name || ""
@@ -166,8 +166,9 @@
 	else if (isghoul(owner))
 		var/datum/species/ghoul/G = owner.dna?.species
 		if (G?.master)
+			var/datum/species/kindred/M = G.master.dna?.species
 			species_block["regnant"] = G.master.real_name || "Unknown"
-			species_block["regnant_clan"] = G.master.clane.name || "Unknown"
+			species_block["regnant_clan"] = M.clan?.name || "Unknown"
 		else
 			species_block["regnant"] = ""
 			species_block["regnant_clan"] = ""

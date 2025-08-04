@@ -382,7 +382,8 @@
 			G.add_member_key(character_key, display_name)
 	// --- Clan
 	if (iskindred(H))
-		var/clan_name = H.clane?.name
+		var/datum/species/kindred/K = H.dna?.species
+		var/clan_name = K.clan?.name
 		if (!clan_name || lowertext(clan_name) == "unknown" || lowertext(clan_name) == "none")
 			clan_name = "Caitiff"
 		var/clan_key = GROUP_KEY_CLAN(clan_name)
