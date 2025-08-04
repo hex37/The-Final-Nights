@@ -68,6 +68,22 @@
 /datum/group/proc/can_be_viewed_by(mob/user, character_key)
 	return (character_key in members) || (character_key in officers) || (character_key in leaders)
 
+
+/datum/group/proc/prettify_character_key(key)
+	if (!istext(key)) return key
+	if (findtext(key, "_character_key"))
+		var/base = replacetext(key, "_character_key", "")
+		// Replace underscores with spaces, then capitalize each word
+		base = capitalize_words(replacetext(base, "_", " "))
+		return base
+	return key
+
+/datum/group/proc/capitalize_words(text)
+	var/list/words = splittext(text, " ")
+	for (var/i = 1, i <= length(words), i++)
+		words[i] = capitalize(words[i])
+	return jointext(words, " ")
+
 /**
  * Returns a UI-safe formatted data structure for this group.
  * Includes leader/officer/member names, orders, etc.
@@ -79,22 +95,22 @@
 
 	for (var/key in leaders)
 		var/datum/component/about_me/C = SSroleplay_management.get_aboutme_component(key)
-		var/display = C?.owner?.real_name || member_names[key] || key
-		if (!C || !C.owner || !ismob(C.owner))
+		var/display = prettify_character_key(key)
+		if (!C)
 			display += " (DC)"
 		leader_names += display
 
 	for (var/key in officers)
 		var/datum/component/about_me/C = SSroleplay_management.get_aboutme_component(key)
-		var/display = C?.owner?.real_name || member_names[key] || key
-		if (!C || !C.owner || !ismob(C.owner))
+		var/display = prettify_character_key(key)
+		if (!C)
 			display += " (DC)"
 		officer_names += display
 
 	for (var/key in members)
 		var/datum/component/about_me/C = SSroleplay_management.get_aboutme_component(key)
-		var/display = C?.owner?.real_name || member_names[key] || key
-		if (!C || !C.owner || !ismob(C.owner))
+		var/display = prettify_character_key(key)
+		if (!C)
 			display += " (DC)"
 		member_names += display
 
@@ -110,6 +126,7 @@
 		"members"     = member_names,
 		"orders"      = orders
 	)
+
 
 /**
  * Returns display names for a given list of character_keys.

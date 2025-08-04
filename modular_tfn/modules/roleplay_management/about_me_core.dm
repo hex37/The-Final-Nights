@@ -43,7 +43,6 @@
 /// - Unregisters this component from the global registry.
 /datum/component/about_me/Destroy()
 	if (character_key)
-		SSroleplay_management.remove_key_from_all_groups(character_key)
 		SSroleplay_management.unregister_aboutme_component(src)
 	owner = null
 	..()

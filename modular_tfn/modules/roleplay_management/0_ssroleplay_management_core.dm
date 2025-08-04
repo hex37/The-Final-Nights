@@ -71,19 +71,29 @@ var/global/list/canonical_groups = list(
 	GROUP_KEY_TRIBE_SILENTSTRIDERS      = /datum/group/tribe/silentstriders,
 	GROUP_KEY_TRIBE_SILVERFANGS         = /datum/group/tribe/silverfangs,
 	GROUP_KEY_TRIBE_STARGAZERS          = /datum/group/tribe/stargazers,
-	// Organizations
+	// Organizations (Core)
 	GROUP_KEY_ORG_GOVERNMENT         = /datum/group/organization/government,
 	GROUP_KEY_ORG_POLICE             = /datum/group/organization/policedepartment,
 	GROUP_KEY_ORG_HOSPITAL           = /datum/group/organization/hospital,
 	GROUP_KEY_ORG_MILITARY           = /datum/group/organization/military,
-	GROUP_KEY_ORG_BIKERGANG          = /datum/group/organization/bikergang,
-	GROUP_KEY_ORG_CORP               = /datum/group/organization/corporation,
 	GROUP_KEY_ORG_WAREHOUSE          = /datum/group/organization/warehouse,
 	GROUP_KEY_ORG_CHURCH             = /datum/group/organization/church,
 	GROUP_KEY_ORG_CIVICSERVICES      = /datum/group/organization/civicservices,
 	GROUP_KEY_ORG_NATIONALSECURITY   = /datum/group/organization/nationalsecurity,
+
+	//Independent Groups
 	GROUP_KEY_ORG_TZIMISCE           = /datum/group/organization/tzimisce,
-	GROUP_KEY_ORG_TRIAD              = /datum/group/organization/triad
+	GROUP_KEY_ORG_TRIAD              = /datum/group/organization/triad,
+
+	// Organizations (Factions & Fronts)
+	GROUP_KEY_ORG_MILLENNIUMTOWER    = /datum/group/organization/millenniumtower,
+	GROUP_KEY_ORG_ANARCHYROSE        = /datum/group/organization/anarchyrose,
+	GROUP_KEY_ORG_SABBATCULT         = /datum/group/organization/sabbatcult,
+	GROUP_KEY_ORG_TREMERE_COVER      = /datum/group/organization/historicsociety,
+	GROUP_KEY_ORG_GIOVANNI_BANK      = /datum/group/organization/giovannibank,
+	GROUP_KEY_ORG_ENDRON             = /datum/group/organization/endron,
+	GROUP_KEY_ORG_AMBERGLADE         = /datum/group/organization/amberglade,
+	GROUP_KEY_ORG_PAINTEDCITYMALL    = /datum/group/organization/paintedcitymall
 )
 
 // ---------------- SUBSYSTEM DEF ----------------

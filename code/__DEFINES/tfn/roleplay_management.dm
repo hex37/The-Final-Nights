@@ -165,19 +165,34 @@
 #define GROUP_KEY_TRIBE_SILVERFANGS         "tribe_silverfangs"
 #define GROUP_KEY_TRIBE_STARGAZERS          "tribe_stargazers"
 
-// -- Organizations
+// =====================================================================
+// GROUP KEY DEFINES (Organizations, Public Fronts, etc.)
+// =====================================================================
+
+// Core Organizations
 #define GROUP_KEY_ORG_GOVERNMENT         "org_government"
 #define GROUP_KEY_ORG_POLICE             "org_police"
 #define GROUP_KEY_ORG_HOSPITAL           "org_hospital"
 #define GROUP_KEY_ORG_MILITARY           "org_military"
-#define GROUP_KEY_ORG_BIKERGANG          "org_bikergang"
-#define GROUP_KEY_ORG_CORP               "org_corporation"
 #define GROUP_KEY_ORG_WAREHOUSE          "org_warehouse"
 #define GROUP_KEY_ORG_CHURCH             "org_church"
 #define GROUP_KEY_ORG_CIVICSERVICES      "org_civicservices"
 #define GROUP_KEY_ORG_NATIONALSECURITY   "org_nationalsecurity"
+
+// Supernatural/Secret Fronts
 #define GROUP_KEY_ORG_TZIMISCE           "org_tzimisce"
 #define GROUP_KEY_ORG_TRIAD              "org_triad"
+
+// Faction/Group-Specific (NEW)
+#define GROUP_KEY_ORG_MILLENNIUMTOWER    "org_millenniumtower"
+#define GROUP_KEY_ORG_ANARCHYROSE        "org_anarchyrose"
+#define GROUP_KEY_ORG_SABBATCULT         "org_sabbatcult"
+#define GROUP_KEY_ORG_TREMERE_COVER      "org_tremerecover"
+#define GROUP_KEY_ORG_GIOVANNI_BANK      "org_giovannibank"
+#define GROUP_KEY_ORG_ENDRON             "org_endron"
+#define GROUP_KEY_ORG_AMBERGLADE         "org_amberglade"
+#define GROUP_KEY_ORG_PAINTEDCITYMALL    "org_paintedcitymall"
+
 
 // ==============================================================================
 // END OF DEFINES roleplay_management.dm FILE
