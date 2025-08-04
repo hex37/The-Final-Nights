@@ -40,11 +40,12 @@
 	jobtype = /datum/job/vamp/garou/spiral/lead
 
 	id = /obj/item/card/id/garou/spiral/lead
+	ears = /obj/item/p25radio
 	uniform =  /obj/item/clothing/under/pentex/pentex_executive_suit
 	shoes = /obj/item/clothing/shoes/vampire/businessblack
 	suit = /obj/item/clothing/suit/pentex/pentex_labcoat_alt
 	l_pocket = /obj/item/vamp/phone/endron_lead
-	r_pocket = /obj/item/vamp/keys/pentex
+	r_pocket = /obj/item/vamp/keys/pentex/leader
 	backpack_contents = list(/obj/item/gun/ballistic/automatic/vampire/deagle=1, /obj/item/phone_book=1, /obj/item/passport=1, /obj/item/cockclock=1, /obj/item/flashlight=1, /obj/item/vamp/creditcard/prince=1)
 
 
@@ -93,7 +94,7 @@
 	minimal_masquerade = 5
 	allowed_species = list("Werewolf", "Vampire", "Human")
 	allowed_tribes = list("Black Spiral Dancers")
-	allowed_bloodlines = list("True Brujah", "Daughters of Cacophony", "Salubri", "Baali", "Brujah", "Tremere", "Ventrue", "Nosferatu", "Toreador", "Malkavian", "Giovanni", "Ministry", "Tzimisce", "Lasombra", "Caitiff")
+	allowed_bloodlines = list(CLAN_TRUE_BRUJAH, CLAN_DAUGHTERS_OF_CACOPHONY, CLAN_SALUBRI, CLAN_BAALI, CLAN_BRUJAH, CLAN_TREMERE, CLAN_VENTRUE, CLAN_NOSFERATU, CLAN_TOREADOR, CLAN_MALKAVIAN, CLAN_GIOVANNI, CLAN_SETITES, CLAN_TZIMISCE, CLAN_LASOMBRA, CLAN_NONE)
 
 	known_contacts = null
 
@@ -104,10 +105,11 @@
 	jobtype = /datum/job/vamp/garou/spiral/executive
 
 	id = /obj/item/card/id/garou/spiral/executive
+	ears = /obj/item/p25radio
 	uniform =  /obj/item/clothing/under/pentex/pentex_executive_suit
 	shoes = /obj/item/clothing/shoes/vampire/businessblack
 	l_pocket = /obj/item/vamp/phone/endron_exec
-	r_pocket = /obj/item/vamp/keys/pentex
+	r_pocket = /obj/item/vamp/keys/pentex/leader
 	backpack_contents = list(/obj/item/phone_book=1, /obj/item/passport=1, /obj/item/cockclock=1, /obj/item/flashlight=1, /obj/item/vamp/creditcard/seneschal=1)
 
 
@@ -166,6 +168,7 @@
 	jobtype = /datum/job/vamp/garou/spiral/executive
 
 	id = /obj/item/card/id/garou/spiral/affairs
+	ears = /obj/item/p25radio
 	uniform =  /obj/item/clothing/under/pentex/pentex_suit
 	shoes = /obj/item/clothing/shoes/vampire/businessblack
 	l_pocket = /obj/item/vamp/phone/endron_affairs
@@ -229,14 +232,16 @@
 	jobtype = /datum/job/vamp/garou/spiral/secchief
 
 	id = /obj/item/card/id/garou/spiral/secchief
+	ears = /obj/item/p25radio
 	uniform =  /obj/item/clothing/under/pentex/pentex_turtleneck
 	shoes = /obj/item/clothing/shoes/vampire/jackboots
 	gloves = /obj/item/clothing/gloves/vampire/work
 	head = /obj/item/clothing/head/pentex/pentex_beret
 	suit = /obj/item/clothing/suit/vampire/vest
+	belt = /obj/item/storage/belt/holster/detective/vampire/endron
 	glasses = /obj/item/clothing/glasses/vampire/sun
 	l_pocket = /obj/item/vamp/phone/endron_sec_chief
-	r_pocket = /obj/item/vamp/keys/pentex
+	r_pocket = /obj/item/vamp/keys/pentex/leader
 	backpack_contents = list(/obj/item/gun/ballistic/automatic/vampire/deagle=1, /obj/item/phone_book=1, /obj/item/veil_contract, /obj/item/passport=1, /obj/item/cockclock=1, /obj/item/flashlight=1, /obj/item/vamp/creditcard/rich=1)
 
 
@@ -279,7 +284,7 @@
 	minimal_masquerade = 3
 	allowed_species = list("Werewolf", "Vampire", "Human")
 	allowed_tribes = list("Black Spiral Dancers")
-	allowed_bloodlines = list("True Brujah", "Daughters of Cacophony", "Salubri", "Baali", "Brujah", "Tremere", "Ventrue", "Nosferatu", "Toreador", "Malkavian", "Giovanni", "Ministry", "Tzimisce", "Lasombra", "Caitiff")
+	allowed_bloodlines = list(CLAN_TRUE_BRUJAH, CLAN_DAUGHTERS_OF_CACOPHONY, CLAN_SALUBRI, CLAN_BAALI, CLAN_BRUJAH, CLAN_TREMERE, CLAN_VENTRUE, CLAN_NOSFERATU, CLAN_TOREADOR, CLAN_MALKAVIAN, CLAN_GIOVANNI, CLAN_SETITES, CLAN_TZIMISCE, CLAN_LASOMBRA, CLAN_NONE)
 
 	known_contacts = null
 
@@ -290,10 +295,12 @@
 	jobtype = /datum/job/vamp/garou/spiral/sec
 
 	id = /obj/item/card/id/garou/spiral/sec
+	ears = /obj/item/p25radio
 	uniform =  /obj/item/clothing/under/pentex/pentex_shortsleeve
 	shoes = /obj/item/clothing/shoes/vampire/jackboots
 	gloves = /obj/item/clothing/gloves/vampire/work
 	suit = /obj/item/clothing/suit/vampire/vest
+	belt = /obj/item/storage/belt/holster/detective/vampire/endron
 	l_pocket = /obj/item/vamp/phone/endron_security
 	r_pocket = /obj/item/vamp/keys/pentex
 	backpack_contents = list(/obj/item/phone_book=1, /obj/item/passport=1, /obj/item/cockclock=1, /obj/item/flashlight=1, /obj/item/vamp/creditcard=1)
@@ -312,7 +319,7 @@
 	allowed_species = list("Vampire", "Ghoul", "Human", "Werewolf")
 	department_head = list("Endron International")
 	allowed_tribes = list("Black Spiral Dancers", "Ronin")
-	allowed_bloodlines = list("True Brujah", "Daughters of Cacophony", "Salubri", "Baali", "Brujah", "Tremere", "Ventrue", "Nosferatu", "Toreador", "Malkavian", "Giovanni", "Ministry", "Tzimisce", "Lasombra", "Caitiff")
+	allowed_bloodlines = list(CLAN_TRUE_BRUJAH, CLAN_DAUGHTERS_OF_CACOPHONY, CLAN_SALUBRI, CLAN_BAALI, CLAN_BRUJAH, CLAN_TREMERE, CLAN_VENTRUE, CLAN_NOSFERATU, CLAN_TOREADOR, CLAN_MALKAVIAN, CLAN_GIOVANNI, CLAN_SETITES, CLAN_TZIMISCE, CLAN_LASOMBRA, CLAN_NONE)
 	faction = "Vampire"
 	selection_color = "#015334"
 
@@ -348,6 +355,7 @@
 	jobtype = /datum/job/vamp/garou/spiral/employee
 
 	id = /obj/item/card/id/garou/spiral/employee
+	ears = /obj/item/p25radio
 	uniform = /obj/item/clothing/under/pentex/pentex_longleeve
 	gloves = /obj/item/clothing/gloves/vampire/work
 	shoes = /obj/item/clothing/shoes/vampire
