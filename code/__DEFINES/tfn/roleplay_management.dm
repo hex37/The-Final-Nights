@@ -117,7 +117,8 @@
 #define GROUP_KEY_FACTION_KINDRED   "faction_kindred"
 #define GROUP_KEY_FACTION_FERA      "faction_fera"
 #define GROUP_KEY_FACTION_HUNTERS   "faction_hunters"
-
+#define GROUP_KEY_FACTION_GHOUL "faction_ghoul"
+#define GROUP_KEY_FACTION_KUEIJIN "faction_kueijin"
 // -- Sects
 #define GROUP_KEY_SECT_INDEPENDENT  "sect_independent"
 #define GROUP_KEY_SECT_CAMARILLA    "sect_camarilla"

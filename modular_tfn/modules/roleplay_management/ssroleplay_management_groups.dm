@@ -115,17 +115,22 @@
 		group_keys += GROUP_KEY_CITY
 	// --- Faction
 	var/faction_key = null
-	if (!iskindred(H) && !isgarou(H))
-		faction_key = GROUP_KEY_FACTION_UNKNOWING
-	else if (iskindred(H) || isghoul(H))
+	if (isghoul(H))
+		faction_key = GROUP_KEY_FACTION_GHOUL
+	else if (iscathayan(H))
+		faction_key = GROUP_KEY_FACTION_KUEIJIN
+	else if (iskindred(H))
 		faction_key = GROUP_KEY_FACTION_KINDRED
 	else if (isgarou(H))
 		faction_key = GROUP_KEY_FACTION_FERA
+	else
+		faction_key = GROUP_KEY_FACTION_UNKNOWING
 	if (faction_key)
 		var/datum/group/faction_group = GLOB.groups[faction_key]
 		if (faction_group)
 			faction_group.add_member_key(character_key, display_name)
 			group_keys += faction_key
+
 	// --- Dynamic Role-Based Assignments
 	var/group_roles = role_to_groups(H.mind?.assigned_role)
 	for (var/Role in group_roles)

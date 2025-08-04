@@ -109,21 +109,29 @@
 	)
 	general["stats"] = stats
 
-	// --- Species-specific details (Kindred, Garou, etc)
+	// --- Species-specific details (Kindred, Garou, Ghoul, etc)
 	var/list/species_block = list(
+		// Kindred & Ghouls
 		"clan" = "", "generation" = "", "masquerade" = "", "morality_path" = "", "morality_score" = "",
 		"disciplines" = list(), "regnant" = "", "regnant_clan" = "",
-		"tribe" = "", "auspice" = "", "gifts" = list(),
-		"rage" = "", "gnosis" = "", "willpower" = "",
+		// Garou
+		"tribe" = "", "auspice" = "", "base_breed" = "", "gifts" = list(),
+		"rage" = "", "gnosis" = "", "willpower" = "", "rank" = "", "honor" = "", "glory" = "", "wisdom" = "",
+		// Kuei-Jin
+		"dharma" = "", "dharma_level" = "", "animated" = "", "po" = "", "hun" = "",
+		"max_yin_chi" = "", "yin_chi" = "", "max_yang_chi" = "", "yang_chi" = "",
+		"max_demon_chi" = "", "demon_chi" = ""
 	)
+
+
+	// Kindred
 	if (iskindred(owner))
 		var/datum/species/kindred/K = owner.dna?.species
 		species_block["clan"]         = owner.clane?.name || "None"
 		species_block["generation"]   = owner.generation || "Unknown"
-		species_block["masquerade"] = "[owner.masquerade]"
+		species_block["masquerade"]   = "[owner.masquerade]"
 		species_block["morality_path"] = owner.morality_path?.name || ""
 		species_block["morality_score"] = owner.morality_path?.score || ""
-		// species_block["regnant"] and ["regnant_clan"] planned for future
 		if (K && islist(K.disciplines))
 			for (var/datum/discipline/D in K.disciplines)
 				species_block["disciplines"] += list(list(
@@ -131,7 +139,78 @@
 					"level" = D.level,
 					"desc" = D.desc || ""
 				))
+
+	// Garou
+	else if (isgarou(owner))
+		var/datum/auspice/a = owner.auspice
+		species_block["masquerade"] = "[owner.masquerade]"
+		species_block["tribe"]      = a?.tribe?.name || "Unknown"
+		species_block["auspice"]    = a?.name || "Unknown"
+		species_block["base_breed"] = a?.base_breed || "Unknown"
+		species_block["gnosis"]     = a?.gnosis || a?.start_gnosis || 0
+		species_block["rage"]       = a?.rage || a?.start_rage || 0
+		species_block["honor"]      = owner.honor || 0
+		species_block["glory"]      = owner.glory || 0
+		species_block["wisdom"]     = owner.wisdom || 0
+		species_block["rank"]       = RankName(owner.renownrank) || "Cub"
+		species_block["gifts"] = list()
+		if (a && islist(a.gifts))
+			for (var/G in a.gifts)
+				var/datum/action/gift/g = locate(G)
+				species_block["gifts"] += list(list(
+					"name" = g?.name || "[G]",
+					"desc" = g?.desc || ""
+				))
+
+	// Ghoul
+	else if (isghoul(owner))
+		var/datum/species/ghoul/G = owner.dna?.species
+		if (G?.master)
+			species_block["regnant"] = G.master.real_name || "Unknown"
+			species_block["regnant_clan"] = G.master.clane.name || "Unknown"
+		else
+			species_block["regnant"] = ""
+			species_block["regnant_clan"] = ""
+		species_block["masquerade"] = "[owner.masquerade]"
+		species_block["generation"] = owner.generation || 13
+		species_block["disciplines"] = list()
+		if (G && islist(G.disciplines))
+			for (var/datum/discipline/D in G.disciplines)
+				species_block["disciplines"] += list(list(
+					"name" = D.name,
+					"level" = D.level,
+					"desc" = D.desc || ""
+				))
+		if (owner.bloodpool || owner.maxbloodpool)
+			species_block["bloodpool"] = "[owner.bloodpool || 0] / [owner.maxbloodpool || 0]"
+
+	else if (iscathayan(owner))
+		var/datum/mind/M = owner.mind
+		var/datum/dharma/D = M?.dharma
+		species_block["dharma"]        = D?.name         || ""
+		species_block["dharma_level"]  = D?.level        || ""
+		species_block["dharma_flavor"] = D?.desc         || ""
+		species_block["tenets"]        = islist(D?.tenets) ? D.tenets : list()
+		species_block["fails"]         = islist(D?.fails) ? D.fails : list()
+		species_block["po"]            = D?.Po           || ""
+		species_block["hun"]           = D?.Hun          || ""
+		species_block["animated"]      = D?.animated     || ""
+		species_block["initial_skin_color"] = D?.initial_skin_color || ""
+		species_block["max_yin_chi"]   = owner.max_yin_chi   || 0
+		species_block["yin_chi"]       = owner.yin_chi       || 0
+		species_block["max_yang_chi"]  = owner.max_yang_chi  || 0
+		species_block["yang_chi"]      = owner.yang_chi      || 0
+		species_block["max_demon_chi"] = owner.max_demon_chi || 0
+		species_block["demon_chi"]     = owner.demon_chi     || 0
+		species_block["masquerade"]    = "[owner.masquerade]"
+
+
+	//KJ have their own thing going on, and a display already, not going to get much deeper right now.
+	//Their powers can be displayed here.
+
+
 	return list("general" = general, "species" = species_block)
+
 
 
 // ==============================================================================

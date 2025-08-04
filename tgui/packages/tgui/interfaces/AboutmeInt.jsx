@@ -16,19 +16,109 @@ const OverviewSection = ({ overview = {}, status, alignment, act }) => {
     name, role, special_role, species: speciesName, regnant, regnant_clan, stats = {},
     goals, personal_quote, gender, physical_desc,
   } = general;
-  const {
-    clan, generation, masquerade, morality_path, morality_score, disciplines = [],
-  } = species;
-
-  const displayOrUnknown = val =>
-    val === undefined || val === null || val === "" ? "Unknown" : val;
-
-  const isKnown = val =>
-    val !== undefined && val !== null && val !== "";
 
   const [disciplinesOpen, setDisciplinesOpen] = useState(false);
   const [statsOpen, setStatsOpen] = useState(false);
   const [speciesOpen, setSpeciesOpen] = useState(false);
+
+  // Utility functions
+  const displayOrUnknown = val =>
+    val === undefined || val === null || val === "" ? "Unknown" : val;
+
+  const isKnown = val =>
+    val !== undefined && val !== null && val !== "" && val !== "Unknown" && val !== "None";
+
+  // --- DYNAMIC SPECIES INFO BLOCK ---
+  function getSpeciesFields(speciesName, species) {
+    const fields = [];
+
+    // Kindred (Vampire)
+    if (speciesName === "Kindred" || speciesName === "Vampire") {
+      isKnown(species.masquerade) && fields.push({ label: "Masquerade", value: species.masquerade }); // Top!
+      isKnown(species.clan) && fields.push({ label: "Clan", value: species.clan });
+      isKnown(species.generation) && species.generation !== 13 && fields.push({ label: "Generation", value: species.generation });
+      (isKnown(species.morality_path) || isKnown(species.morality_score)) && fields.push({
+        label: "Path",
+        value: `${isKnown(species.morality_path) ? species.morality_path : "Unknown"}${isKnown(species.morality_score) ? ` (${species.morality_score})` : ""}`,
+      });
+    }
+
+
+    // Garou (Werewolf)
+    else if (speciesName === "Werewolf" || speciesName === "Garou") {
+      isKnown(species.masquerade) && fields.push({ label: "Veil", value: species.masquerade }); // Top!
+      isKnown(species.tribe) && fields.push({ label: "Tribe", value: species.tribe });
+      isKnown(species.auspice) && fields.push({ label: "Auspice", value: species.auspice });
+      isKnown(species.base_breed) && fields.push({ label: "Breed", value: species.base_breed });
+      isKnown(species.rank) && fields.push({ label: "Rank", value: species.rank });
+      isKnown(species.gnosis) && fields.push({ label: "Gnosis", value: species.gnosis });
+      isKnown(species.rage) && fields.push({ label: "Rage", value: species.rage });
+      isKnown(species.willpower) && fields.push({ label: "Willpower", value: species.willpower });
+      isKnown(species.honor) && fields.push({ label: "Honor", value: species.honor });
+      isKnown(species.glory) && fields.push({ label: "Glory", value: species.glory });
+      isKnown(species.wisdom) && fields.push({ label: "Wisdom", value: species.wisdom });
+      // Gifts list
+      if (Array.isArray(species.gifts) && species.gifts.length > 0) {
+        fields.push({
+          label: "Gifts",
+          value: (
+            <ul style={{ margin: 0, paddingLeft: 18 }}>
+              {species.gifts.map((g, i) =>
+                <li key={i}><b>{g.name}</b>{g.desc ? ` – ${g.desc}` : ""}</li>
+              )}
+            </ul>
+          ),
+        });
+      }
+    }
+
+
+
+    // Ghoul
+    else if (speciesName === "Ghoul") {
+      isKnown(species.masquerade) && fields.push({ label: "Masquerade", value: species.masquerade }); // Top!
+      isKnown(species.regnant) && fields.push({ label: "Regnant", value: species.regnant });
+      isKnown(species.regnant_clan) && fields.push({ label: "Regnant Clan", value: species.regnant_clan });
+    }
+
+
+    // Kuei-Jin
+    else if (
+      speciesName === "Kuei-Jin" ||
+      speciesName === "Kuei Jin" ||
+      speciesName === "Kuei-jin"
+    ) {
+      isKnown(species.masquerade) && fields.push({ label: "Masquerade", value: species.masquerade }); // Top, if you want to show their cover.
+      isKnown(species.dharma) && fields.push({ label: "Dharma", value: species.dharma });
+      isKnown(species.yin_chi) && fields.push({ label: "Yin Chi", value: species.yin_chi });
+      isKnown(species.yang_chi) && fields.push({ label: "Yang Chi", value: species.yang_chi });
+      isKnown(species.demon_chi) && fields.push({ label: "Demon Chi", value: species.demon_chi });
+      isKnown(species.po) && fields.push({ label: "P'o", value: species.po });
+    }
+
+
+    // Fallback: Show any remaining non-blank fields (avoids duplicates)
+    else {
+      Object.entries(species).forEach(([k, v]) => {
+        if (
+          isKnown(v) &&
+          !["disciplines", "gifts"].includes(k) &&
+          !fields.some(f => f.label.toLowerCase() === k.replace(/_/g, " ").toLowerCase())
+        ) {
+          fields.push({
+            label: k.charAt(0).toUpperCase() + k.slice(1).replace(/_/g, " "),
+            value: v,
+          });
+        }
+      });
+    }
+
+    return fields;
+  }
+
+  // --- END DYNAMIC SPECIES INFO BLOCK ---
+
+  const disciplines = species.disciplines ?? [];
 
   return (
     <Section fill title="Overview">
@@ -76,7 +166,6 @@ const OverviewSection = ({ overview = {}, status, alignment, act }) => {
         </LabeledList>
       </Box>
 
-
       {/* Collapsible Attributes (Stats) */}
       {Object.keys(stats).length > 0 && (
         <Box mb={2}>
@@ -98,8 +187,8 @@ const OverviewSection = ({ overview = {}, status, alignment, act }) => {
         </Box>
       )}
 
-      {/* Collapsible Species Information */}
-      {(clan || generation || masquerade || morality_path || morality_score) && (
+      {/* Collapsible Species Information (Dynamic) */}
+      {speciesName && (
         <Box mb={2}>
           <Box
             bold
@@ -111,17 +200,8 @@ const OverviewSection = ({ overview = {}, status, alignment, act }) => {
           </Box>
           {speciesOpen && (
             <LabeledList>
-              {isKnown(clan) && clan !== "None" && clan !== "Unknown" &&
-                <LabeledList.Item label="Clan">{clan}</LabeledList.Item>}
-              {isKnown(generation) && generation !== 13 && generation !== "13" &&
-                <LabeledList.Item label="Generation">{generation}</LabeledList.Item>}
-              {isKnown(masquerade) &&
-                <LabeledList.Item label="Masquerade">{masquerade}</LabeledList.Item>}
-              {(isKnown(morality_path) || isKnown(morality_score)) && (
-                <LabeledList.Item label="Path">
-                  {isKnown(morality_path) ? morality_path : "Unknown"}
-                  {isKnown(morality_score) ? ` (${morality_score})` : ""}
-                </LabeledList.Item>
+              {getSpeciesFields(speciesName, species).map(({ label, value }, i) =>
+                <LabeledList.Item key={i} label={label}>{value}</LabeledList.Item>
               )}
             </LabeledList>
           )}
@@ -164,6 +244,7 @@ const OverviewSection = ({ overview = {}, status, alignment, act }) => {
     </Section>
   );
 };
+
 
 
 

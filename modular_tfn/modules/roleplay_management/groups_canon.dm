@@ -59,6 +59,18 @@
 	name = "Kindred of San Francisco"
 	desc = "You are among the Kindred of San Francisco."
 	leader_name = "Varies"
+//Ghouls
+/datum/group/faction/ghoul
+	id = GROUP_KEY_FACTION_FERA // Replace with the appropriate key or define GROUP_KEY_FACTION macro elsewhere
+	name = "Ghouls of San Francisco"
+	desc = "You are among the Ghouls of San Francisco."
+	leader_name = "Varies, between sects."
+//KueiJin
+/datum/group/faction/kueijin
+	id = GROUP_KEY_FACTION_KUEIJIN // Replace with the appropriate key or define GROUP_KEY_FACTION macro elsewhere
+	name = "Kuei-Jin of San Francisco"
+	desc = "You are among the Kuei-Jin of San Francisco."
+	leader_name = "Varies, between sects."
 //Fera
 /datum/group/faction/fera
 	id = GROUP_KEY_FACTION_FERA // Replace with the appropriate key or define GROUP_KEY_FACTION macro elsewhere

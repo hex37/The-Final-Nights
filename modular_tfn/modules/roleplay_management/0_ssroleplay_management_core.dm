@@ -26,6 +26,8 @@ var/global/list/canonical_groups = list(
 	GROUP_KEY_FACTION_KINDRED   = /datum/group/faction/kindred,
 	GROUP_KEY_FACTION_FERA      = /datum/group/faction/fera,
 	GROUP_KEY_FACTION_HUNTERS   = /datum/group/faction/hunter,
+	GROUP_KEY_FACTION_GHOUL = /datum/group/faction/ghoul,
+	GROUP_KEY_FACTION_KUEIJIN = /datum/group/faction/kueijin,
 	// Sects
 	GROUP_KEY_SECT_CAMARILLA     = /datum/group/sect/camarilla,
 	GROUP_KEY_SECT_ANARCHS       = /datum/group/sect/anarchs,
