@@ -1,64 +1,104 @@
-
-
 ## <Title AboutMe>
-Module ID: ABOUT_ME_CORE
+Module ID: ABOUT_ME_CORE  
 [https://github.com/The-Final-Nights/The-Final-Nights/pull/661]
-### Description:
-Hi! Thanks for your interest in this module. I’ll say outright I’m not an experienced programmer or contributor to BYOND projects—but I do have a love for UI. There are likely many oversights or places where things could be done differently on the backend, but I’ve done my best to make the system easy to understand, modify, build on, and adapt.
 
-**Player Entry Point:**  
-Human mobs get the `about_me` component (`aboutme_core.dm`) during `ComponentInitialize()`. This attaches a TGUI-access button that opens their "About Me" panel, displaying a central character identity page. It also sets up their group memberships based on role and species.
+### Description
 
-**Persistence is not implemented yet**, but this system is built to prepare for it.
+Hi! Thanks for your interest in this module. I’ll say outright I’m not an experienced programmer or contributor to BYOND projects—but I do have a love for UI and systems that make roleplay more fun I hope! There are probably places this could be more "BYONDy" or backend-efficient, but my goal was making the system easy to understand, modify, build on, and expand for future contributors, and myself!
 
-**Round Start:**  
-The `ssrpmanagement.dm` subsystem manages all About Me records and global data. It initializes canonical groups, stores them, and relationships, chronicles, and memories. All information is stored using dynamic access keys, and wiped round-to-round until persistence is ready.
+### **Player Entry Point**
 
-**Files Overview:**
-- `aboutme_defines.dm`: Central definitions (types, tags, group keys). To be split later.
-- `aboutme_core.dm`: The player’s character data controller. Handles component behavior and display access.
-- `aboutme_tgui.dm`: UI logic and act routing.
-- `AboutmeInt.jsx`: Single About Me TGUI panel (5-tab layout), receives and displays player-specific payload.
-- `aboutme_record.dm`: Stores the character’s aboutme_key, group affiliations, memories, and relationships.
-- `ssrpmanagement.dm`: Subsystem manager for canonical groups and global RP state.
-- `group.dm`, `relationships.dm`, `memory.dm`, `chronicle.dm`: Datums for their respective features.
-- `groups_canon.dm`: Canonical group registration (Camarilla, Anarchs, etc).
+All human mobs get the `about_me` component (`aboutme_core.dm`) in `ComponentInitialize()`. This provides an "About Me" button in TGUI—your character’s central identity panel, accessible from the UI. The component also wires up the group/relationship/chronicle/memory systems and auto-registers basic group memberships (like faction, clan, or city) based on your character's role/species.
 
-**External Changes:**
-(Not in the modular aboutme folder, but essential to the system.)
-- Added `AboutmeInt.jsx`, for the player interface.
-- TGUI bridge handled in `aboutme_tgui.dm`, connects JSX to backend act handlers.
-- `AddComponent(/datum/component/about_me)` inserted in:
-  - `/mob/living/carbon/human/ComponentInitialize()`
+### **How It Works**
 
-**Modular:**
-Added `modular_tfn/modules/aboutme/` folder containing all components, records, datums, defines, and the RP subsystem.
+- **The SSRP Management Subsystem** (`ssroleplay_management.dm` and friends) handles:
+  - Canonical group creation (city, factions, clans, orgs, etc) from `groups_canon.dm`
+  - All About Me records, relationships, chronicles, and memories
+  - Global lists for everything, keyed by character/group id
+  - All data is currently *runtime only* (no persistence yet)
+- **Component/Record System**: All in-character info is stored and referenced by `character_key`, never hardcoded to a mob.
+- **Dynamic, Modular, and Easy to Build On**: All logic for tabbed UI, memory/chronicle/relationship management, and group/voting flows is in modular files, following the Nova modular structure.
 
-**About Me Display Tabs:**
-1. **Overview** – Name, role, species, stats, disciplines, regnant, etc.
-2. **Groups** – Clans, sects, factions, tribes, organizations, coteries.
-3. **Relationships** – Tracked relationships between players or groups.
-4. **Chronicles** – Shared/group/memory-linked events (wars, deals, betrayals).
-5. **Memories** – Player-authored log entries, secrets, goals, tags, and RP effects.
+### **File Overview and Responsibilities**
 
-### TG Proc/File Changes:
-- `code/modules/mob/living/carbon/human.dm`:  
-  - `proc/ComponentInitialize()`  
-    ```dm
-    // TFN EDIT ADDITION START - ABOUT_ME_CORE
-    AddComponent(/datum/component/about_me)
-    // TFN EDIT ADDITION END
-    ```
+#### 1. **roleplay_management.dm**
+- Centralizes all the systems defines, group/relationship/memory tags, types, group key macros, and helpers. Lots.
+- Use these for type-safe role and group checks in your own procs!
 
-### Modular Overrides:
-- N/A
+#### 2. **aboutme_core.dm**
+- Attaches the `about_me` component to the player.
+- Controls character-key creation and About Me UI button.
+- Provides main API for fetching and updating overview fields, groups, memories, etc.
 
-### Defines:
-- `aboutme_defines.dm`
+#### 3. **aboutme_tgui.dm**
+- Handles TGUI act routing and payload updates between the backend and AboutMeInt.jsx.
+- All UI act() calls are dispatched here.
 
-### Included files that are not contained in this module:
-- `AboutmeInt.jsx` in tgui/interfaces
+#### 4. **aboutme_record.dm**
+- Stores all persistent player About Me data in a canonical record (not tied to mob!).
+- Includes editable overview fields, group keys, relationships, chronicle and memory references.
+- Responsible for building the UI payload sent to TGUI.
 
-### Credits:
+#### 5. **group.dm**
+- **/datum/group**: The master group datum for all group types (city, clan, sect, org, party, etc).
+- Tracks leaders, officers, members, display names, group orders, chronicles, active votes, and group relationships.
+- Provides all core APIs for joining, leaving, promotion, demotion, voting, and invitations.
+- Groups can be public or require approval.
+- **/datum/group_vote**: Supports officer/leader promotion voting within a group, with vote result tracking and expiry.
+
+#### 6. **relationships.dm**
+- **/datum/relationships**: Represents a character↔character or character↔group relationship.
+- Tracks type ("friend", "rival", "enemy", etc), description, tags, strength, visibility, and whether the relationship is mutual or group-based.
+- API to format for UI and determine visibility.
+
+#### 7. **chronicle.dm**
+- **/datum/chronicle**: Represents a shared event, story arc, or major group moment.
+- Tracks involved characters, groups, and related memories, with date, description, and tags.
+- Used for both personal and group chronicles.
+- API for UI formatting and (future) access control.
+
+#### 8. **memory.dm**
+- **/datum/memory**: Player-authored log entries, secrets, or event notes.
+- Includes summary, details, tags (e.g. "background", "goal", "secret"), owner, related keys, date, and status.
+- All player memories are registered and can be edited, tagged, or deleted from the UI.
+
+#### 9. **groups_canon.dm**
+- Registers all canonical (main) group datums at roundstart (city, factions, major clans, orgs, etc).
+- Used by SSRP to enforce correct group/role mappings at runtime.
+
+#### 10. **ssrpmanagement.dm**
+- The core RP Management subsystem.
+- Initializes all group and aboutme data, provides registration, lookup, and modification for every part of the About Me system.
+
+#### 11. **AboutmeInt.jsx** (in tgui/interfaces)
+- The actual TGUI interface. All data for your character's About Me is rendered here in 5 main tabs:
+  1. Overview (character sheet)
+  2. Groups (clan/sect/faction/org/party)
+  3. Relationships (player-to-player and player-to-group)
+  4. Chronicles (events and stories)
+  5. Memories (your logs, secrets, and RP notes)
+
+### **External Changes**
+- Adds `AboutmeInt.jsx` for the new panel UI.
+- Adds `AddComponent(/datum/component/about_me)` to `/mob/living/carbon/human/ComponentInitialize()`.
+
+### **Key Concepts**
+
+- **Tab-Based, Expandable UI:** Each About Me section (overview, groups, relationships, etc) is fully modular and easy to expand.
+- **No Hard References:** All data is keyed and accessed by character or group key, allowing cross-round persistence (when implemented).
+- **Voting & Group Management:** Groups support officer/leader voting, invite flows, and loyalty-based leaving/restriction logic.
+- **Story-Driven:** Players and staff can log events, memories, and relationships in-game, supporting RP-focused narrative play.
+
+### **Modular Layout**
+
+All code lives in `modular_tfn/modules/aboutme/` (except for TGUI and defines), following Nova’s modular standards for future-proofing.
+
+### **Credits**
+
 MichaelEUkari - <3 - Let's make some memories.  
 Soreyew - Prompted the faction system and favor tracking inspiration. (Favor tracking coming with persistence!)
+
+### **Contributing**
+
+This is a living system! Please feel free to PR improvements, better persistence, new group types, or more user-friendly flows. UI/UX and story tool suggestions are always welcome!
