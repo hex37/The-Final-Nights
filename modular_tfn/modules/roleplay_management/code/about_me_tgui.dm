@@ -73,7 +73,7 @@
 // ==============================================================================
 
 /// Handles button click actions from the About Me TGUI.
-/// Routes action to appropriate backend proc or prompt handler.
+/// Routes action to appropriate backend proc or prompt handlers.
 /datum/component/about_me/ui_act(action, params, about_me_ui, about_me_ui_state)
 	. = ..()
 	var/mob/user_mob = parent

@@ -29,8 +29,6 @@
 /// Updates or sets this component's character_key from the mob's true_real_name.
 /// Ensures a consistent, unique key for About Me tracking.
 /datum/component/about_me/proc/UpdateCharacterKey()
-	if (!owner || !owner.true_real_name)
-		return
 	var/raw_key = lowertext(replacetext(owner.true_real_name, " ", "_"))
 	character_key = "[raw_key]_character_key"
 
@@ -43,8 +41,6 @@
 /// Convenience proc to get this component's own aboutme_record.
 /// Returns null if no character_key is set.
 /datum/component/about_me/proc/get_record()
-	if (!character_key)
-		return null
 	return SSroleplay_management.get_aboutme_record(character_key)
 
 /// Provides the full About Me payload for TGUI.
@@ -62,43 +58,35 @@
 /// Delegates to aboutme_record.
 /datum/component/about_me/proc/build_overview_data()
 	var/datum/aboutme_record/aboutme_record = get_aboutme_record()
-	if (!aboutme_record)
-		return null
 	return aboutme_record.get_ui_overview_data(owner)
 
 /// Returns all group data (by type) for the Groups tab in the About Me UI.
 /// Delegates to aboutme_record.
 /datum/component/about_me/proc/get_groups_for_ui()
 	var/datum/aboutme_record/aboutme_record = get_aboutme_record()
-	if (!aboutme_record)
-		return null
 	return aboutme_record.get_ui_groups(owner)
 
 /// Returns categorized memories (by tag/category) for the Memories tab in the About Me UI.
 /// Delegates to aboutme_record.
 /datum/component/about_me/proc/get_memories_by_category()
 	var/datum/aboutme_record/aboutme_record = get_aboutme_record()
-	if (!aboutme_record)
-		return null
 	return aboutme_record.get_ui_memories_by_tag(owner)
 
 /// Opens a TGUI prompt to vote on a group role action (officer/leader/etc).
 /// Registers the player's choice and notifies them. Used by group voting features.
+/// Prompts the user to vote in a group decision, then records their vote.
 /datum/component/about_me/proc/prompt_vote_on_group(datum/group_vote/group_vote)
-	if (!group_vote || !owner || !ismob(owner))
-		return
 	var/datum/group/group = SSroleplay_management.get_group_by_key(group_vote.group_id)
-	if (!group || group_vote.has_voted(character_key))
+	if (!group || !owner || !ismob(owner) || group_vote.has_voted(character_key))
 		return
-	var/vote_target = group.member_names[group_vote.target_character_key] ? group.member_names[group_vote.target_character_key] : group_vote.target_character_key
-	var/vote_title = "Vote in [group.name]: [group_vote.vote_type]"
-	var/vote_message = "Do you vote YES or NO to [group_vote.vote_type] [vote_target]?"
-	var/player_choice = tgui_input_list(owner, vote_message, vote_title, list("Yes", "No"))
+	var/vote_target = group.member_names[group_vote.target_character_key] || group_vote.target_character_key
+	var/player_choice = tgui_input_list(
+		owner,
+		"Do you vote YES or NO to [group_vote.vote_type] [vote_target]?",
+		"Vote in [group.name]: [group_vote.vote_type]",
+		list("Yes", "No")
+	)
 	if (isnull(player_choice))
 		return
 	group_vote.add_vote(character_key, player_choice == "Yes")
-	to_chat(owner, "<span class='notice'>Your vote for [vote_target] has been recorded.</span>")
-
-// ==============================================================================
-// END OF /datum/component/about_me (STYLE GUIDE COMPLIANT, FULLY COMMENTED)
-// ==============================================================================
+	to_chat(owner, span_notice("Your vote for [vote_target] has been recorded."))

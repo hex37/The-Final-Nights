@@ -59,10 +59,10 @@
 	)
 
 	// --- Bank account code, if available ---
-	for (var/datum/vtm_bank_account/account in GLOB.bank_account_list)
-		if (owner.bank_id == account.bank_id)
-			general["bank_account_code"] = account.code
-			break
+	if (owner.bank_id && GLOB.bank_account_list[owner.bank_id])
+		var/datum/vtm_bank_account/account = GLOB.bank_account_list[owner.bank_id]
+		general["bank_account_code"] = account.code
+
 
 	// --- Role-specific codes ---
 	var/role = owner?.mind?.assigned_role
@@ -72,7 +72,7 @@
 		general["armory_code"] = armory.pincode
 
 	var/obj/keypad/panic_room/panic = find_keypad(/obj/keypad/panic_room)
-	if (panic && role == "Prince")
+	if (panic && role == "Prince", "Seneschal")
 		general["panic_room_code"] = panic.pincode
 
 	var/obj/structure/vaultdoor/pincode/bank/bankdoor = find_door_pin(/obj/structure/vaultdoor/pincode/bank)
@@ -110,8 +110,6 @@
 	//more species cases as needed
 	// Fallback/default
 	return list("general" = general, "species" = get_species_ui_default(owner))
-
-
 
 /// Returns a fully populated Kindred species block for About Me UI.
 /datum/aboutme_record/proc/get_species_ui_kindred(mob/living/carbon/human/owner)
@@ -216,7 +214,7 @@
 /// Returns all groups this character is a member of, organized by type, and formatted for UI.
 /datum/aboutme_record/proc/get_ui_groups(mob/living/carbon/human/owner)
 	var/list/group_objects = list()
-	for (var/group_key in src.group_keys)
+	for (var/group_key in group_keys)
 		var/datum/group/group = SSroleplay_management.get_group_by_key(group_key)
 		if (!group)
 			continue
@@ -231,7 +229,7 @@
 	var/list/output = list()
 	for (var/key in relationship_keys)
 		var/datum/relationships/relationship = SSroleplay_management.get_relationship_by_key(key)
-		if (!relationship || !relationship.visible)
+		if (!relationship.visible)
 			continue
 		output += list(relationship.GetFormattedUI())
 	return output
@@ -241,7 +239,7 @@
 	var/list/visible = list()
 	for (var/key in chronicle_keys)
 		var/datum/chronicle/chronicle = SSroleplay_management.get_chronicle_by_key(key)
-		if (!chronicle || !chronicle.is_visible_to(user, character_key))
+		if (!chronicle.is_visible_to(user, character_key))
 			continue
 		var/list/char_names = list()
 		for (var/char_key in chronicle.related_characters)
@@ -267,7 +265,7 @@
 	)
 	for (var/key in memory_keys)
 		var/datum/memory/memory = SSroleplay_management.get_memory_by_key(key)
-		if (!memory || !memory.is_visible_to(user, character_key))
+		if (!memory.is_visible_to(user, character_key))
 			continue
 		var/mem_ui = memory.GetFormattedUI()
 		by_tag["memories_all"] += list(mem_ui)
@@ -279,35 +277,23 @@
 // ------------------------------------------------------------------------------
 // EDITABLE FIELDS: Called by TGUI to update values. No mob refs—pure persistence.
 // ------------------------------------------------------------------------------
-
 /// Sets the character's display name (shown in Overview tab).
 /datum/aboutme_record/proc/set_display_name(new_name)
 	edit_display_name = new_name
-
 /// Sets the character's personal goals.
 /datum/aboutme_record/proc/set_goals(new_goal)
 	edit_goals = new_goal
-
 /// Sets the character's personal quote.
 /datum/aboutme_record/proc/set_personal_quote(new_quote)
 	edit_personal_quote = new_quote
-
 /// Sets the character's gender field.
 /datum/aboutme_record/proc/set_gender(new_gender)
 	edit_gender = new_gender
-
 /// Sets the character's physical description field.
 /datum/aboutme_record/proc/set_physical_desc(new_phys_desc)
 	edit_physical_desc = new_phys_desc
 
-// ------------------------------------------------------------------------------
-// UTILITY HELPERS: No mob refs or component refs stored—pure data
-// ------------------------------------------------------------------------------
-
+// HELPERS:
 /// Returns a copy of all current group keys for this character (used for checks, UI, etc).
 /datum/aboutme_record/proc/get_current_group_keys()
 	return group_keys.Copy()
-
-// ------------------------------------------------------------------------------
-// END: aboutme_record.dm (STYLE GUIDE + COMMENTED)
-// ------------------------------------------------------------------------------
