@@ -380,20 +380,23 @@
 			G.add_officer(character_key, display_name)
 		else
 			G.add_member_key(character_key, display_name)
-	// --- Clan
+
 	if (iskindred(H))
-		var/datum/species/kindred/K = H.dna?.species
-		var/clan_name = K.clan?.name
-		if (!clan_name || lowertext(clan_name) == "unknown" || lowertext(clan_name) == "none")
-			clan_name = "Caitiff"
-		var/clan_key = GROUP_KEY_CLAN(clan_name)
+		var/datum/vampire_clan/clan = H.clan
+		var/clan_key = GROUP_KEY_CLAN(clan.name)
 		var/datum/group/clan_group = GLOB.groups[clan_key]
 		if (!clan_group)
 			clan_key = GROUP_KEY_CLAN_CAITIF
 			clan_group = GLOB.groups[clan_key]
 		if (clan_group)
+			// Remove other clan_* keys
+			for (var/gk in group_keys)
+				if (findtext(gk, "clan_") == 1 && gk != clan_key)
+					group_keys -= gk
 			clan_group.add_member_key(character_key, display_name)
-			group_keys += clan_key
+			if (!(clan_key in group_keys))
+				group_keys += clan_key
+
 	// --- Tribe
 	if (isgarou(H) || iswerewolf(H))
 		var/tribe = H.auspice?.tribe?.name
