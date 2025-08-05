@@ -91,11 +91,6 @@
 #define ACCESS_ROLE_MEMBER          "member"
 #define ACCESS_ROLE_NONE            "none"
 
-// ------------------------------------------------------------------------------
-// FILE PATH HELPERS: Used for persistent save/load, and TGUI hooks
-// ------------------------------------------------------------------------------
-#define SAVEFILE_ROOT_PATH          "data/player_saves"
-#define SAVEFILE_ABOUTME_PATH(ckey, character_key) "[SAVEFILE_ROOT_PATH]/[ckey]/aboutme/[character_key].sav"
 #define TGUI_ABOUTME_ID             "AboutmeInt"
 #define SUBSYSTEM_ABOUTME_TAG       "aboutme_rp"
 

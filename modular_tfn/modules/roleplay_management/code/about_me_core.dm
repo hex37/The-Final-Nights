@@ -7,80 +7,98 @@
 // ==============================================================================
 
 /datum/component/about_me
-	// Quick reference to the mob this is attached to
 	var/mob/living/carbon/human/owner = null
-	// Unique character key (built from owner mob's true_real_name.)
 	var/character_key = null
 
+/// Called when the component is initialized and attached to a mob.
+/// Grants the About Me UI action button to the mob.
 /datum/component/about_me/Initialize()
 	..()
 	owner = parent
-	// Add UI button for About Me
-	var/datum/action/about_me/action = new(owner)
-	action.Grant(parent)
+	var/datum/action/about_me/about_me_action = new(owner)
+	about_me_action.Grant(parent)
 
+/// Called when the component is destroyed (mob deleted or cleaned up).
+/// Unregisters this component from the global registry and clears refs.
 /datum/component/about_me/Destroy()
 	if (character_key)
 		SSroleplay_management.unregister_aboutme_component(src)
 	owner = null
 	..()
 
-	// === IDENTITY & RECORD LOOKUP ===
-
-	/// Updates/sets character_key from mob's true_real_name
+/// Updates or sets this component's character_key from the mob's true_real_name.
+/// Ensures a consistent, unique key for About Me tracking.
 /datum/component/about_me/proc/UpdateCharacterKey()
-	if (owner && owner.true_real_name)
-		var/raw_key = lowertext(replacetext(owner.true_real_name, " ", "_"))
-		character_key = "[raw_key]_character_key"
+	if (!owner || !owner.true_real_name)
+		return
+	var/raw_key = lowertext(replacetext(owner.true_real_name, " ", "_"))
+	character_key = "[raw_key]_character_key"
 
-	/// Gets this component's aboutme_record (optionally for another key)
+/// Gets the aboutme_record for this component (optionally for another key).
+/// This is the canonical data record, used for About Me info at runtime, supports future save and load features.
 /datum/component/about_me/proc/get_aboutme_record(character_key_override = null)
-	var/key = character_key_override || character_key
-	return SSroleplay_management.get_aboutme_record(key)
+	var/lookup_key = character_key_override ? character_key_override : character_key
+	return SSroleplay_management.get_aboutme_record(lookup_key)
 
-	/// Short form: gets this record for convenience
+/// Convenience proc to get this component's own aboutme_record.
+/// Returns null if no character_key is set.
 /datum/component/about_me/proc/get_record()
-	return character_key ? SSroleplay_management.get_aboutme_record(character_key) : null
+	if (!character_key)
+		return null
+	return SSroleplay_management.get_aboutme_record(character_key)
 
-	// === UI PAYLOAD & TGUI INTERFACE ===
-
-	/// Provides the full About Me payload for TGUI
+/// Provides the full About Me payload for TGUI.
+/// Registers this component globally if needed, ensures the record exists, and returns all panel data.
 /datum/component/about_me/proc/get_full_payload(mob/living/carbon/human/user)
 	UpdateCharacterKey()
 	if (!(src in GLOB.aboutme_components))
 		SSroleplay_management.register_aboutme_component(src)
-	var/datum/aboutme_record/R = get_aboutme_record()
-	if (!R)
-		R = SSroleplay_management.ensure_aboutme_datum_for_key(character_key, owner)
-	return R.update_payload(owner)
+	var/datum/aboutme_record/aboutme_record = get_aboutme_record()
+	if (!aboutme_record)
+		aboutme_record = SSroleplay_management.ensure_aboutme_datum_for_key(character_key, owner)
+	return aboutme_record.update_payload(owner)
 
-	/// Tab data accessors (all just delegate to the record)
+/// Returns overview data (e.g. name, stats, clan) for the About Me UI tab.
+/// Delegates to aboutme_record.
 /datum/component/about_me/proc/build_overview_data()
-	var/datum/aboutme_record/R = get_aboutme_record()
-	return R?.get_ui_overview_data(owner)
+	var/datum/aboutme_record/aboutme_record = get_aboutme_record()
+	if (!aboutme_record)
+		return null
+	return aboutme_record.get_ui_overview_data(owner)
 
+/// Returns all group data (by type) for the Groups tab in the About Me UI.
+/// Delegates to aboutme_record.
 /datum/component/about_me/proc/get_groups_for_ui()
-	var/datum/aboutme_record/R = get_aboutme_record()
-	return R?.get_ui_groups(owner)
+	var/datum/aboutme_record/aboutme_record = get_aboutme_record()
+	if (!aboutme_record)
+		return null
+	return aboutme_record.get_ui_groups(owner)
 
+/// Returns categorized memories (by tag/category) for the Memories tab in the About Me UI.
+/// Delegates to aboutme_record.
 /datum/component/about_me/proc/get_memories_by_category()
-	var/datum/aboutme_record/R = get_aboutme_record()
-	return R?.get_ui_memories_by_tag(owner)
+	var/datum/aboutme_record/aboutme_record = get_aboutme_record()
+	if (!aboutme_record)
+		return null
+	return aboutme_record.get_ui_memories_by_tag(owner)
 
-	// === VOTING UI (quick access, yes or no, with context for groups to use.) ===
-/datum/component/about_me/proc/prompt_vote_on_group(datum/group_vote/V)
-	if (!V || !owner || !ismob(owner)) return
-	var/datum/group/G = SSroleplay_management.get_group_by_key(V.group_id)
-	if (!G || V.has_voted(character_key)) return
-	var/target = G.member_names[V.target_character_key] || V.target_character_key
-	var/title = "Vote in [G.name]: [V.vote_type]"
-	var/message = "Do you vote YES or NO to [V.vote_type] [target]?"
-	var/choice = tgui_input_list(owner, message, title, list("Yes", "No"))
-	if (isnull(choice)) return
-	V.add_vote(character_key, choice == "Yes")
-	to_chat(owner, "<span class='notice'>Your vote for [target] has been recorded.</span>")
+/// Opens a TGUI prompt to vote on a group role action (officer/leader/etc).
+/// Registers the player's choice and notifies them. Used by group voting features.
+/datum/component/about_me/proc/prompt_vote_on_group(datum/group_vote/group_vote)
+	if (!group_vote || !owner || !ismob(owner))
+		return
+	var/datum/group/group = SSroleplay_management.get_group_by_key(group_vote.group_id)
+	if (!group || group_vote.has_voted(character_key))
+		return
+	var/vote_target = group.member_names[group_vote.target_character_key] ? group.member_names[group_vote.target_character_key] : group_vote.target_character_key
+	var/vote_title = "Vote in [group.name]: [group_vote.vote_type]"
+	var/vote_message = "Do you vote YES or NO to [group_vote.vote_type] [vote_target]?"
+	var/player_choice = tgui_input_list(owner, vote_message, vote_title, list("Yes", "No"))
+	if (isnull(player_choice))
+		return
+	group_vote.add_vote(character_key, player_choice == "Yes")
+	to_chat(owner, "<span class='notice'>Your vote for [vote_target] has been recorded.</span>")
 
 // ==============================================================================
-// END OF /datum/component/about_me (REFINED)
+// END OF /datum/component/about_me (STYLE GUIDE COMPLIANT, FULLY COMMENTED)
 // ==============================================================================
-
