@@ -36,10 +36,6 @@
 	. = ..()
 	if(!CONFIG_GET(flag/disable_human_mood))
 		AddComponent(/datum/component/mood)
-	// TFN EDIT ADDITION START - ABOUT_ME_CORE
-	if(!GetComponent(/datum/component/about_me))
-		AddComponent(/datum/component/about_me)
-	// TFN EDIT ADDITION END
 
 /mob/living/carbon/human/Destroy()
 	QDEL_NULL(physiology)
