@@ -312,18 +312,16 @@
 
 // ---------------- INITIALIZATION ----------------
 /datum/controller/subsystem/roleplay_management/Initialize()
-	..()
-	InitAllGroups()
-/datum/controller/subsystem/roleplay_management/proc/InitAllGroups()
-	var/created = "", skipped = ""
-	for (var/group_key in canonical_groups)
-		if (!(group_key in GLOB.groups))
-			var/typepath = canonical_groups[group_key]
-			GLOB.groups[group_key] = new typepath()
-			created += "[group_key], "
-		else
-			skipped += "[group_key], "
-	message_admins("Groups created: [created]\nGroups skipped: [skipped]")
+	. = ..()
+	if (!.) return .
+	if (!GLOB.groups) GLOB.groups = list()
+	if (!GLOB.canonical_groups) GLOB.canonical_groups = list()
+
+	// Register/create all canonical groups (idempotent)
+	rpm_register_canonical_groups()
+	return .
+
+
 // ---------------- LOOKUP / REGISTRATION ----------------
 /datum/controller/subsystem/roleplay_management/proc/get_group_by_key(key)
 	return is_valid_key(key) ? GLOB.groups[key] : null
@@ -333,11 +331,8 @@
 /datum/controller/subsystem/roleplay_management/proc/unregister_group(datum/group/G)
 	if (G?.id)
 		GLOB.groups -= G.id
-/datum/controller/subsystem/roleplay_management/proc/get_canonical_group_key_for_type(typepath)
-	for (var/k in canonical_groups)
-		if (canonical_groups[k] == typepath)
-			return k
-	return null
+
+
 // ---------------- ROLE-BASED ASSIGNMENT ----------------
 /datum/controller/subsystem/roleplay_management/proc/ensure_groups_from_role(character_key, mob/living/carbon/human/owner)
 	var/datum/aboutme_record/R = ensure_aboutme_datum_for_key(character_key, owner)

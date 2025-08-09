@@ -7,6 +7,6 @@
 	var/show_flavor_text_when_masked
 
 /mob/living/carbon/human/ComponentInitialize()
-    . = ..()
+	. = ..()
 	if(!GetComponent(/datum/component/about_me))
 		AddComponent(/datum/component/about_me)

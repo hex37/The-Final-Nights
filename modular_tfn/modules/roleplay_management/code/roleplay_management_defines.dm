@@ -25,17 +25,6 @@
 #define GROUP_TYPE_PLAYER           "player_created" // For player-made groups
 
 // ------------------------------------------------------------------------------
-// GROUP TAGS: Used for type-based filtering and identification
-// ------------------------------------------------------------------------------
-#define GROUP_TAG_CITY              "group_tag_city"
-#define GROUP_TAG_FACTION           "group_tag_faction"
-#define GROUP_TAG_SECT              "group_tag_sect"
-#define GROUP_TAG_CLAN              "group_tag_clan"
-#define GROUP_TAG_TRIBE             "group_tag_tribe"
-#define GROUP_TAG_ORG               "group_tag_org"
-#define GROUP_TAG_PARTY             "group_tag_party"
-
-// ------------------------------------------------------------------------------
 // RELATIONSHIP TYPES: Used for both logic and UI presentation
 // ------------------------------------------------------------------------------
 #define RELATIONSHIP_ALLY           "ally"

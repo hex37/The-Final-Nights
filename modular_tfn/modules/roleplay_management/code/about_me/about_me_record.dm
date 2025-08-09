@@ -218,7 +218,7 @@
 		var/datum/group/group = SSroleplay_management.get_group_by_key(group_key)
 		if (!group)
 			continue
-		var/group_type = group.gtype || "unknown"
+		var/group_type = group.get_group_type()
 		if (!(group_type in group_objects))
 			group_objects[group_type] = list()
 		group_objects[group_type] += group.GetFormattedUI()

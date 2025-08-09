@@ -53,11 +53,25 @@
 	var/list/chronicle_keys = list()   // Chronicle/event IDs for this group
 	var/list/active_votes = list()     // id => /datum/group_vote
 
-/// On creation, guarantees a unique group id.
+/datum/group/proc/get_group_type()
+	// Prefer explicit, but fall back to checking the type path.
+	if (gtype) return gtype
+	if (istype(src, /datum/group/city))         return GROUP_TYPE_CITY
+	if (istype(src, /datum/group/faction))      return GROUP_TYPE_FACTION
+	if (istype(src, /datum/group/sect))         return GROUP_TYPE_SECT
+	if (istype(src, /datum/group/clan))         return GROUP_TYPE_CLAN
+	if (istype(src, /datum/group/tribe))        return GROUP_TYPE_TRIBE
+	if (istype(src, /datum/group/organization)) return GROUP_TYPE_ORGANIZATION
+	if (istype(src, /datum/group/party))        return GROUP_TYPE_PARTY
+	return "unknown"
+
+// Optional: set it once on construct if empty
 /datum/group/New()
 	..()
 	if (!id)
-		id = "[type]_[world.time]_[rand(1,1000000)]" // guarantee uniqueness
+		id = "[type]_[world.time]_[rand(1,1000000)]"
+	if (!gtype)
+		gtype = get_group_type()
 
 /// On deletion, clean up registration.
 /datum/group/Destroy()
