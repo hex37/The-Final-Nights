@@ -72,7 +72,7 @@
 		general["armory_code"] = armory.pincode
 
 	var/obj/keypad/panic_room/panic = find_keypad(/obj/keypad/panic_room)
-	if (panic && (role in list("Prince", "Seneschal")))
+	if (panic && role == "Prince", "Seneschal")
 		general["panic_room_code"] = panic.pincode
 
 	var/obj/structure/vaultdoor/pincode/bank/bankdoor = find_door_pin(/obj/structure/vaultdoor/pincode/bank)
