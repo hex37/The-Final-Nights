@@ -42,7 +42,7 @@ SUBSYSTEM_DEF(roleplay_management)
 		check_register_valid_character_key(character_key)
 	return GLOB.aboutme_records[character_key]
 
-/datum/controller/subsystem/roleplay_management/proc/ensure_aboutme_datum_for_key(character_key, mob/living/carbon/human/owner)
+/datum/controller/subsystem/roleplay_management/proc/ensure_aboutme_record_for_key(character_key, mob/living/carbon/human/owner)
 	if (!character_key)
 		return null
 	return get_aboutme_record(character_key)

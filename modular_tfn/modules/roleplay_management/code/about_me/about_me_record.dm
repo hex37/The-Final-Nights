@@ -48,8 +48,10 @@
 /// Builds a dictionary of overview data for the panel's Overview tab.
 /// Pulls from both saved fields and live mob state (name, species, stats, codes, etc).
 /datum/aboutme_record/proc/get_ui_overview_data(mob/living/carbon/human/owner)
+	message_admins("AboutMe[character_key]: overview start; owner=[owner ? owner.real_name : "null"]")
+
 	var/list/general = list(
-		"name" = (edit_display_name && edit_display_name != "") ? edit_display_name : (owner.real_name || "Unknown"),
+		"name" = (edit_display_name && edit_display_name != "") ? edit_display_name : (owner?.real_name || "Unknown"),
 		"role" = owner?.mind?.assigned_role || "Unknown",
 		"species" = owner?.dna?.species?.name || "Unknown",
 		"gender" = edit_gender || "",
@@ -57,22 +59,33 @@
 		"goals" = edit_goals || "",
 		"personal_quote" = edit_personal_quote || ""
 	)
+	message_admins("AboutMe[character_key]: general built; name=[general["name"]] role=[general["role"]] species=[general["species"]]")
 
-	// --- Bank account code, if available ---
-	if (owner.bank_id && GLOB.bank_account_list[owner.bank_id])
-		var/datum/vtm_bank_account/account = GLOB.bank_account_list[owner.bank_id]
-		general["bank_account_code"] = account.code
+	// --- Bank account code ---
+	if (owner?.bank_id && islist(GLOB.bank_account_list))
+		var/datum/vtm_bank_account/account = null
+
+		// Search for matching bank_id
+		for (var/datum/vtm_bank_account/A in GLOB.bank_account_list)
+			if (A?.bank_id == owner.bank_id)
+				account = A
+				break
+
+		// Only show if this is actually their account
+		if (account && account?.account_owner == owner.real_name && account?.code)
+			general["bank_account_code"] = account.code
+		else
+			general["bank_account_code"] = "N/A"
 
 
 	// --- Role-specific codes ---
-	var/role = owner?.mind?.assigned_role
-
+	var/role = general["role"]
 	var/obj/keypad/armory/armory = find_keypad(/obj/keypad/armory)
 	if (armory && (role in list("Prince", "Sheriff", "Seneschal")))
 		general["armory_code"] = armory.pincode
 
 	var/obj/keypad/panic_room/panic = find_keypad(/obj/keypad/panic_room)
-	if (panic && role == "Prince", "Seneschal")
+	if (panic && (role in list("Prince", "Seneschal")))
 		general["panic_room_code"] = panic.pincode
 
 	var/obj/structure/vaultdoor/pincode/bank/bankdoor = find_door_pin(/obj/structure/vaultdoor/pincode/bank)
@@ -81,35 +94,41 @@
 			general["bank_vault_code"] = bankdoor.pincode
 		else if (role == "La Squadra" && prob(50))
 			general["bank_vault_code"] = bankdoor.pincode
+	message_admins("AboutMe[character_key]: role codes ok")
 
-	// --- Player stats from mob/living ---
-	var/list/stats = list(
-		"Physique" = owner.get_total_physique(),
-		"Dexterity" = owner.get_total_dexterity(),
-		"Social" = owner.get_total_social(),
-		"Mentality" = owner.get_total_mentality(),
-		"Athletics" = owner.get_total_athletics(),
-		"Lockpicking" = owner.get_total_lockpicking(),
-		"Cruelty" = owner.get_total_blood()
-	)
+	// --- Player stats (guard each call) ---
+	var/list/stats = list()
+	if (hascall(owner, "get_total_physique"))    stats["Physique"]    = owner.get_total_physique()
+	if (hascall(owner, "get_total_dexterity"))   stats["Dexterity"]   = owner.get_total_dexterity()
+	if (hascall(owner, "get_total_social"))      stats["Social"]      = owner.get_total_social()
+	if (hascall(owner, "get_total_mentality"))   stats["Mentality"]   = owner.get_total_mentality()
+	if (hascall(owner, "get_total_athletics"))   stats["Athletics"]   = owner.get_total_athletics()
+	if (hascall(owner, "get_total_lockpicking")) stats["Lockpicking"] = owner.get_total_lockpicking()
+	if (hascall(owner, "get_total_blood"))       stats["Cruelty"]     = owner.get_total_blood()
 	general["stats"] = stats
+	message_admins("AboutMe[character_key]: stats added; keys=[stats?.len || 0]")
 
-	/// Builds the species block for About Me UI, delegating by species.
-	var/datum/species/species_datum = owner.dna?.species
-	var/species_type = istype(species_datum) ? species_datum.type : null
+	// --- Species block (safe switch) ---
+	var/list/species_block = list()
+	if (iskindred(owner))
+		message_admins("AboutMe[character_key]: species route = kindred")
+		species_block = get_species_ui_kindred(owner)
+	else if (isgarou(owner))
+		message_admins("AboutMe[character_key]: species route = garou")
+		species_block = get_species_ui_garou(owner)
+	else if (isghoul(owner))
+		message_admins("AboutMe[character_key]: species route = ghoul")
+		species_block = get_species_ui_ghoul(owner)
+	else if (iscathayan(owner))
+		message_admins("AboutMe[character_key]: species route = cathayan")
+		species_block = get_species_ui_cathayan(owner)
+	else
+		message_admins("AboutMe[character_key]: species route = default/human")
 
-	switch (species_type)
-		if (/datum/species/kindred)
-			return list("general" = general, "species" = get_species_ui_kindred(owner))
-		if (/datum/species/garou)
-			return list("general" = general, "species" = get_species_ui_garou(owner))
-		if (/datum/species/ghoul)
-			return list("general" = general, "species" = get_species_ui_ghoul(owner))
-		if (/datum/species/kuei_jin)
-			return list("general" = general, "species" = get_species_ui_cathayan(owner))
-	//more species cases as needed
-	// Fallback/default
-	return list("general" = general, "species" = get_species_ui_default(owner))
+	message_admins("AboutMe[character_key]: overview return OK")
+	return list("general" = general, "species" = species_block)
+
+
 
 /// Returns a fully populated Kindred species block for About Me UI.
 /datum/aboutme_record/proc/get_species_ui_kindred(mob/living/carbon/human/owner)

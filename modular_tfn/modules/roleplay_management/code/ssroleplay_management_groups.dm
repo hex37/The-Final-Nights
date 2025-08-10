@@ -335,7 +335,7 @@
 
 // ---------------- ROLE-BASED ASSIGNMENT ----------------
 /datum/controller/subsystem/roleplay_management/proc/ensure_groups_from_role(character_key, mob/living/carbon/human/owner)
-	var/datum/aboutme_record/R = ensure_aboutme_datum_for_key(character_key, owner)
+	var/datum/aboutme_record/R = ensure_aboutme_record_for_key(character_key, owner)
 	var/mob/living/carbon/human/H = owner
 	var/list/group_keys = list()
 	var/display_name = H.true_real_name || H.name

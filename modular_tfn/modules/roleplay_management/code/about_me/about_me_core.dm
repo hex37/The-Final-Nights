@@ -28,6 +28,7 @@
 
 /// Updates or sets this component's character_key from the mob's true_real_name.
 /// Ensures a consistent, unique key for About Me tracking.
+///Needs to be ckey_charactername_character_ID
 /datum/component/about_me/proc/UpdateCharacterKey()
 	var/raw_key = lowertext(replacetext(owner.true_real_name, " ", "_"))
 	character_key = "[raw_key]_character_key"
@@ -45,14 +46,23 @@
 
 /// Provides the full About Me payload for TGUI.
 /// Registers this component globally if needed, ensures the record exists, and returns all panel data.
-/datum/component/about_me/proc/get_full_payload(mob/living/carbon/human/user)
+/datum/component/about_me/proc/get_full_payload()
 	UpdateCharacterKey()
+
 	if (!(src in GLOB.aboutme_components))
 		SSroleplay_management.register_aboutme_component(src)
-	var/datum/aboutme_record/aboutme_record = get_aboutme_record()
-	if (!aboutme_record)
-		aboutme_record = SSroleplay_management.ensure_aboutme_datum_for_key(character_key, owner)
-	return aboutme_record.update_payload(owner)
+
+	var/datum/aboutme_record/R = get_aboutme_record()
+	if (!R)
+		R = SSroleplay_management.ensure_aboutme_record_for_key(character_key, owner)
+
+	// Owner already be set; null means something is wrong.
+	if (!istype(owner, /mob/living/carbon/human))
+		return list(error = "Invalid or missing owner for About Me component.")
+
+	return R.update_payload(owner)
+
+
 
 /// Returns overview data (e.g. name, stats, clan) for the About Me UI tab.
 /// Delegates to aboutme_record.

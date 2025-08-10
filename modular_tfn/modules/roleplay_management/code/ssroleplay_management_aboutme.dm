@@ -9,7 +9,7 @@
 // ================================================================
 // ---------------- ABOUTME INITIALIZATION ----------------
 /datum/controller/subsystem/roleplay_management/proc/check_initialize_aboutme_for(character_key, mob/living/carbon/human/owner, datum/component/about_me/C)
-	var/datum/aboutme_record/rec = SSroleplay_management.ensure_aboutme_datum_for_key(character_key, owner)
+	var/datum/aboutme_record/rec = SSroleplay_management.ensure_aboutme_record_for_key(character_key, owner)
 	if (!(C in GLOB.aboutme_components))
 		SSroleplay_management.register_aboutme_component(C)
 	if (!rec.has_initialized_personal_chronicle)
@@ -33,7 +33,7 @@
 		if (R.character_key)
 			GLOB.aboutme_records -= R.character_key
 /datum/controller/subsystem/roleplay_management/proc/get_aboutme_datum_for_key(character_key)
-	return ensure_aboutme_datum_for_key(character_key, null)
+	return ensure_aboutme_record_for_key(character_key, null)
 // ---------------- COMPONENT REGISTRATION ----------------
 /datum/controller/subsystem/roleplay_management/proc/register_aboutme_component(C)
 	if (C && !(C in GLOB.aboutme_components))

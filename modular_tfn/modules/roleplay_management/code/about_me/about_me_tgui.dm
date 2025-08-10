@@ -19,7 +19,7 @@
 	return GLOB.always_state
 
 /// Returns the full About Me UI payload for TGUI display. All data comes from component.
-/datum/component/about_me/ui_data(user)
+/datum/component/about_me/ui_data()
 	return get_full_payload()
 
 // ==============================================================================
