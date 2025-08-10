@@ -60,7 +60,7 @@
 	var/list/chronicle_groups = list()
 	for (var/key in GLOB.chronicles)
 		var/datum/chronicle/C = GLOB.chronicles[key]
-		var/host = C.host_key || "Unknown"
+		var/host = C.owner_key || "Unknown"
 		(chronicle_groups[host] ||= list()) += key
 	for (var/host in chronicle_groups)
 		var/list/keys = chronicle_groups[host]
@@ -79,7 +79,7 @@
 	)
 	for (var/key in GLOB.groups)
 		var/datum/group/G = GLOB.groups[key]
-		var/type = G?.gtype || "unknown"
+		var/type = G?.group_type || "unknown"
 		(group_categories[type] ||= list()) += key
 	for (var/category in group_categories)
 		var/list/keys = group_categories[category]
@@ -94,7 +94,7 @@
 	var/list/rel_groups = list()
 	for (var/key in GLOB.relationships)
 		var/datum/relationships/R = GLOB.relationships[key]
-		var/source = R?.source_character || "Unknown"
+		var/source = R?.subject_key || "Unknown"
 		(rel_groups[source] ||= list()) += key
 	for (var/source in rel_groups)
 		var/list/keys = rel_groups[source]

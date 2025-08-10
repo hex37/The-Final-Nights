@@ -145,41 +145,51 @@ export const AboutmeInt = (props, context) => {
 
 
 
-  const renderGroups = () => {
-    let groupList = [];
-    if (groups.group_objects) {
-      groupList = Object.values(groups.group_objects);
-    } else if (Array.isArray(groups)) {
-      groupList = groups;
-    } else if (typeof groups === 'object') {
-      groupList = Object.values(groups);
-    }
+const renderGroups = () => {
+  // Flatten { type: [ ...groups ] } -> [ ...groups ]
+  let groupList = [];
+  if (groups.group_objects && typeof groups.group_objects === 'object') {
+    groupList = Object.entries(groups.group_objects).flatMap(([gtype, arr]) =>
+      Array.isArray(arr) ? arr.map(g => ({
+        ...g,
+        group_type: g.group_type || gtype, // ensure present for UI
+      })) : []
+    );
+  } else if (Array.isArray(groups)) {
+    groupList = groups;
+  } else if (groups && typeof groups === 'object') {
+    groupList = Object.values(groups).flat();
+  }
 
-    // Which group is open
-    const [openIndex, setOpenIndex] = useLocalState('aboutme_group_open', -1);
+  const [openIndex, setOpenIndex] = useLocalState('aboutme_group_open', -1);
 
-    return (
-      <Section
-        title={
-          <Box style={{ display: 'flex', alignItems: 'center' }}>
-            <Box style={{ fontWeight: 'bold', fontSize: 16 }}>Groups</Box>
-            <Box ml="auto">
-              <Button
-                icon="wrench"
-                content="Manage Groups"
-                size="small"
-                onClick={() => act('manage_groups')}
-                style={{ marginLeft: 12, marginBottom: 0 }}
-              />
-            </Box>
+  return (
+    <Section
+      title={
+        <Box style={{ display: 'flex', alignItems: 'center' }}>
+          <Box style={{ fontWeight: 'bold', fontSize: 16 }}>Groups</Box>
+          <Box ml="auto">
+            <Button
+              icon="wrench"
+              content="Manage Groups"
+              size="small"
+              onClick={() => act('manage_groups')}
+              style={{ marginLeft: 12, marginBottom: 0 }}
+            />
           </Box>
-        }
-        fill
-      >
-        {groupList.length === 0 && <Box italic>No groups joined.</Box>}
-        {groupList.map((group, i) => (
+        </Box>
+      }
+      fill
+    >
+      {groupList.length === 0 && <Box italic>No groups joined.</Box>}
+      {groupList.map((group, i) => {
+        const typeLabel = (group.group_type || group.type || 'group');
+        const typePretty = typeLabel.charAt(0).toUpperCase() + typeLabel.slice(1);
+        const leaderName = group.leader_name || (Array.isArray(group.leaders) && group.leaders[0]) || '—';
+        const memberNames = (group.member_names || group.members || []);
+        return (
           <Box
-            key={i}
+            key={`${group.id || i}`}
             mb={2}
             style={{
               border: '1px solid #333',
@@ -203,38 +213,38 @@ export const AboutmeInt = (props, context) => {
               }}>
                 {openIndex === i ? '▼' : '►'}
               </Box>
-              <Box mr={2}>{group.name}</Box>
-              <Box
-                ml="auto"
-                italic
-                style={{ color: '#6cf', fontWeight: 400 }}
-              >
-                {group.type ? group.type.charAt(0).toUpperCase() + group.type.slice(1) : 'Group'}
+              <Box mr={2}>{group.name || 'Group'}</Box>
+              <Box ml="auto" italic style={{ color: '#6cf', fontWeight: 400 }}>
+                {typePretty}
               </Box>
             </Box>
             {openIndex === i && (
               <Box p={2} pt={1}>
                 <Box mb={1} style={{ color: '#bbb' }}>{group.desc}</Box>
                 <LabeledList>
-                  <LabeledList.Item label="Leader">{group.leader_name || '—'}</LabeledList.Item>
-                  <LabeledList.Item label="Members">{(group.members || []).join(', ') || '—'}</LabeledList.Item>
-                  <LabeledList.Item label="Orders">{group.orders || '—'}</LabeledList.Item>
+                  <LabeledList.Item label="Leader">{leaderName}</LabeledList.Item>
+                  <LabeledList.Item label="Members">
+                    {memberNames.length ? memberNames.join(', ') : '—'}
+                  </LabeledList.Item>
+                  {/* Orders removed per new payload */}
                 </LabeledList>
               </Box>
             )}
           </Box>
-        ))}
-      </Section>
-    );
-  };
+        );
+      })}
+    </Section>
+  );
+};
+
 
 
   const renderRelationships = () => {
     const [openIndex, setOpenIndex] = useLocalState('aboutme_relationship_open', -1);
 
-    // Split relationships
-    const personal = relationships.filter(rel => !rel.is_group);
-    const group = relationships.filter(rel => rel.is_group);
+    // Split relationships (UI-only)
+    const personal = relationships.filter(rel => rel.target_type !== 'group');
+    const group = relationships.filter(rel => rel.target_type === 'group');
 
     const makeAccordion = (rels, sectionLabel, sectionColor) =>
       rels.length > 0 && (
@@ -277,8 +287,12 @@ export const AboutmeInt = (props, context) => {
                     <Box mb={1} style={{ color: '#bbb' }}>{rel.desc}</Box>
                     <LabeledList>
                       <LabeledList.Item label="Strength">{rel.strength || '—'}</LabeledList.Item>
-                      <LabeledList.Item label="Target">{rel.target || '—'}</LabeledList.Item>
-                      <LabeledList.Item label="Date">{rel.date_created || '—'}</LabeledList.Item>
+                      <LabeledList.Item label="Target">
+                        {rel.target || rel.name || rel.target_key || '—'}
+                      </LabeledList.Item>
+                      <LabeledList.Item label="Date">
+                        {rel.date_created || rel.created_at || '—'}
+                      </LabeledList.Item>
                     </LabeledList>
                   </Box>
                 )}
@@ -307,8 +321,8 @@ export const AboutmeInt = (props, context) => {
         fill
       >
         {personal.length === 0 && group.length === 0 && <Box italic>No relationships.</Box>}
-        {makeAccordion(personal, "Personal Relationships", "#6cfc9e")}
-        {makeAccordion(group, "Group Relationships", "#6cf")}
+        {makeAccordion(personal, 'Personal Relationships', '#6cfc9e')}
+        {makeAccordion(group, 'Group Relationships', '#6cf')}
       </Section>
     );
   };

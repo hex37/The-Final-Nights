@@ -60,7 +60,7 @@
 	if (!istype(owner, /mob/living/carbon/human))
 		return list(error = "Invalid or missing owner for About Me component.")
 
-	return R.update_payload(owner)
+	return R.GetFormattedUI(owner)
 
 
 
@@ -89,7 +89,7 @@
 	var/datum/group/group = SSroleplay_management.get_group_by_key(group_vote.group_id)
 	if (!group || !owner || !ismob(owner) || group_vote.has_voted(character_key))
 		return
-	var/vote_target = group.member_names[group_vote.target_character_key] || group_vote.target_character_key
+	var/vote_target = group.member_keys[group_vote.target_character_key] || group_vote.target_character_key
 	var/player_choice = tgui_input_list(
 		owner,
 		"Do you vote YES or NO to [group_vote.vote_type] [vote_target]?",

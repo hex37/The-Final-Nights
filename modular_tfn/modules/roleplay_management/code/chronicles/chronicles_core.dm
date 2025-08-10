@@ -1,90 +1,91 @@
-/**
- * Chronicle datum.
- * - id:                Unique chronicle ID (auto-generated on creation).
- * - title:             Display name for the chronicle/event/story arc.
- * - ctype:             Chronicle type ("event", "arc", "plot", etc).
- * - desc:              Description or summary of the event or arc.
- * - tags:              List of arbitrary tags for sorting/search.
- * - date_started:      When the chronicle/event began (string).
- * - date_ended:        When the chronicle/event ended (string, optional).
- * - host_key:          Key of the host (character or group); who “owns” this chronicle.
- * - related_characters: List of character_keys involved in the event.
- * - related_groups:    List of group IDs involved in the event.
- * - related_memories:  List of memory IDs attached to this chronicle.
- *
- * Chronicles represent shared RP history: memorable events, stories, or arcs.
- * They link to multiple memories, characters, and groups, and are registered globally.
- */
-// ============================================================================
-/datum/chronicle
-	var/id = null
-	var/title = "Chronicle"
-	var/ctype = null   // "event", "arc", "plot"
-	var/desc = ""
-	var/list/tags = list()
-	var/date_started = ""
-	var/date_ended = ""
-	var/list/host_key = "" // character or group key (who “owns” the chronicle)
-	var/list/related_characters = list() // All character_keys in this chronicle
-	var/list/related_groups = list()     // All group ids linked
-	var/list/related_memories = list()   // All memory ids attached
+// ==============================================================================
+// CHRONICLE — CORE (chronicle_core.dm)
+// Chronicle = story container with linked entries (memory ids).
+// ==============================================================================
 
-/**
- * Chronicle constructor.
- * Accepts all key fields as arguments, generates a unique id and registers globally.
- */
-/datum/chronicle/New(
-	host_key_arg = null,
-	title_arg = "Chronicle",
-	ctype_arg = "event",
-	desc_arg = "",
-	date_started_arg = "",
-	date_ended_arg = "",
-	list/related_characters_arg = null,
-	list/related_groups_arg = null,
-	list/related_memories_arg = null
-)
+/datum/chronicle
+	var/id
+	var/scope = "personal"
+	var/title = "Untitled Chronicle"
+	var/desc = ""
+	var/owner_key
+	var/group_id
+	var/list/tags = list()
+	var/list/entries = list() // memory ids
+	var/status = "Ongoing"
+
+	var/start_at = ""
+	var/start_at_ts = 0
+	var/end_at = ""
+	var/end_at_ts = 0
+
+	var/created_by_key
+	var/created_at = ""
+	var/created_at_ts = 0
+	var/updated_at = ""
+	var/updated_at_ts = 0
+
+/datum/chronicle/New(id, scope, title, desc, owner_key, group_id, created_by_key)
 	..()
-	host_key = host_key_arg
-	id = "[host_key]_personal_chronicle_[world.time]_[rand(1,1000000)]"
-	title = title_arg
-	ctype = ctype_arg
-	desc = desc_arg
-	date_started = date_started_arg
-	date_ended = date_ended_arg
-	related_characters = related_characters_arg || list()
-	related_groups = related_groups_arg || list()
-	related_memories = related_memories_arg || list()
+	src.id = id
+	src.scope = scope || src.scope
+	src.title = title || src.title
+	src.desc  = desc  || src.desc
+	src.owner_key = owner_key
+	src.group_id  = group_id
+	src.created_by_key = created_by_key
+
+	if (!src.id)
+		var/host = owner_key ? "[owner_key]" : (group_id ? "[group_id]" : "unknown")
+		var/pfx = "chron_[src.scope]_[host]"
+		src.id = SSroleplay_management.about_me_new_id(pfx)
+
+	if (!created_at_ts)
+		created_at_ts = world.realtime
+		created_at = time2text(created_at_ts, "MMM DD, YYYY hh:mm")
+	updated_at_ts = created_at_ts
+	updated_at = created_at
+
+	start_at_ts = created_at_ts
+	start_at = created_at
 
 	SSroleplay_management.register_chronicle(src)
 
-/**
- * Unregisters this chronicle from global subsystem on deletion.
- */
+
 /datum/chronicle/Destroy()
 	SSroleplay_management.unregister_chronicle(src)
 	..()
 
-/**
- * Checks if this chronicle is visible to the given character.
- * (Override for custom access logic; currently always TRUE.)
- */
-/datum/chronicle/proc/is_visible_to(mob/user, character_key)
-	return TRUE
+/datum/chronicle/proc/touch()
+	updated_at_ts = world.realtime
+	updated_at = time2text(updated_at_ts, "MMM DD, YYYY hh:mm")
 
-/**
- * Returns a UI-ready list of chronicle data for frontend use.
- */
+/datum/chronicle/proc/add_entry(memory_id)
+	if (!memory_id) return
+	if (!(memory_id in entries))
+		entries += memory_id
+	touch()
+
+/datum/chronicle/proc/close(now = TRUE)
+	status = "Concluded"
+	if (now)
+		end_at_ts = world.realtime
+		end_at = time2text(end_at_ts, "MMM DD, YYYY hh:mm")
+	touch()
+
 /datum/chronicle/proc/GetFormattedUI()
 	return list(
-		"id"                = id,
-		"title"             = title,
-		"desc"              = desc,
-		"ctype"             = ctype,
-		"tags"              = tags,
-		"date_started"      = date_started,
-		"date_ended"        = date_ended,
-		"related_characters"= islist(related_characters) ? related_characters.Copy() : list(),
-		"related_groups"    = islist(related_groups) ? related_groups.Copy() : list(),
-		"related_memories"  = islist(related_memories) ? related_memories.Copy() : list()
+		"id" = id,
+		"scope" = scope,
+		"title" = title,
+		"desc" = desc,
+		"owner_key" = owner_key,
+		"group_id" = group_id,
+		"tags" = islist(tags) ? tags.Copy() : list(),
+		"entries" = islist(entries) ? entries.Copy() : list(),
+		"status" = status,
+		"start_at" = start_at,
+		"end_at" = end_at,
+		"created_at" = created_at,
+		"updated_at" = updated_at
 	)

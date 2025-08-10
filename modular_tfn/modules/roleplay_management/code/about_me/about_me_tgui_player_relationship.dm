@@ -112,8 +112,8 @@
  */
 /datum/component/about_me/proc/create_mutual_relationship(target_key, rtype, strength, taglist, mob/living/carbon/human/user, mob/living/carbon/human/Target)
 	var/datum/relationships/rel = new
-	rel.source_character = src.character_key
-	rel.target_character = target_key
+	rel.subject_key = src.character_key
+	rel.target_key = target_key
 	rel.rtype = rtype
 	rel.strength = strength
 	rel.tags = taglist
@@ -137,7 +137,7 @@
 	for (var/key in R.relationship_keys)
 		var/datum/relationships/rel = SSroleplay_management.get_relationship_by_key(key)
 		if (!rel || !rel.is_visible_to(user, src.character_key)) continue
-		if (rel.group_target_id) continue // skip group relationships
+		if (rel.target_key) continue // skip group relationships
 		var/label = "[rel.name] (Character)"
 		edit_map[label] = rel
 	return edit_map
@@ -160,7 +160,7 @@
 	for (var/key in R.relationship_keys)
 		var/datum/relationships/rel = SSroleplay_management.get_relationship_by_key(key)
 		if (!rel || !rel.is_visible_to(user, src.character_key)) continue
-		if (rel.group_target_id) continue
+		if (rel.target_key) continue
 		var/label = "[rel.name] (Character)"
 		edit_map[label] = rel.id
 		rel_by_id[rel.id] = rel
@@ -177,7 +177,7 @@
 		return src.prompt_change_relationship(user)
 	var/datum/relationships/rel = rel_by_id[choice]
 	var/source_key = src.character_key
-	var/target_key = rel.target_character
+	var/target_key = rel.target_key
 	message_admins("Relationship Remove: Attempting removal for rel.id=[rel.id] ([rel.name]) between [source_key] and [target_key]")
 
 	// Call the core removal logic (removes from both records and GLOB)
@@ -198,10 +198,9 @@
  */
 /datum/component/about_me/proc/has_relationship_with(other_key)
 	var/datum/aboutme_record/R = src.get_record()
-	if (!R) return FALSE
 	for (var/rel_id in R.relationship_keys)
 		var/datum/relationships/rel = SSroleplay_management.get_relationship_by_key(rel_id)
 		if (!rel) continue
-		if ((rel.source_character == src.character_key && rel.target_character == other_key) || (rel.source_character == other_key && rel.target_character == src.character_key))
+		if ((rel.subject_key == src.character_key && rel.target_key == other_key) || (rel.subject_key == other_key && rel.target_key == src.character_key))
 			return TRUE
 	return FALSE

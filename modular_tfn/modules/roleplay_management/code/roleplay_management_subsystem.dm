@@ -25,6 +25,10 @@ SUBSYSTEM_DEF(roleplay_management)
 		if (!G?.active_votes || !length(G.active_votes)) continue
 		G.resolve_votes()
 
+
+
+
+
 // ---------------- LOOKUPS & UTILITIES ----------------
 /datum/controller/subsystem/roleplay_management/proc/get_aboutme_component(character_key)
 	for (var/datum/component/about_me/C in GLOB.aboutme_components)
@@ -64,3 +68,7 @@ SUBSYSTEM_DEF(roleplay_management)
 		return null
 	return GLOB.relationships[rel_id]
 
+/datum/controller/subsystem/roleplay_management/proc/about_me_new_id(prefix)
+	if (!prefix) prefix = "id"
+	var/tstamp = time2text(world.realtime, "YYYYMMDD_hhmmss")
+	return "[prefix]_[tstamp]_[rand(100000, 999999)]"

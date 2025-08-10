@@ -22,18 +22,42 @@
 	return is_valid_key(key) ? GLOB.chronicles[key] : null
 // ---------------- PERSONAL CHRONICLE ----------------
 /datum/controller/subsystem/roleplay_management/proc/ensure_personal_chronicle(character_key, mob/living/carbon/human/owner)
-	if (!character_key || !owner) return null
+	if (!character_key || !owner)
+		return null
+
+	// Return existing personal chronicle for this character, if any.
 	for (var/datum/chronicle/C in GLOB.chronicles)
-		if (C.ctype == "personal" && C.host_key == character_key)
-			return C // Already exists
+		if (C.scope == "personal" && C.owner_key == character_key)
+			return C
+
+	var/title = "[owner.real_name]'s Chronicle"
+	var/desc = "(This is your personal chronicle of this night's events. Record your journey, important events, or reflections here. Your personal chronicle might get spotlighted!)"
+
+	// New constructor: (id, scope, title, desc, owner_key, group_id, created_by_key)
 	var/datum/chronicle/new_personal = new(
-		host_key_arg = character_key,
-		title_arg = "[owner.real_name]'s Chronicle",
-		ctype_arg = "personal",
-		desc_arg = "(This is your personal chronicle of this night's events. Record your journey, important events, or reflections here. Your personal chronicle might get spotlighted!)",
-		related_characters_arg = list(character_key)
+		null,
+		"personal",
+		title,
+		desc,
+		character_key,
+		null,
+		character_key
 	)
+
+	// Optional: mark with a tag for filtering
+	if (!islist(new_personal.tags))
+		new_personal.tags = list()
+	if (!("personal" in new_personal.tags))
+		new_personal.tags += "personal"
+
+	// Link to the aboutme_record
 	var/datum/aboutme_record/rec = get_aboutme_record(character_key)
 	if (rec)
-		rec.chronicle_keys += new_personal.id
+		if (!islist(rec.chronicle_keys))
+			rec.chronicle_keys = list()
+		if (!(new_personal.id in rec.chronicle_keys))
+			rec.chronicle_keys += new_personal.id
+		rec.touch()
+
 	return new_personal
+

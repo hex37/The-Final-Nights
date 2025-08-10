@@ -405,20 +405,21 @@
 	for (var/gk in group_keys)
 		if (!(gk in R.group_keys))
 			R.group_keys += gk
+
 /// Cleanly removes a character from a specific group, including leadership/officer/member status, deleting the relationshoip, and key etc.
 /datum/controller/subsystem/roleplay_management/proc/clear_group_relationship(character_key, datum/group/G)
 	// Remove from group
 	G.leaders -= character_key
 	G.officers -= character_key
 	G.members -= character_key
-	G.member_names -= character_key
+	G.member_keys -= character_key
 	// Remove group key from record
 	var/datum/aboutme_record/R = get_aboutme_record(character_key)
 	if (R && islist(R.group_keys))
 		R.group_keys -= G.id
 	// Remove group relationship
 	for (var/datum/relationships/rel in GLOB.relationships)
-		if (rel.source_character == character_key && rel.group_target_id == G.id)
+		if (rel.subject_key == character_key && rel.target_key == G.id)
 			GLOB.relationships -= rel.id
 			if (R?.relationship_keys)
 				R.relationship_keys -= rel.id
@@ -455,4 +456,4 @@
 		G.leaders -= character_key
 		G.officers -= character_key
 		G.members -= character_key
-		G.member_names -= character_key
+		G.member_keys -= character_key

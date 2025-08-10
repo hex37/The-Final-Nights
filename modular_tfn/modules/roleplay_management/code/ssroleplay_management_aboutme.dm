@@ -48,7 +48,7 @@
 // ---------------- GETTERS & FIELD SET ----------------
 /datum/controller/subsystem/roleplay_management/proc/get_aboutme_payload_for_owner(mob/living/carbon/human/owner, character_key)
 	var/datum/aboutme_record/rec = get_aboutme_record(character_key)
-	return rec ? rec.update_payload(owner) : null
+	return rec ? rec.GetFormattedUI(owner) : null
 /datum/controller/subsystem/roleplay_management/proc/set_aboutme_field(character_key, field, value)
 	var/datum/aboutme_record/rec = get_aboutme_record(character_key)
 	switch (field)

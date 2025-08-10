@@ -64,8 +64,6 @@
 				desc,
 				date
 			)
-			entry.related_characters += src.character_key
-
 			R.chronicle_keys += entry.id
 			to_chat(user, "<span class='notice'>Personal chronicle entry added.</span>")
 			message_admins("[key_name(user)] added personal chronicle entry '[title]'.")
@@ -89,7 +87,7 @@
 		var/datum/group/G = SSroleplay_management.get_group_by_key(group_id)
 		if (!G) continue
 		if ((src.character_key in G.leaders) || (src.character_key in G.officers))
-			admin_groups["[G.name] ([G.gtype])"] = G
+			admin_groups["[G.name] ([G.group_type])"] = G
 
 	if (!length(admin_groups))
 		to_chat(user, "<span class='notice'>You are not a leader or officer in any group.</span>")
@@ -124,7 +122,6 @@
 				desc,
 				date
 			)
-			entry.related_groups += G.id
 
 			G.chronicle_keys += entry.id
 			to_chat(user, "<span class='notice'>Group chronicle entry added for [G.name].</span>")
@@ -149,7 +146,7 @@
 		var/datum/chronicle/C = SSroleplay_management.get_chronicle_by_key(key)
 		if (!C || !C.is_visible_to(user, src.character_key)) continue
 
-		var/date = C.date_started || "Unknown"
+		var/date = C.created_at || "Unknown"
 		var/desc = C.desc || "No details provided."
 		to_chat(user, "<hr><b>[C.title]</b><br><i>[date]</i><br>[desc]")
 

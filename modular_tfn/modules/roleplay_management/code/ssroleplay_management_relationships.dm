@@ -20,34 +20,43 @@
 		GLOB.relationships -= R.id
 // ---------------- GROUP RELATIONSHIPS ----------------
 /// Ensures a relationship exists between a character and a group. Returns the datum.
-/datum/controller/subsystem/roleplay_management/proc/ensure_group_relationship(character_key, datum/group/G, initial_strength = 0)
-	if (!character_key || !G) return
-	// Check for existing
+/datum/controller/subsystem/roleplay_management/proc/ensure_group_relationship(subject_key, datum/group/G, initial_strength = 50)
+	if (!subject_key || !G)
+		return null
+
+	// Return existing subject→group relationship if present
 	for (var/datum/relationships/R in GLOB.relationships)
-		if (R.source_character == character_key && R.group_target_id == G.id)
+		if (R.subject_key == subject_key && R.target_type == "group" && R.target_key == G.id)
+			// optionally sync strength upward
+			if (isnum(initial_strength) && initial_strength > R.strength)
+				R.set_strength(initial_strength)
 			return R
-	// Create new
-	var/datum/relationships/R = new()
-	R.source_character = character_key
-	R.group_target_id = G.id
-	R.rtype = "group"
-	R.strength = initial_strength
-	R.name = "[G.name] Affiliation"
-	R.desc = "Initial loyalty toward [G.name]"
-	GLOB.relationships[R.id] = R
-	// Link to aboutme record
-	var/datum/aboutme_record/rec = get_aboutme_record(character_key)
+
+	// Create new (auto-registers via New())
+	var/datum/relationships/new_rel = new( null, subject_key, "group", G.id, "group", isnum(initial_strength) ? initial_strength : 50, subject_key)
+
+	// Link onto the subject's About Me record
+	var/datum/aboutme_record/rec = get_aboutme_record(subject_key)
 	if (rec)
-		rec.relationship_keys += R.id
-	// Link to group (for group-side lookups)
-	if (!(R.id in G.group_relationship_keys))
-		G.group_relationship_keys += R.id
-	return R
+		if (!islist(rec.relationship_keys)) rec.relationship_keys = list()
+		if (!(new_rel.id in rec.relationship_keys))
+			rec.relationship_keys += new_rel.id
+		rec.touch()
+
+	// Link to group for group-side lookups
+	if (!islist(G.group_relationship_keys)) G.group_relationship_keys = list()
+	if (!(new_rel.id in G.group_relationship_keys))
+		G.group_relationship_keys += new_rel.id
+	G.touch()
+
+	return new_rel
+
+
 /// Finds or creates a group relationship by character and group_id.
 /datum/controller/subsystem/roleplay_management/proc/get_or_create_group_relationship(character_key, group_id)
 	if (!character_key || !group_id) return null
 	for (var/datum/relationships/R in GLOB.relationships)
-		if (R.source_character == character_key && R.group_target_id == group_id)
+		if (R.subject_key == character_key && R.target_key == group_id)
 			return R
 	var/datum/group/G = GLOB.groups[group_id]
 	if (!G) return null
@@ -56,12 +65,11 @@
 /datum/controller/subsystem/roleplay_management/proc/CreateGroupRelationship(source_key, group_key, rtype, strength = 0, name = null, desc = "")
 	if (!source_key || !group_key || !rtype) return
 	var/datum/relationships/R = new()
-	R.source_character = source_key
-	R.group_target_id = group_key
+	R.subject_key = source_key
+	R.target_key = group_key
 	R.rtype = rtype
 	R.strength = strength
 	R.name = name || "[rtype] toward [group_key]"
-	R.desc = desc
 	GLOB.relationships[R.id] = R
 	var/datum/aboutme_record/record = get_aboutme_record(source_key)
 	if (record)
@@ -70,7 +78,7 @@
 /// Returns the strength of a group relationship, or null if not found.
 /datum/controller/subsystem/roleplay_management/proc/get_relationship_strength(character_key, group_id)
 	for (var/datum/relationships/R in GLOB.relationships)
-		if (R.source_character == character_key && R.group_target_id == group_id)
+		if (R.subject_key == character_key && R.target_key == group_id)
 			return R.strength
 	return null
 
@@ -79,7 +87,7 @@
 	var/list/to_delete = list()
 	for (var/rel_id in GLOB.relationships)
 		var/datum/relationships/rel = GLOB.relationships[rel_id]
-		if (rel.group_target_id == group_id)
+		if (rel.target_key == group_id)
 			to_delete += rel_id
 	for (var/rel_id in to_delete)
 		var/datum/relationships/rel = GLOB.relationships[rel_id]
@@ -99,7 +107,7 @@
 	for (var/rel_id in GLOB.relationships)
 		var/datum/relationships/rel = GLOB.relationships[rel_id]
 		if (!rel) continue
-		if ((rel.source_character == source_key && rel.target_character == target_key) || (rel.source_character == target_key && rel.target_character == source_key))
+		if ((rel.subject_key == source_key && rel.target_key == target_key) || (rel.subject_key == target_key && rel.target_key == source_key))
 			message_admins("Deleting rel.id=[rel.id] ([rel.name])")
 			to_delete += rel_id
 	// Actually remove all found
@@ -126,7 +134,7 @@
 	for (var/rel_id in R.relationship_keys)
 		var/datum/relationships/rel = get_relationship_by_key(rel_id)
 		if (!rel) continue
-		if ((rel.source_character == key1 && rel.target_character == key2) || (rel.source_character == key2 && rel.target_character == key1))
+		if ((rel.subject_key == key1 && rel.target_key == key2) || (rel.subject_key == key2 && rel.target_key == key1))
 			return rel
 	return null
 
