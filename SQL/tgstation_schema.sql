@@ -752,8 +752,8 @@ CREATE TABLE `about_me_record` (
 DROP TABLE IF EXISTS `chronicle`;
 CREATE TABLE `chronicle` (
   `id` INT NOT NULL AUTO_INCREMENT,
-  `about_me_id` INT NOT NULL,
-  `group_id` INT NOT NULL,
+  `about_me_id` INT,
+  `group_id` INT,
   `created_by_key` datetime NOT NULL,
   `owner_key` VARCHAR(256),
   `scope` VARCHAR(64),
@@ -765,6 +765,7 @@ CREATE TABLE `chronicle` (
   `end_time` datetime,
   PRIMARY KEY (`id`),
   CONSTRAINT fk_chronicle_about_me_record FOREIGN KEY (about_me_id) REFERENCES about_me_record(id),
+  CONSTRAINT fk_chronicle_group_id FOREIGN KEY (group_id) REFERENCES chronicle_group(id),
   INDEX `about_me_id_index` (`about_me_id`),
   INDEX `group_id_index` (`group_id`),
   INDEX `create_time_index` (`create_time`));
@@ -774,6 +775,7 @@ CREATE TABLE `chronicle_tag` (
   `id` INT NOT NULL AUTO_INCREMENT,
   `chronicle_id` INT NOT NULL,
   `tag` VARCHAR(64) NOT NULL,
+  `create_time` datetime NOT NULL,
   PRIMARY KEY (`id`),
   INDEX `chronicle_id_index` (`chronicle_id`),
   CONSTRAINT fk_tag_chronicle FOREIGN KEY (chronicle_id) REFERENCES chronicle(id));
@@ -782,8 +784,10 @@ DROP TABLE IF EXISTS `chronicle_entry`;
 CREATE TABLE `chronicle_entry` (
   `id` INT NOT NULL AUTO_INCREMENT,
   `chronicle_id` INT NOT NULL,
-  `entry` TEXT,
+  `title` TEXT,
+  `body` TEXT,
   `create_time` datetime NOT NULL,
+  `update_time` datetime NOT NULL,
   `end_time` datetime,
   PRIMARY KEY (`id`),
   INDEX `chronicle_id_index` (`chronicle_id`),
@@ -846,6 +850,28 @@ CREATE TABLE `memory_linked_keys` (
   PRIMARY KEY (`id`),
   INDEX `memory_id_index` (`memory_id`),
   CONSTRAINT fk_key_memory_id FOREIGN KEY (memory_id) REFERENCES memory(id));
+
+DROP TABLE IF EXISTS `chronicle_group`;
+CREATE TABLE `chronicle_group` (
+  `id` INT NOT NULL AUTO_INCREMENT,
+  `group_type` VARCHAR(64) NOT NULL,
+  `name` TEXT,
+  `desc` TEXT,
+  `status` VARCHAR(64),
+  `created_by_key` VARCHAR(256),
+  `visibility` BOOLEAN DEFAULT TRUE,
+  `is_public` BOOLEAN DEFAULT TRUE,
+  `canonical_key` VARCHAR(256),
+  `is_canonical` BOOLEAN DEFAULT FALSE,
+  `load_mode` BOOLEAN DEFAULT FALSE,
+  `create_time` datetime NOT NULL,
+  `update_time` datetime NOT NULL,
+  `end_time` datetime,
+  PRIMARY KEY (`id`),
+  INDEX `group_type_index` (`group_type`),
+  INDEX `created_by_key_index` (`created_by_key`),
+  INDEX `create_time_index` (`create_time`));
+
 
 /*!40101 SET SQL_MODE=@OLD_SQL_MODE */;
 /*!40014 SET FOREIGN_KEY_CHECKS=@OLD_FOREIGN_KEY_CHECKS */;
